@@ -1,0 +1,26 @@
+[
+	{
+        "type": "sprite",
+        "name": "player",
+        "numFrames": 1,
+        "fps": 30,
+        "path": [
+            "C:\\Users\\camer\\Downloads\\image0.jpg"
+        ],
+
+        "hitbox": {
+
+        }
+    },
+    
+    {
+        "type": "sound",
+        "name": "music_main",
+        "path": ""
+    },
+
+    {
+        "type": "hitbox",
+        "hitbox":null
+    }
+]
