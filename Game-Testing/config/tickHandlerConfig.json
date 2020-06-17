@@ -7,16 +7,33 @@
 			"members":[
 
 				{
+					"class" : "game.entities.BackgroundManager",
+					"fodlerID": "0xFFA05C8D",
+					"graphicsLayer": "default",
+					"graphicsDepth": 1,
+					"constructorArgumentsType": [
+                    ],
+					"constructorArgumentsValue":
+					[
+					]
+				},
+				{
 					"class" : "game.entities.Player",
+					"folderID": "0xFFA05C8D",
+					"graphicsLayer": "default",
+					"graphicsDepth": -12121212,
 					"constructorArgumentsType": [
 						"java.lang.Integer"
                     ],
 					"constructorArgumentsValue":
 					[
-						"¬í sr java.lang.Integerâ ¤÷‡8 I valuexr java.lang.Number†¬•”à‹  xp   m"
+						"Player\\"
 					]
 				}
 			]
 		}
+
+		
+		
 	]
 }

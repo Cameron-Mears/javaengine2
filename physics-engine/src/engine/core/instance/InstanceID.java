@@ -6,7 +6,7 @@ public final class InstanceID
 	
 	public InstanceID()
 	{
-		
+		id = (long) (Math.random() * Long.MAX_VALUE);
 	}
 	
 	public long getID()

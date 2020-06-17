@@ -1,6 +1,5 @@
 package physics.body;
 
-import engine.core.Engine;
 import engine.core.tick.TickInfo;
 import physics.collision.Shape;
 import physics.general.Transform;

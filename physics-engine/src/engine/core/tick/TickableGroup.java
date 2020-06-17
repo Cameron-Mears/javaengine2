@@ -1,14 +1,11 @@
 package engine.core.tick;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.function.Function;
 
 import engine.core.exceptions.EngineException;
-import engine.core.instance.InstanceID;
-import engine.util.bst.BST;
+import engine.core.instance.EngineInstance;
 import external.org.json.JSONArray;
 import external.org.json.JSONException;
-import graphics.instance.EngineInstance;
 import graphics.instance.InvalidInstanceException;
 import graphics.layer.Layer;
 
@@ -73,7 +70,8 @@ public class TickableGroup extends Layer
 		for (int index = 0; index < instances.length(); index++) 
 		{
 			EngineInstance instance = EngineInstance.instanceFromJSON(instances.getJSONObject(index));
-			members.addNode(instance.getID(), instance);
+			
+			members.addNode(instance.getID().getID(), instance);
 		}
 		
 		return false;

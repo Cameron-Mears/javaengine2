@@ -1,22 +1,21 @@
-package graphics.instance;
+package engine.core.instance;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 
 import engine.core.JSON_CONSTANTS;
 import engine.core.exceptions.EngineException;
-import engine.core.instance.InstanceID;
 import engine.util.bst.BST;
 import external.org.json.JSONArray;
 import external.org.json.JSONObject;
+import graphics.instance.IGraphics;
+import graphics.instance.InvalidInstanceException;
+import graphics.layer.GraphicsLayerManager;
 
 public abstract class EngineInstance 
 {
@@ -56,27 +55,8 @@ public abstract class EngineInstance
 		return;
 	}
 	
-	public static EngineInstance instanceFromJSON(JSONObject object) throws EngineException, InvalidInstanceException
-	{
-		String test = null;
-		byte[] a = null;
-		try
-		{
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	        ObjectOutputStream oos = new ObjectOutputStream( baos );
-	        oos.writeObject(109);		
-	        oos.close();
-	        a = baos.toByteArray();
-	        FileOutputStream s = new FileOutputStream(new File("C:\\Users\\camer\\OneDrive\\Documents\\test.txt"));
-	        s.write(a);
-	        s.flush();
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-		
-		
-		
-		
+	public static final EngineInstance instanceFromJSON(JSONObject object) throws EngineException, InvalidInstanceException
+	{	
 		
 		String className = object.getString(JSON_CONSTANTS.OBJECT_CLASS);
 		
@@ -105,30 +85,42 @@ public abstract class EngineInstance
 				JSONArray constructorParamValues = object.getJSONArray(JSON_CONSTANTS.OBJECT_CONSTRUCTORS_PARAMS);
 				
 				//create the array to hold class types as Class
-				Class<?> types[] = new Class<?>[constructorParamTypes.length()];
-				Object[] values = new Object[constructorParamTypes.length()];
-				
-				ObjectInputStream objectStream;
+				Class<?> types[] = null;
+				Object[] values = null;
 				
 				
-				
-				for (int index = 0; index < types.length; index++) 
+				String root = System.getProperty("user.dir") + "\\config\\levels\\level1\\objects\\";
+				if (constructorParamTypes.length() > 0)
 				{
-					String typeString = constructorParamTypes.getString(index);
-					types[index] = Class.forName(typeString);
+					types = new Class<?>[constructorParamTypes.length()];
+					values = new Object[constructorParamTypes.length()];
+					root += constructorParamValues.getString(0);
+					root += object.getString("folderID") + "\\";
 					
-					String objectRaw = constructorParamValues.getString(index);
-				
-					objectStream = new ObjectInputStream(new ByteArrayInputStream(objectRaw.getBytes()));
-					values[index] = objectStream.readObject();
-					objectStream.close();
-				}		
-				
+					for (int index = 0; index < types.length; index++) 
+					{
+						File file = new File(root + Integer.toString(index+1) + ".txt");
+						//add the type to the array to find the correct constructor
+						String typeString = constructorParamTypes.getString(index);
+						types[index] = Class.forName(typeString);
+						
+						FileInputStream fis = new FileInputStream(file);
+						ObjectInputStream ois = new ObjectInputStream(fis);
+						values[index] = ois.readObject();
+						ois.close();
+					}		
+				}
 				constructor = type.getConstructor(types); //get the constructor with specified arguments
 				
 				
 				instance = (EngineInstance) constructor.newInstance(values);
 				
+				String gLayer = object.getString("graphicsLayer");
+				long depth = object.getLong("graphicsDepth");
+				
+				if (gLayer != "none")
+					GraphicsLayerManager.getInstance().getLayer(gLayer).addIGrpahics((IGraphics)instance, depth);
+			
 			} 
 			catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | ClassNotFoundException | IOException e) 
 			{

@@ -2,10 +2,12 @@
 	{
         "type": "sprite",
         "name": "player",
-        "numFrames": 1,
-        "fps": 30,
+        "numFrames": 2,
+        "fps": 2,
         "path": [
-            "C:\\Users\\camer\\Downloads\\image0.jpg"
+            "C:\\Users\\camer\\Downloads\\image0.jpg",
+            "C:\\Users\\camer\\OneDrive\\Pictures\\image0 (2).jpg"
+
         ],
 
         "hitbox": {

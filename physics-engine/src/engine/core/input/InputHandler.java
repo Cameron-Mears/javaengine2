@@ -8,10 +8,11 @@ import java.util.LinkedList;
 
 public class InputHandler implements MouseListener, KeyListener
 {
-	private LinkedList<InputEvent> m;
+	
 	
 	@Override
-	public void keyTyped(KeyEvent e) {
+	public void keyTyped(KeyEvent e) 
+	{
 		// TODO Auto-generated method stub
 		
 	}
@@ -24,7 +25,7 @@ public class InputHandler implements MouseListener, KeyListener
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 

@@ -4,9 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
-import java.util.Scanner;
 
 import engine.core.exceptions.EngineException;
 import engine.util.parsers.AssetMapParser;
@@ -31,7 +29,9 @@ public class Engine                                                             
 	
 	private static void init() throws JSONException, IOException
 	{
+		long now = System.currentTimeMillis();
 		instance = new Engine();
+		System.out.println("init complete time: " + Long.toString(System.currentTimeMillis() - now) + "ms");
 	}
 	
 	public static synchronized Engine getInstance() throws JSONException, IOException
@@ -96,9 +96,11 @@ public class Engine                                                             
 		engineProperties.put("server_port", defaultServerPort);
 		
 		
+		//System.out.println("C:\\Users\\camer\\OneDrive\\Documents\\GitHub\\javaengine2\\Game-Testing\\config\\tickHandlerConfig.json".equals((USER_DIR+"\\config\\tickHandlerConfig.json")));
+		
 		//add to seperate parsing methods
 		engineProperties.put("tickHandlerConfig", new JSONObject(new JSONTokener(new FileInputStream(new File(USER_DIR+"\\config\\tickHandlerConfig.json")))).getJSONArray("tick_handler"));
-	
+		
 		AssetMapParser.parseAssetMap(new File(System.getProperty("user.dir") + "\\assets\\assetmap.json"));
 	
 		this.recomputeParams();

@@ -1,6 +1,6 @@
 package engine.event;
 
-import graphics.instance.EngineInstance;
+import engine.core.instance.EngineInstance;
 
 public abstract class EngineEvent 
 {

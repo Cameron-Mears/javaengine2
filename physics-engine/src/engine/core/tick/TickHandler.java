@@ -80,7 +80,6 @@ public class TickHandler
 		/*
 		 * iterates through each TickableGroup listed in the JSON file, and will add it to the tree
 		 */
-		
 		for (int index = 0; index < groupList.length(); index ++)
 		{
 			JSONObject groupJSON = groupList.getJSONObject(index);

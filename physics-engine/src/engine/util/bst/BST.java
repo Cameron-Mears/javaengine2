@@ -171,6 +171,8 @@ public class BST<Key,Value>
 	
 	public void inOrderTraverse(Node<Value> root, Function<Value, Void> func)
 	{
+		if (root == null) return;
+		
 		if (root.leftChild != null) inOrderTraverse(root.leftChild, func);
 		
 		func.apply(root.value);

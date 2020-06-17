@@ -9,9 +9,9 @@
 	
 	"engine": {
 	
-		"tickrate": 1,
-		"framerate": 40,
-		"doTickAndFrameRatePrint" : false
+		"tickrate": 40000,
+		"framerate": 600000,
+		"doTickAndFrameRatePrint" : true
 	
 	},
 	

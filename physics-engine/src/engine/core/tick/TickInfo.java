@@ -6,5 +6,4 @@ public class TickInfo
 	public double delta;
 	public long deltaNS;
 	
-	
 }

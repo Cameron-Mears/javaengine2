@@ -1,14 +1,14 @@
 package engine.core;
 
+import java.awt.Graphics2D;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 
 import engine.core.exceptions.EngineException;
 import engine.core.tick.TickHandler;
-import engine.core.tick.TickInfo;
 import external.org.json.JSONException;
 import graphics.instance.InvalidInstanceException;
 import graphics.layer.GraphicsLayerManager;
+import graphics.viewer.Window;
 
 class GameLoop extends Thread
 {
@@ -53,7 +53,15 @@ class GameLoop extends Thread
 			
 			if (deltaFsum >= deltaF)
 			{
-				this.render();
+				try {
+					this.render();
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				deltaFsum = 0;
 				frames++;
 			}
@@ -84,7 +92,6 @@ class GameLoop extends Thread
 			}
 			this.lastTime = now;
 			
-			//tick
 			
 			
 		}
@@ -95,9 +102,11 @@ class GameLoop extends Thread
 		tickHandler.tick(delta);
 	}
 	
-	private void render()
+	private void render() throws JSONException, IOException
 	{
-		
+		Graphics2D g2 = Window.getInstance().createGraphics();
+		GraphicsLayerManager.getInstance().render(g2);
+		Window.getInstance().showGraphics();
 	}
 	
 

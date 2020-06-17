@@ -7,8 +7,8 @@ import engine.core.tick.TickInfo;
 
 public class Sprite 
 {
-	private long frameDeltaNanos;
-	private long currentDelta;
+	private double frameDelta;
+	private double currentDelta;
 	
 	private int currentFrame;
 	private String name;
@@ -31,6 +31,7 @@ public class Sprite
 		this.setSpriteFPS(fps);
 		this.currentFrame = 0;
 		this.currentDelta = 0;
+		this.animated = true;
 	}
 	
 	public boolean isAnimated()
@@ -51,7 +52,7 @@ public class Sprite
 	public void setSpriteFPS(int fps)
 	{
 		this.FPS = fps;
-		this.frameDeltaNanos = (long)(1E9)/this.FPS;
+		this.frameDelta = 1.0/this.FPS;
 	}
 	
 	
@@ -67,12 +68,12 @@ public class Sprite
 			
 			currentDelta += tickInfo.delta;
 			
-			if (currentDelta >= frameDeltaNanos)
+			if (currentDelta >= frameDelta)
 			{
 				currentDelta = 0;
 				currentFrame++;
 				
-				if (currentFrame > frames.size())
+				if (currentFrame > frames.size()-1)
 				{
 					currentFrame = 0;
 				}

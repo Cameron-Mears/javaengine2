@@ -1,24 +1,20 @@
 package graphics.layer;
 
-import java.util.LinkedList;
-import java.util.function.Function;
-
+import engine.core.instance.EngineInstance;
 import engine.core.instance.InstanceID;
-import engine.core.tick.Tickable;
 import engine.util.bst.BST;
-import graphics.instance.EngineInstance;
 
 public class Layer 
 {
 	protected String name;
 	
-	protected BST<InstanceID, Object> members;
+	protected BST<Long, Object> members;
 
 	
 	public Layer(String name)
 	{
 		this.name = name;
-		members = new BST<InstanceID,Object>();
+		members = new BST<Long,Object>();
 	}
 	
 	
@@ -35,6 +31,7 @@ public class Layer
 	public void addInstance(EngineInstance eInstance)
 	{
 		
+		members.addNode(eInstance.getID().getID(), eInstance);
 	}
 	
 }
