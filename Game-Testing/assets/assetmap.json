@@ -3,11 +3,16 @@
         "type": "sprite",
         "name": "player",
         "numFrames": 2,
-        "fps": 2,
+        "fps": 24,
         "path": [
-            "C:\\Users\\camer\\Downloads\\image0.jpg",
-            "C:\\Users\\camer\\OneDrive\\Pictures\\image0 (2).jpg"
-
+            "C:\\Users\\camer\\Downloads\\ezgif-6-f2d16115ee42-gif-im\\frame_0.gif",
+            "C:\\Users\\camer\\Downloads\\ezgif-6-f2d16115ee42-gif-im\\frame_1.gif",
+            "C:\\Users\\camer\\Downloads\\ezgif-6-f2d16115ee42-gif-im\\frame_2.gif",
+            "C:\\Users\\camer\\Downloads\\ezgif-6-f2d16115ee42-gif-im\\frame_3.gif",
+            "C:\\Users\\camer\\Downloads\\ezgif-6-f2d16115ee42-gif-im\\frame_4.gif",
+            "C:\\Users\\camer\\Downloads\\ezgif-6-f2d16115ee42-gif-im\\frame_5.gif",
+            "C:\\Users\\camer\\Downloads\\ezgif-6-f2d16115ee42-gif-im\\frame_6.gif",
+            "C:\\Users\\camer\\Downloads\\ezgif-6-f2d16115ee42-gif-im\\frame_7.gif"
         ],
 
         "hitbox": {

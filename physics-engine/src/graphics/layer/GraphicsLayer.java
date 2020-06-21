@@ -42,18 +42,15 @@ public class GraphicsLayer
 	public void render(Graphics2D g2)
 	{
 		this.g2 = g2;
-		if (renderOrder.getRoot() != null)
-		{
-			renderOrder.inOrderTraverse(renderOrder.getRoot(), traverse);
-		}
+		renderOrder.inOrderTraverse(traverse);
 	}
 
 	
 	//returns the depth assigned to the graphics instance if that depth is already taken
 	public long addIGrpahics(IGraphics instance, long depth) 
 	{
-		GraphicsInstance g = renderOrder.find(depth);
 		
+		GraphicsInstance g = renderOrder.find(depth);
 		if (g != null)
 		{
 			if (g.isCreatedFromGraphicsLayer())
@@ -64,10 +61,10 @@ public class GraphicsLayer
 			else
 			{
 				depth++;
+				System.out.println("++");
 				return addIGrpahics(instance, depth);
 			}
 		}
-		
 		GraphicsInstance gInstance = new GraphicsInstance(depth, true);
 		gInstance.addInterface(instance);
 		gInstance.assignedToLayer(renderOrder);

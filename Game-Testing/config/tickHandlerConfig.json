@@ -8,27 +8,19 @@
 
 				{
 					"class" : "game.entities.BackgroundManager",
-					"fodlerID": "0xFFA05C8D",
 					"graphicsLayer": "default",
-					"graphicsDepth": 1,
-					"constructorArgumentsType": [
-                    ],
-					"constructorArgumentsValue":
-					[
-					]
+					"graphicsDepth": -1,
+					"constructor": {
+						"test":1
+					}
 				},
 				{
 					"class" : "game.entities.Player",
-					"folderID": "0xFFA05C8D",
 					"graphicsLayer": "default",
-					"graphicsDepth": -12121212,
-					"constructorArgumentsType": [
-						"java.lang.Integer"
-                    ],
-					"constructorArgumentsValue":
-					[
-						"Player\\"
-					]
+					"graphicsDepth": 1,
+					"constructor": {
+						"test":1
+					}
 				}
 			]
 		}

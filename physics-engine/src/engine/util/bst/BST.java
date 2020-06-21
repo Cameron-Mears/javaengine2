@@ -1,5 +1,7 @@
 package engine.util.bst;
 
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.function.Function;
 
 public class BST<Key,Value> 
@@ -18,7 +20,13 @@ public class BST<Key,Value>
 		if (root != null)
 		{
 			Node<Value> focus = root;
-			double key = (double)(k.hashCode());
+			double key;
+			if (k instanceof Number)
+			{
+				key = ((Number) k).doubleValue();
+			}
+			else key = (double)(k.hashCode());
+			
 			if (root.key == key) return root.value;
 			
 			while (focus.key != key)
@@ -47,7 +55,14 @@ public class BST<Key,Value>
 		if (root != null)
 		{
 			Node<Value> focus = root;
-			double key = (double)(k.hashCode());
+			
+			double key;
+			if (k instanceof Number)
+			{
+				key = ((Number) k).doubleValue();
+			}
+			else key = (double)(k.hashCode());
+			
 			if (root.key == key) return true;
 			
 			while (focus.key != key)
@@ -76,9 +91,9 @@ public class BST<Key,Value>
 		return null;
 	}
 	
-	long minValue(Node<Value> root) 
+	double minValue(Node<Value> root) 
     { 
-        long minv = root.key; 
+        double minv = root.key; 
         while (root.leftChild != null) 
         { 
             minv = root.leftChild.key; 
@@ -88,7 +103,7 @@ public class BST<Key,Value>
     }
 	
 	
-	public Node<Value> deleteRec(Node<Value> root, long key) 
+	public Node<Value> deleteRec(Node<Value> root, double key) 
     { 
         /* Base Case: If the tree is empty */
         if (root == null)  return root; 
@@ -122,10 +137,16 @@ public class BST<Key,Value>
 	
 	public boolean addNode(Key k,Value value)
 	{
+		
 		if (findNode(k)) return false;
 		
 		Node<Value> focus = root;
-		long key = (long)(k.hashCode());
+		double key;
+		if (k instanceof Number)
+		{
+			key = ((Number) k).doubleValue();
+		}
+		else key = (double)(k.hashCode());
 		if (focus == null)
 		{
 			root = new Node<Value>(key, value);
@@ -162,6 +183,29 @@ public class BST<Key,Value>
 		}
 	}
 	
+	public void levelOrderTraverse(Function<Value, Void> function)
+	{
+		if (root == null) return;
+		Queue<Node<Value>> queue = new LinkedList<Node<Value>>();
+		queue.add(root);
+		
+		while (!queue.isEmpty())
+		{
+			Node<Value> node = queue.poll();
+			function.apply(node.value);
+			
+			if (node.leftChild != null)
+			{
+				queue.add(node.leftChild);
+			}
+			
+			if (node.rightChild != null)
+			{
+				queue.add(node.rightChild);
+			}
+		}
+	}
+	
 	
 	
 	public Node<Value> getRoot()
@@ -169,10 +213,8 @@ public class BST<Key,Value>
 		return root;
 	}
 	
-	public void inOrderTraverse(Node<Value> root, Function<Value, Void> func)
-	{
-		if (root == null) return;
-		
+	private void inOrderTraverse(Node<Value> root, Function<Value, Void> func)
+	{		
 		if (root.leftChild != null) inOrderTraverse(root.leftChild, func);
 		
 		func.apply(root.value);
@@ -182,5 +224,9 @@ public class BST<Key,Value>
 			
 	}
 	
-	
+	public void inOrderTraverse(Function<Value, Void> func)
+	{
+		if (root == null) return;
+		inOrderTraverse(root, func);
+	}
 }

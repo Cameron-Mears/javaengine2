@@ -5,6 +5,18 @@ public class Vector2
 	private double x;
 	private double y;
 	
+	
+	@Override
+	public boolean equals(Object object)
+	{
+		if (object instanceof Vector2)
+		{
+			Vector2 other = (Vector2) object;
+			return other.x == this.x && other.y == this.y;
+		}
+		return false;
+	}
+	
 	public Vector2()
 	{
 		
@@ -66,6 +78,23 @@ public class Vector2
 	public Vector2 scaled(double scalar)
 	{
 		return new Vector2(this.x * scalar, this.y * scalar);
+	}
+	
+	public double angleTo(Vector2 other)
+	{
+		double angle =  Math.atan2(other.getY() - this.y,other.getX() - this.x);
+		return (angle < 0)? (2*Math.PI)+angle:angle;
+	}
+	
+	public double getAngle()
+	{
+		double angle =  Math.atan2(y, x);
+		return (angle < 0)? (2*Math.PI)+angle:angle;
+	}
+	
+	public double getMagnitude()
+	{
+		return Math.hypot(x, y);
 	}
 	
 }

@@ -58,10 +58,7 @@ public class TickableGroup extends Layer
 	public void tick(TickInfo info)
 	{
 		this.info = info;
-		
-		if (members.getRoot() != null)
-			
-			members.inOrderTraverse(members.getRoot(), function);
+		members.inOrderTraverse(function);
 	}
 		
 	public boolean addInstancesFromJSON(JSONArray instances) throws EngineException, JSONException, InvalidInstanceException

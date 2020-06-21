@@ -52,7 +52,6 @@ public class GraphicsInstance
 	
 	public void assignedToLayer(BST<Long, GraphicsInstance> g)
 	{
-		
 		gLayers.add(g);
 	}
 	

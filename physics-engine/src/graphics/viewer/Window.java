@@ -16,6 +16,7 @@ public class Window extends JFrame
 	private static Window instance;
 	private BufferStrategy bs;
 	private Graphics2D g2;
+	private boolean fullscreen;
 	
 	public static Window getInstance() throws JSONException, IOException
 	{
@@ -41,7 +42,11 @@ public class Window extends JFrame
 		int width = (int) Engine.getInstance().getProperty("window_width");
 		int height = (int) Engine.getInstance().getProperty("window_height");
 		
-		boolean fullscreen = (boolean) Engine.getInstance().getProperty("window_fullscreen");
+		fullscreen = (boolean) Engine.getInstance().getProperty("window_fullscreen");
+		
+		this.setTitle((String) Engine.getInstance().getProperty("title"));
+		
+		this.setLocation(100, 100);
 		
 		if (fullscreen)
 		{
@@ -79,6 +84,7 @@ public class Window extends JFrame
 			}
 		}
 		this.g2 = (Graphics2D) bs.getDrawGraphics();
+		g2.translate(0, 32);
 		return g2;
 	}
 }

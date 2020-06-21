@@ -50,15 +50,14 @@ public class GraphicsLayerManager
 		return graphicsLayers.find(name);
 	}
 	
-	
+	public boolean addLayer(GraphicsLayer layer)
+	{
+		return false;
+	}
 	
 	public void render(Graphics2D g2)
 	{
 		this.g2 = g2;
-		
-		if (graphicsLayers.getRoot() != null)
-		{
-			graphicsLayers.inOrderTraverse(graphicsLayers.getRoot(), traverse);
-		}
+		graphicsLayers.inOrderTraverse(traverse);
 	}
 }

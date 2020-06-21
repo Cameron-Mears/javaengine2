@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import engine.core.exceptions.EngineException;
+import engine.core.input.InputHandler;
 import engine.util.parsers.AssetMapParser;
 import external.org.json.JSONException;
 import external.org.json.JSONObject;
@@ -17,6 +18,8 @@ public class Engine                                                             
 {
 	
 	private long deltaF, deltaU;	
+	
+	private boolean doLoad = true;
 	
 	private static String USER_DIR = System.getProperty("user.dir");
 	
@@ -66,7 +69,8 @@ public class Engine                                                             
 		this.engineProperties.put("framerate", framerate);
 		boolean printFramerate = enginePropertiesJSON.getBoolean("doTickAndFrameRatePrint");
 		this.engineProperties.put("printRates", printFramerate);
-		
+		this.doLoad = enginePropertiesJSON.getBoolean("doLoad");		;
+		this.engineProperties.put("doLoad", doLoad);
 		//window properties
 		
 		JSONObject windowProperties = jobj.getJSONObject("window");

@@ -1,17 +1,18 @@
 {
 	"window": {
-		"title": "Test",
+		"title": "Engine",
 		"screen": 2,
 		"fullscreen": false,
-		"window_width": 1000,
+		"window_width": 1200,
 		"window_height": 800
 	},
 	
 	"engine": {
 	
 		"tickrate": 40000,
-		"framerate": 600000,
-		"doTickAndFrameRatePrint" : true
+		"framerate": 144,
+		"doTickAndFrameRatePrint" : true,
+		"doLoad": true
 	
 	},
 	
@@ -19,20 +20,4 @@
 		"server_port": 6969
 	},
 	
-	"tick_handler": [
-
-		{
-			"name": "default",
-			"enabled": true,
-			"members":[
-
-				{
-					"class" : "game.entities.Player",
-					"subClassInfo": {
-
-					}
-				}
-			]
-		}
-	]
 }

@@ -2,13 +2,13 @@ package engine.util.bst;
 
 public class Node<Value>
 {
-	long key;
+	double key;
 	Value value;
 	
 	Node<Value> leftChild;
 	Node<Value> rightChild;
 	
-	Node(long key, Value val)
+	Node(double key, Value val)
 	{
 		this.key = key;
 		this.value = val;

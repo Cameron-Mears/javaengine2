@@ -7,10 +7,15 @@ import engine.core.Engine;
 import engine.core.instance.EngineInstance;
 import engine.core.tick.TickInfo;
 import engine.core.tick.Tickable;
+import external.org.json.JSONObject;
 import graphics.instance.IGraphics;
 
 public class BackgroundManager extends EngineInstance implements IGraphics, Tickable
 {	
+	public BackgroundManager(JSONObject json) {
+		// TODO Auto-generated constructor stub
+	}
+	
 	@Override
 	public void render(Graphics2D g2) {
 		g2.setColor(Color.white);

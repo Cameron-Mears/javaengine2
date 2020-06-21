@@ -2,6 +2,8 @@ package engine.core.tick;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.function.Function;
 
 import engine.core.Engine;
@@ -21,6 +23,7 @@ public class TickHandler
 	private int nProcessors = 0;
 	private Function<TickableGroup, Void> inOrderTraversalFunction;
 	private long deltaNS;
+	private Queue<Tickable> tickables;
 	
 	
 	private static TickHandler instance;
@@ -59,7 +62,8 @@ public class TickHandler
 		};
 		
 		groups = new BST<String, TickableGroup>();
-		this.parseJSONConfig((JSONArray) Engine.getInstance().getProperty("tickHandlerConfig"));
+		this.tickables = new LinkedList<Tickable>();
+		if ((boolean)Engine.getInstance().getProperty("doLoad")) this.parseJSONConfig((JSONArray) Engine.getInstance().getProperty("tickHandlerConfig"));
 		
 	}
 	
@@ -92,9 +96,18 @@ public class TickHandler
 	public void tick(long deltaNS)
 	{
 		this.deltaNS = deltaNS;
-		Node<TickableGroup> bstRoot = groups.getRoot();
-		if (bstRoot == null) return;
-		groups.inOrderTraverse(bstRoot, inOrderTraversalFunction);
+		groups.inOrderTraverse(inOrderTraversalFunction);
+		
+		TickInfo tf = new TickInfo();
+		
+		tf.groupName = "queuedTickable";
+		tf.delta = deltaNS/(1e9);
+		tf.deltaNS = deltaNS;
+		
+		while (!this.tickables.isEmpty())
+		{
+			tickables.poll().onTick(tf);
+		}
 	}
 	
 	private TickableGroup parseGroupfromJSON(JSONObject jsonObject) throws  JSONException, InvalidInstanceException, EngineException
@@ -111,5 +124,10 @@ public class TickHandler
 		
 		return group;
 		
+	}
+	
+	public void queueTickable(Tickable tickable)
+	{
+		this.tickables.add(tickable);
 	}
 }
