@@ -20,6 +20,16 @@ public abstract class EngineInstance
 	protected LinkedList<BST<Long,Object>> listmembers;
 	
 	
+	@Override
+	public boolean equals(Object other)
+	{
+		if (other instanceof EngineInstance)
+		{
+			return id.getID() == ((EngineInstance)other).getID().getID();
+		}
+		return false;
+	}
+	
 	public EngineInstance()
 	{
 		this.id = new InstanceID();

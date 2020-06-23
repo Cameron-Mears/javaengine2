@@ -1,5 +1,8 @@
 package engine.util.parsers;
 
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsEnvironment;
+import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,12 +36,11 @@ public class AssetMapParser
 					
 					
 				case "tilemap":
-				
+				case "tilemapimageset":
 				case "hitbox":
 				case "sound":
 					break;
 				default:
-					
 					throw new IllegalArgumentException("Unexpected value: " + asset.getString("type"));
 			}
 		}
@@ -56,6 +58,7 @@ public class AssetMapParser
 		for (int frame = 0; frame < nFrames; frame++) 
 		{
 			BufferedImage img = ImageParser.parseImage(new File(images.getString(frame)));
+			img.setAccelerationPriority(1);
 			frames.add(frame, img);
 		}
 		

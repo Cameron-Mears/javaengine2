@@ -12,7 +12,8 @@ import graphics.instance.IGraphics;
 
 public class BackgroundManager extends EngineInstance implements IGraphics, Tickable
 {	
-	public BackgroundManager(JSONObject json) {
+	public BackgroundManager(JSONObject json) 
+	{
 		// TODO Auto-generated constructor stub
 	}
 	

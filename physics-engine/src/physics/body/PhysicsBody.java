@@ -1,6 +1,7 @@
 package physics.body;
 
 import engine.core.tick.TickInfo;
+import physics.collision.HitBox;
 import physics.collision.Shape;
 import physics.general.Transform;
 import physics.general.Vector2;
@@ -9,7 +10,7 @@ public class PhysicsBody
 {
 	private MassData massData;
 	private Material material;
-	private Shape shape;
+	private HitBox hitbox;
 	private Transform tx;
 	private Vector2 velocity;
 	private Vector2 force;
@@ -20,7 +21,7 @@ public class PhysicsBody
 		this.massData = md;
 		this.material = mat;
 		this.tx = tx;
-		this.shape = shape;
+		this.hitbox = hitbox;
 		this.force = new Vector2(0,0);
 		this.velocity = new Vector2(0,0);
 	}
@@ -36,6 +37,12 @@ public class PhysicsBody
 	public void applyForce(Vector2 force)
 	{
 		this.force.add(force);
+	}
+	
+	public void applyForce(double x, double y)
+	{
+		force.addX(x);
+		force.addY(y);
 	}
 	
 	public void tick(TickInfo info)

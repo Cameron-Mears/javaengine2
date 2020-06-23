@@ -18,15 +18,13 @@ import graphics.sprite.SpriteMap;
 import physics.body.MassData;
 import physics.body.Material;
 import physics.body.PhysicsBody;
-import physics.collision.CollisionEvent;
-import physics.collision.CollisionEventListener;
 import physics.collision.CollisionLayerManager;
 import physics.collision.HitBox;
 import physics.collision.Shape;
 import physics.general.Transform;
 import physics.general.Vector2;
 
-public class Player extends EngineInstance implements Tickable, IGraphics, CollisionEventListener
+public class Player2 extends EngineInstance implements Tickable, IGraphics
 {
 	
 	private Sprite playerSprite;
@@ -34,18 +32,17 @@ public class Player extends EngineInstance implements Tickable, IGraphics, Colli
 	private InputHandler input;
 	private HitBox hitbox;
 	
-	public Player(int x)
+	public Player2(int x)
 	{
 		super();
 		input = new InputHandler();
 		playerSprite = SpriteMap.getClonedSprite("player");
-		body = new PhysicsBody(new MassData(1), new Material(), new Shape(), new Transform(100,100));
+		body = new PhysicsBody(new MassData(1), new Material(), new Shape(), new Transform(23,2));
 		hitbox = playerSprite.getHitBox(body.getPosition(), this);
-		hitbox.addCollisionEventListener(this);
 		CollisionLayerManager.getInstance().getDefaultlayer().addHitBox(hitbox);
 	}
 	
-	public Player(JSONObject json)
+	public Player2(JSONObject json)
 	{
 		this(json.getInt("test"));
 	}
@@ -54,10 +51,10 @@ public class Player extends EngineInstance implements Tickable, IGraphics, Colli
 	@Override
 	public void onTick(TickInfo info) 
 	{
-		if (input.isKeyDown(KeyEvent.VK_UP)) body.applyForce(0,-100);
-		if (input.isKeyDown(KeyEvent.VK_DOWN)) body.applyForce(0,100);
-		if (input.isKeyDown(KeyEvent.VK_LEFT)) body.applyForce(-100,0);
-		if (input.isKeyDown(KeyEvent.VK_RIGHT)) body.applyForce(100,0);
+		if (input.isKeyDown('W')) body.applyForce(0,-100);
+		if (input.isKeyDown('S')) body.applyForce(0,100);
+		if (input.isKeyDown('A')) body.applyForce(-100,0);
+		if (input.isKeyDown('D')) body.applyForce(100,0);
 		
 		double friction_x = (Math.abs(body.getVelocity().getX()) > 0)? 40 * -Math.signum(body.getVelocity().getX()):0;
 		double friction_y = (Math.abs(body.getVelocity().getY()) > 0)? 40 * -Math.signum(body.getVelocity().getY()):0;
@@ -74,14 +71,5 @@ public class Player extends EngineInstance implements Tickable, IGraphics, Colli
 		g2.drawImage(playerSprite.getCurrentFrame(), (int)body.getPosition().getX(), (int)body.getPosition().getY(), null);
 		hitbox.drawHitBox(g2);
 	}
-
-
-	@Override
-	public void onCollision(CollisionEvent event) {
-		System.out.println("sad");
-		
-	}
-	
-
 	
 }

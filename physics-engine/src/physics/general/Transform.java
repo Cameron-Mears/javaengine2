@@ -10,6 +10,11 @@ public class Transform
 		position = new Vector2(0,0);
 	}
 	
+	public Transform(double x, double y)
+	{
+		position = new Vector2(x,y);
+	}
+	
 	public Vector2 getPosition()
 	{
 		return position;

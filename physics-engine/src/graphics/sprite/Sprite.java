@@ -3,7 +3,11 @@ package graphics.sprite;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import engine.core.instance.EngineInstance;
 import engine.core.tick.TickInfo;
+import physics.collision.HitBox;
+import physics.collision.Rectangle;
+import physics.general.Vector2;
 
 public class Sprite 
 {
@@ -47,6 +51,12 @@ public class Sprite
 	public int getCurrentFPS()
 	{
 		return FPS;
+	}
+	
+	public HitBox getHitBox(Vector2 position, EngineInstance owner)
+	{
+		Rectangle rect = new Rectangle(frames.get(0).getWidth(), frames.get(0).getHeight(), position);
+		return new HitBox(rect, owner);
 	}
 	
 	public void setSpriteFPS(int fps)

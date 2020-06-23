@@ -9,6 +9,7 @@ import external.org.json.JSONException;
 import graphics.instance.InvalidInstanceException;
 import graphics.layer.GraphicsLayerManager;
 import graphics.viewer.Window;
+import physics.collision.CollisionLayerManager;
 
 class GameLoop extends Thread
 {
@@ -19,6 +20,7 @@ class GameLoop extends Thread
 	
 	private TickHandler tickHandler;
 	private GraphicsLayerManager gManager;
+	private CollisionLayerManager collisionManager;
 	
 	private long deltaF; //time delta for a frame render
 	private long deltaU; //time delta for a tick
@@ -28,6 +30,7 @@ class GameLoop extends Thread
 		deltaF = ((long)(1e9))/frameRate;
 		deltaU = ((long)(1e9))/tickRate;
 		tickHandler = TickHandler.getInstance();
+		collisionManager = CollisionLayerManager.getInstance();
 	}
 	
 	@Override
@@ -100,6 +103,7 @@ class GameLoop extends Thread
 	private void tick(long delta)
 	{
 		tickHandler.tick(delta);
+		collisionManager.resloveAllCollisions();
 	}
 	
 	private void render() throws JSONException, IOException

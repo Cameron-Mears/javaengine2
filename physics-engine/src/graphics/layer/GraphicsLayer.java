@@ -61,7 +61,6 @@ public class GraphicsLayer
 			else
 			{
 				depth++;
-				System.out.println("++");
 				return addIGrpahics(instance, depth);
 			}
 		}

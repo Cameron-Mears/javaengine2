@@ -52,6 +52,7 @@ public class Engine                                                             
 	
 	private Engine() throws JSONException, IOException
 	{
+		
 		engineProperties = new HashMap<String, Object>();
 		engineProperties.put("numberOfProcessors", Runtime.getRuntime().availableProcessors());
 	
@@ -69,8 +70,10 @@ public class Engine                                                             
 		this.engineProperties.put("framerate", framerate);
 		boolean printFramerate = enginePropertiesJSON.getBoolean("doTickAndFrameRatePrint");
 		this.engineProperties.put("printRates", printFramerate);
-		this.doLoad = enginePropertiesJSON.getBoolean("doLoad");		;
+		this.doLoad = enginePropertiesJSON.getBoolean("doLoad");
 		this.engineProperties.put("doLoad", doLoad);
+		JSONObject collisionLayerProperties = enginePropertiesJSON.getJSONObject("collisionDefaultLayerBounds");
+		this.engineProperties.put("collisionDefaultLayerBounds", collisionLayerProperties);
 		//window properties
 		
 		JSONObject windowProperties = jobj.getJSONObject("window");

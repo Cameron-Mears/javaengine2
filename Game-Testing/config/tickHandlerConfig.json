@@ -21,6 +21,14 @@
 					"constructor": {
 						"test":1
 					}
+				},
+				{
+					"class" : "game.entities.Player2",
+					"graphicsLayer": "default",
+					"graphicsDepth": 1,
+					"constructor": {
+						"test":1
+					}
 				}
 			]
 		}

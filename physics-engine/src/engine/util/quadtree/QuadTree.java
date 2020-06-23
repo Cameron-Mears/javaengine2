@@ -14,29 +14,29 @@ import physics.general.Vector2;
 public class QuadTree<Value> implements IGraphics
 {
 	
-	private static int LEAF_CAPCITY = 200;
+	protected static int LEAF_CAPCITY = 10;
 	
 	
-	private ArrayList<QuadTreeNode<Value>> leafs;
+	protected LinkedList<QuadTreeNode<Value>> leafs;
 	
-	private QuadTree<Value> ur;
-	private QuadTree<Value> ul;
-	private QuadTree<Value> lr;
-	private QuadTree<Value> ll;
+	protected QuadTree<Value> ur;
+	protected QuadTree<Value> ul;
+	protected QuadTree<Value> lr;
+	protected QuadTree<Value> ll;
 	
 	
 	public static int levels = 0;
 	
-	private Rectangle boundary;
-	private Vector2 origin;
+	protected Rectangle boundary;
+	protected Vector2 origin;
 	
-	boolean isDivided;
+	protected boolean isDivided;
 	
 	public QuadTree(Rectangle boundary, Vector2 origin)
 	{
 		this.boundary = boundary;
 		this.origin = origin;
-		this.leafs = new ArrayList<QuadTreeNode<Value>>(LEAF_CAPCITY);
+		this.leafs = new LinkedList<QuadTreeNode<Value>>();
 		this.isDivided = false;
 	}
 	
@@ -155,7 +155,7 @@ public class QuadTree<Value> implements IGraphics
 		return n;
 	}
 	
-	public ArrayList<QuadTreeNode<Value>> getLeafs()
+	public LinkedList<QuadTreeNode<Value>> getLeafs()
 	{
 		return leafs;
 	}
@@ -169,11 +169,10 @@ public class QuadTree<Value> implements IGraphics
 		return result;
 	}
 	
-	private LinkedList<QuadTreeNode<Value>> queryRange(Rectangle rect, LinkedList<QuadTreeNode<Value>> result)
+	protected LinkedList<QuadTreeNode<Value>> queryRange(Rectangle rect, LinkedList<QuadTreeNode<Value>> result)
 	{
 		
 		if (!boundary.contains(rect)) return result;
-		
 		
 		if (isDivided)
 		{
@@ -197,12 +196,23 @@ public class QuadTree<Value> implements IGraphics
 	@Override
 	public void render(Graphics2D g2) 
 	{
+		
+		
 		g2.setColor(Color.blue);
 		try {
 			g2.fillRect(0, 0, (int)Engine.getInstance().getProperty("window_width"), (int)Engine.getInstance().getProperty("window_height"));
 		} catch (Exception e) {}
 		
 		this.drawBoundries(g2);
+		
+		g2.setColor(Color.red);
+		if (this instanceof CollisionQuadTree)
+		{
+			for (QuadTreeNode<Value> quadTreeNode : leafs) 
+			{
+				((CollisionNode<Value>) quadTreeNode).getHitbox().drawHitBox(g2);
+			}
+		}
 	}
 	
 	public void drawBoundries(Graphics2D g2)
@@ -210,7 +220,6 @@ public class QuadTree<Value> implements IGraphics
 		g2.setColor(Color.black);
 		g2.setStroke(new BasicStroke(5));
 		g2.drawRect((int)origin.getX(), (int)origin.getY(), (int)boundary.getWidth(), (int)boundary.getHeight());
-		g2.drawRect(23, 43, 100, 200);
 		if (!isDivided)g2.drawString(Integer.toString(leafs.size()), (int)(origin.getX() + boundary.getWidth()/2), (int)(origin.getY() + boundary.getHeight()/2));
 		
 		if (isDivided)
@@ -220,6 +229,14 @@ public class QuadTree<Value> implements IGraphics
 			ll.drawBoundries(g2);
 			lr.drawBoundries(g2);
 			
+		}
+		g2.setColor(Color.red);
+		if (this instanceof CollisionQuadTree)
+		{
+			for (QuadTreeNode<Value> quadTreeNode : leafs) 
+			{
+				((CollisionNode<Value>) quadTreeNode).getHitbox().drawHitBox(g2);
+			}
 		}
 	}
 	

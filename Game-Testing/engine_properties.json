@@ -8,16 +8,22 @@
 	},
 	
 	"engine": {
-	
+		
 		"tickrate": 40000,
-		"framerate": 144,
+		"framerate": 1444,
 		"doTickAndFrameRatePrint" : true,
-		"doLoad": true
+		"doLoad": true,
+		"collisionDefaultLayerBounds":{
+			"origin_x": -100,
+			"origin_y": -100,
+			"width": 2000,
+			"height": 2000
+		}
 	
 	},
-	
+
 	"server": {
 		"server_port": 6969
-	},
+	}
 	
 }

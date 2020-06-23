@@ -124,19 +124,19 @@ public class InputHandler implements MouseListener, KeyListener, MouseWheelListe
 	}
 	
 	
-	public boolean isKeyDown(char key)
+	public boolean isKeyDown(int key)
 	{
-		return keyIsDown.get((int)key);
+		return keyIsDown.get(key);
 	}
 	
-	public boolean wasKeyPressed(char key)
+	public boolean wasKeyPressed(int key)
 	{
-		return keyWasPressed.get((int)key);
+		return keyWasPressed.get(key);
 	}
 	
-	public boolean wasKeyReleased(char key)
+	public boolean wasKeyReleased(int key)
 	{
-		return keyWasReleased.get((int)key);
+		return keyWasReleased.get(key);
 	}
 	
 	public boolean isMouseButtonDown(int button)

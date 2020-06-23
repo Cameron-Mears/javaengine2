@@ -2,7 +2,7 @@
 	{
         "type": "sprite",
         "name": "player",
-        "numFrames": 2,
+        "numFrames": 8,
         "fps": 24,
         "path": [
             "C:\\Users\\camer\\Downloads\\ezgif-6-f2d16115ee42-gif-im\\frame_0.gif",
@@ -16,7 +16,7 @@
         ],
 
         "hitbox": {
-
+            
         }
     },
     
@@ -27,7 +27,26 @@
     },
 
     {
-        "type": "hitbox",
-        "hitbox":null
+        "type": "tilemapimageset",
+        "name": "background",
+        "images": [
+            
+            {
+                "int_code": 1,
+                "path": "null"
+            }
+        ]
+    },
+
+    {
+        "type": "tilemap",
+        "name": "background",
+        "imageset": "background",
+        "map":[
+
+            [12,34,34,12,3,123,435,12,21,34,123],
+            [1212,0,13,3]
+
+        ]
     }
 ]

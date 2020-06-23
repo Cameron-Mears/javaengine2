@@ -27,7 +27,8 @@ public class Rectangle extends Shape
 	
 	public Rectangle(double width, double height, Vector2 position)
 	{
-		super(position);
+		this(width,height);
+		this.position = position;
 		this.width = width;
 		this.height = height;
 	}
@@ -42,8 +43,15 @@ public class Rectangle extends Shape
 		return height;
 	}
 	
+	
+	public void setPosition(Vector2 postion)
+	{
+		this.position = postion;
+	}
+	
 	public Vector2[] getVerticies()
 	{
+		vertices[0] = position;
 		vertices[1].set(position.getX() + width, position.getY());
 		vertices[2].set(position.getX(), position.getY() + height);
 		vertices[3].set(position.getX() + width, position.getY() + height);
@@ -63,5 +71,19 @@ public class Rectangle extends Shape
 		return (rect.getPosition().getX() + rect.getWidth() >= position.getX() && rect.getPosition().getX() <= position.getX() + width)
 				&&
 				(rect.getPosition().getY() + rect.getHeight() >= position.getY() && rect.getPosition().getY() <= position.getY() + height);
+	}
+	
+	
+	/*
+	 * Check if each vertex of the other rectangle is a point inside of this rectangle
+	 * if every vertex of the rectangle is inside this rectangle the other rectangle
+	 * must be fully inside of this rectangle
+	 */
+	
+	public boolean fullyContains(Rectangle rect)
+	{
+		Vector2[] vertices = rect.getVerticies();
+		
+		return (this.contains(vertices[0]) &&  this.contains(vertices[3]));
 	}
 }

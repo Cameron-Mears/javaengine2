@@ -47,6 +47,7 @@ public class Window extends JFrame
 		this.setTitle((String) Engine.getInstance().getProperty("title"));
 		
 		this.setLocation(100, 100);
+		this.setResizable(false);
 		
 		if (fullscreen)
 		{

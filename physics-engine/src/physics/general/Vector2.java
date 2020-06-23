@@ -17,9 +17,17 @@ public class Vector2
 		return false;
 	}
 	
+	
+	@Override
+	public Vector2 clone()
+	{
+		return new Vector2(x, y);
+	}
+	
 	public Vector2()
 	{
-		
+		x = 0;
+		y = 0;
 	}
 	
 	public Vector2(double x, double y)
