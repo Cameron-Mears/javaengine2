@@ -105,4 +105,9 @@ public class Vector2
 		return Math.hypot(x, y);
 	}
 	
+	public double dotProduct(Vector2 other)
+	{
+		return other.x * this.x + this.y*other.y;
+	}
+	
 }

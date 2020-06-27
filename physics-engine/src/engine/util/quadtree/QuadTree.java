@@ -239,6 +239,13 @@ public class QuadTree<Value> implements IGraphics
 			}
 		}
 	}
+
+
+	@Override
+	public Rectangle renderBoundingArea() 
+	{
+		return boundary;
+	}
 	
 
 }

@@ -1,8 +1,5 @@
 package engine.util.parsers;
 
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsEnvironment;
-import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import engine.core.JSON_CONSTANTS;
+import engine.core.exceptions.EngineException;
 import engine.util.parsers.image.ImageParser;
 import external.org.json.JSONArray;
 import external.org.json.JSONException;
@@ -17,12 +15,16 @@ import external.org.json.JSONObject;
 import external.org.json.JSONTokener;
 import graphics.sprite.Sprite;
 import graphics.sprite.SpriteMap;
+import graphics.tilemap.TileMap;
+import graphics.tilemap.TileMapAssetMap;
+import graphics.tilemap.TileMapImageSet;
 
 public class AssetMapParser 
 {
-	public static void parseAssetMap(File assetMap) throws JSONException, IOException
+	public static void parseAssetMap(File assetMap) throws JSONException, IOException, EngineException
 	{
 		JSONArray assets = new JSONArray(new JSONTokener(new FileInputStream(assetMap)));
+		TileMapAssetMap  tileMapAssets = TileMapAssetMap.getInstance();
 		
 		for (int index = 0; index < assets.length(); index++) 
 		{
@@ -36,7 +38,11 @@ public class AssetMapParser
 					
 					
 				case "tilemap":
+					tileMapAssets.putTileMap(new TileMap(asset, tileMapAssets.getImageSet(asset.getString("name")), asset.getString("name")));
+					break;
 				case "tilemapimageset":
+					tileMapAssets.putTileMapImageSet(parserImageSet(asset));
+					break;
 				case "hitbox":
 				case "sound":
 					break;
@@ -68,6 +74,12 @@ public class AssetMapParser
 		return true;
 	}
 	
+	private static TileMapImageSet parserImageSet(JSONObject asset) throws IOException
+	{
+		TileMapImageSet set = new TileMapImageSet(asset);
+		return set;
+		
+	}
 	
 	
 	

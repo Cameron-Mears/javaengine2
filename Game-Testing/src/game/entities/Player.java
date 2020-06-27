@@ -2,29 +2,30 @@ package game.entities;
 
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
 
 import engine.core.Engine;
-import engine.core.input.InputEventListener;
 import engine.core.input.InputHandler;
 import engine.core.instance.EngineInstance;
 import engine.core.tick.TickInfo;
 import engine.core.tick.Tickable;
 import external.org.json.JSONObject;
+import graphics.Camera;
 import graphics.instance.IGraphics;
 import graphics.sprite.Sprite;
 import graphics.sprite.SpriteMap;
+import graphics.tilemap.TileMap;
+import graphics.tilemap.TileMapAssetMap;
 import physics.body.MassData;
 import physics.body.Material;
 import physics.body.PhysicsBody;
 import physics.collision.CollisionEvent;
 import physics.collision.CollisionEventListener;
+import physics.collision.CollisionLayer;
 import physics.collision.CollisionLayerManager;
 import physics.collision.HitBox;
+import physics.collision.Rectangle;
 import physics.collision.Shape;
 import physics.general.Transform;
-import physics.general.Vector2;
 
 public class Player extends EngineInstance implements Tickable, IGraphics, CollisionEventListener
 {
@@ -33,6 +34,8 @@ public class Player extends EngineInstance implements Tickable, IGraphics, Colli
 	private PhysicsBody body;
 	private InputHandler input;
 	private HitBox hitbox;
+	private CollisionLayer layer;
+	private Camera camera;
 	
 	public Player(int x)
 	{
@@ -42,7 +45,8 @@ public class Player extends EngineInstance implements Tickable, IGraphics, Colli
 		body = new PhysicsBody(new MassData(1), new Material(), new Shape(), new Transform(100,100));
 		hitbox = playerSprite.getHitBox(body.getPosition(), this);
 		hitbox.addCollisionEventListener(this);
-		CollisionLayerManager.getInstance().getDefaultlayer().addHitBox(hitbox);
+		layer = CollisionLayerManager.getInstance().getDefaultlayer();
+		layer.addHitBox(hitbox);
 	}
 	
 	public Player(JSONObject json)
@@ -65,21 +69,30 @@ public class Player extends EngineInstance implements Tickable, IGraphics, Colli
 		body.applyForce(friction_x, friction_y);
 		body.tick(info);
 		playerSprite.tick(info);
+		layer.checkCollisions(hitbox);
 	}
 
 
 	@Override
 	public void render(Graphics2D g2) 
 	{	
+		TileMap tm = TileMapAssetMap.getInstance().getTileMap("background");
+		tm.render(g2);
 		g2.drawImage(playerSprite.getCurrentFrame(), (int)body.getPosition().getX(), (int)body.getPosition().getY(), null);
 		hitbox.drawHitBox(g2);
 	}
 
 
 	@Override
-	public void onCollision(CollisionEvent event) {
-		System.out.println("sad");
-		
+	public void onCollision(CollisionEvent event) 
+	{
+		Engine.printDebugMessage("hello", this);	
+	}
+
+	@Override
+	public Rectangle renderBoundingArea() 
+	{
+		return hitbox.getBounds();
 	}
 	
 

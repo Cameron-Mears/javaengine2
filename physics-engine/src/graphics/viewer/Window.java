@@ -8,6 +8,7 @@ import java.io.IOException;
 import javax.swing.JFrame;
 
 import engine.core.Engine;
+import engine.core.exceptions.EngineException;
 import external.org.json.JSONException;
 
 public class Window extends JFrame
@@ -18,7 +19,7 @@ public class Window extends JFrame
 	private Graphics2D g2;
 	private boolean fullscreen;
 	
-	public static Window getInstance() throws JSONException, IOException
+	public static Window getInstance() throws JSONException, IOException, EngineException
 	{
 		if (instance == null)
 		{
@@ -27,7 +28,7 @@ public class Window extends JFrame
 		return instance;
 	}
 	
-	public static Window init() throws JSONException, IOException
+	public static Window init() throws JSONException, IOException, EngineException
 	{
 		return new Window();
 	}
@@ -37,7 +38,7 @@ public class Window extends JFrame
 		
 	}
 	
-	private Window() throws JSONException, IOException
+	private Window() throws JSONException, IOException, EngineException
 	{
 		int width = (int) Engine.getInstance().getProperty("window_width");
 		int height = (int) Engine.getInstance().getProperty("window_height");

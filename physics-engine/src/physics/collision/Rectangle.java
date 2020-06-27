@@ -66,6 +66,23 @@ public class Rectangle extends Shape
 				(point.getY() >= position.getY() && point.getY() <= position.getY() + height);
 	}
 	
+	
+	public boolean contains(Shape shape)
+	{
+		if (shape instanceof Rectangle)
+		{
+			return contains((Rectangle)shape);
+		}
+		
+		if (shape instanceof Circle)
+		{
+			return contains((Circle)shape);
+		}
+		
+		return false;
+	}
+	
+	
 	public boolean contains(Rectangle rect)
 	{
 		return (rect.getPosition().getX() + rect.getWidth() >= position.getX() && rect.getPosition().getX() <= position.getX() + width)
@@ -73,6 +90,28 @@ public class Rectangle extends Shape
 				(rect.getPosition().getY() + rect.getHeight() >= position.getY() && rect.getPosition().getY() <= position.getY() + height);
 	}
 	
+	public boolean contains(Circle circle)
+	{
+		double testX = circle.getPosition().getX();
+		double testY = circle.getPosition().getY();
+		if (circle.getPosition().getX() < position.getX()) testX = position.getX();      // test left edge
+		else if (circle.getPosition().getX() > position.getX()+width) testX = position.getX()+width;   // right edge
+		if (circle.getPosition().getY() < position.getY())         testY = position.getY();      // top edge
+		else if (circle.getPosition().getY() > position.getY()+height) testY = position.getY()+height;   // bottom edge
+		
+		  // get distance from closest edges
+		double dx= circle.getPosition().getX()-testX;
+		double dy = circle.getPosition().getY()-testY;
+		double distance = dx*dx + dy*dy;
+		
+		  // if the distance is less than the radius, collision!
+		if (distance <= circle.getRadius() * circle.getRadius()) 
+		{
+			return true;
+		}
+		return false;
+	}
+		
 	
 	/*
 	 * Check if each vertex of the other rectangle is a point inside of this rectangle
@@ -84,6 +123,6 @@ public class Rectangle extends Shape
 	{
 		Vector2[] vertices = rect.getVerticies();
 		
-		return (this.contains(vertices[0]) &&  this.contains(vertices[3]));
+		return (this.contains(vertices[0]) && this.contains(vertices[3]));
 	}
 }

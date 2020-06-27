@@ -64,6 +64,9 @@ class GameLoop extends Thread
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+				} catch (EngineException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 				deltaFsum = 0;
 				frames++;
@@ -106,7 +109,7 @@ class GameLoop extends Thread
 		collisionManager.resloveAllCollisions();
 	}
 	
-	private void render() throws JSONException, IOException
+	private void render() throws JSONException, IOException, EngineException
 	{
 		Graphics2D g2 = Window.getInstance().createGraphics();
 		GraphicsLayerManager.getInstance().render(g2);

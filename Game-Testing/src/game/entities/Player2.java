@@ -18,8 +18,10 @@ import graphics.sprite.SpriteMap;
 import physics.body.MassData;
 import physics.body.Material;
 import physics.body.PhysicsBody;
+import physics.collision.CollisionLayer;
 import physics.collision.CollisionLayerManager;
 import physics.collision.HitBox;
+import physics.collision.Rectangle;
 import physics.collision.Shape;
 import physics.general.Transform;
 import physics.general.Vector2;
@@ -31,6 +33,7 @@ public class Player2 extends EngineInstance implements Tickable, IGraphics
 	private PhysicsBody body;
 	private InputHandler input;
 	private HitBox hitbox;
+	private CollisionLayer layer;
 	
 	public Player2(int x)
 	{
@@ -39,7 +42,8 @@ public class Player2 extends EngineInstance implements Tickable, IGraphics
 		playerSprite = SpriteMap.getClonedSprite("player");
 		body = new PhysicsBody(new MassData(1), new Material(), new Shape(), new Transform(23,2));
 		hitbox = playerSprite.getHitBox(body.getPosition(), this);
-		CollisionLayerManager.getInstance().getDefaultlayer().addHitBox(hitbox);
+		layer = CollisionLayerManager.getInstance().getDefaultlayer();
+		layer.addHitBox(hitbox);
 	}
 	
 	public Player2(JSONObject json)
@@ -70,6 +74,12 @@ public class Player2 extends EngineInstance implements Tickable, IGraphics
 	{	
 		g2.drawImage(playerSprite.getCurrentFrame(), (int)body.getPosition().getX(), (int)body.getPosition().getY(), null);
 		hitbox.drawHitBox(g2);
+	}
+	
+	@Override
+	public Rectangle renderBoundingArea() 
+	{
+		return hitbox.getBounds();
 	}
 	
 }

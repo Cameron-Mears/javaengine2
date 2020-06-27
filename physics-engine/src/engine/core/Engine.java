@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import engine.core.exceptions.EngineException;
-import engine.core.input.InputHandler;
 import engine.util.parsers.AssetMapParser;
 import external.org.json.JSONException;
 import external.org.json.JSONObject;
@@ -30,14 +29,14 @@ public class Engine                                                             
 	private static Engine instance;
 	
 	
-	private static void init() throws JSONException, IOException
+	private static void init() throws JSONException, IOException, EngineException
 	{
 		long now = System.currentTimeMillis();
 		instance = new Engine();
 		System.out.println("init complete time: " + Long.toString(System.currentTimeMillis() - now) + "ms");
 	}
 	
-	public static synchronized Engine getInstance() throws JSONException, IOException
+	public static synchronized Engine getInstance() throws JSONException, IOException, EngineException
 	{
 		if (instance == null)
 			try {
@@ -50,7 +49,7 @@ public class Engine                                                             
 	
 
 	
-	private Engine() throws JSONException, IOException
+	private Engine() throws JSONException, IOException, EngineException
 	{
 		
 		engineProperties = new HashMap<String, Object>();
@@ -146,6 +145,12 @@ public class Engine                                                             
 	public static void printDebugMessage(Object message, Object sender)
 	{
 		System.out.print("[DEBUG][" + sender.getClass().getName() + "]: ");
+		System.out.println(message);
+	}
+	
+	public static void printWarningMessage(Object message, Object sender)
+	{
+		System.out.print("[WARNING][" + sender.getClass().getName() + "]: ");
 		System.out.println(message);
 	}
 	

@@ -57,6 +57,9 @@ public class InputHandler implements MouseListener, KeyListener, MouseWheelListe
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 		/*

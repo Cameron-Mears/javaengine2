@@ -36,7 +36,7 @@ public class CollisionLayerManager
 			Rectangle rect = new Rectangle(properties.getDouble("width"), properties.getDouble("height"));
 			CollisionLayer defaultLayer = new CollisionLayer("default", rect, vector);
 			layers.addNode("default", defaultLayer);
-		} catch (JSONException | IOException e) 
+		} catch (JSONException | IOException | EngineException e) 
 		{
 			e.printStackTrace();
 			System.out.println("[WARNING][ENGINE_INIT]: The defualt collison layer could not be cretaed");

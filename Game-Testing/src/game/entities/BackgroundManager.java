@@ -9,6 +9,7 @@ import engine.core.tick.TickInfo;
 import engine.core.tick.Tickable;
 import external.org.json.JSONObject;
 import graphics.instance.IGraphics;
+import physics.collision.Rectangle;
 
 public class BackgroundManager extends EngineInstance implements IGraphics, Tickable
 {	
@@ -34,6 +35,12 @@ public class BackgroundManager extends EngineInstance implements IGraphics, Tick
 	public void onTick(TickInfo info) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public Rectangle renderBoundingArea() {
+
+		return null;
 	}
 
 }

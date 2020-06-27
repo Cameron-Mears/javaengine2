@@ -15,17 +15,25 @@ public class BST<Key,Value>
 	}
 	
 	
+	
+	private double toKey(Key k)
+	{
+		double key;
+		if (k instanceof Number)
+		{
+			key = ((Number) k).doubleValue();
+		}
+		else key = (double)(k.hashCode());
+		
+		return key;
+	}
+	
 	public Value find(Key k)
 	{
 		if (root != null)
 		{
 			Node<Value> focus = root;
-			double key;
-			if (k instanceof Number)
-			{
-				key = ((Number) k).doubleValue();
-			}
-			else key = (double)(k.hashCode());
+			double key = toKey(k);
 			
 			if (root.key == key) return root.value;
 			
@@ -56,14 +64,7 @@ public class BST<Key,Value>
 		{
 			Node<Value> focus = root;
 			
-			double key;
-			if (k instanceof Number)
-			{
-				key = ((Number) k).doubleValue();
-			}
-			else key = (double)(k.hashCode());
-			
-			if (root.key == key) return true;
+			double key = toKey(k);
 			
 			while (focus.key != key)
 			{
@@ -135,18 +136,18 @@ public class BST<Key,Value>
         return root; 
     }
 	
+	public void remove(Key k)
+	{		
+		deleteRec(root, toKey(k));
+	}
+	
 	public boolean addNode(Key k,Value value)
 	{
 		
 		if (findNode(k)) return false;
 		
 		Node<Value> focus = root;
-		double key;
-		if (k instanceof Number)
-		{
-			key = ((Number) k).doubleValue();
-		}
-		else key = (double)(k.hashCode());
+		double key = toKey(k);
 		if (focus == null)
 		{
 			root = new Node<Value>(key, value);

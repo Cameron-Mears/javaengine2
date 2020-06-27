@@ -11,10 +11,9 @@ public class Game
 {
 	
 	public static void main(String[] args) throws JSONException, IOException, EngineException, InvalidInstanceException
-	{    	
+	{    
 		
 		Engine.getInstance().start();
-		
 		
 	}
 	

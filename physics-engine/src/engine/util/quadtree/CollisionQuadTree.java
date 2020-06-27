@@ -141,7 +141,7 @@ public class CollisionQuadTree<Value> extends QuadTree<Value>
 	public LinkedList<QuadTreeNode<Value>> queryRange(Rectangle rect)
 	{
 		LinkedList<QuadTreeNode<Value>> result = new LinkedList<QuadTreeNode<Value>>();
-		
+		if (rect == null) return result;
 		if (this.boundary.contains(rect))
 		{
 			for(QuadTreeNode<Value> node : this.leafs)

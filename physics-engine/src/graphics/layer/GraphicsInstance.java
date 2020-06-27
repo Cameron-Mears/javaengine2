@@ -4,7 +4,9 @@ import java.awt.Graphics2D;
 import java.util.LinkedList;
 
 import engine.util.bst.BST;
+import graphics.Camera;
 import graphics.instance.IGraphics;
+import physics.collision.Rectangle;
 
 public class GraphicsInstance 
 {
@@ -55,10 +57,25 @@ public class GraphicsInstance
 		gLayers.add(g);
 	}
 	
-	public void render(Graphics2D g2)
+	public void render(Graphics2D g2, Camera camera)
 	{
 		for (IGraphics iGraphics : renderInterfaces)
 		{
+			Rectangle bounds = iGraphics.renderBoundingArea();
+			if (camera != null)
+			{
+				if (bounds != null)
+				{
+					if (camera.getBounds() != null && camera.getBounds().contains(bounds))
+					{
+						iGraphics.render(g2);
+						continue;
+					}
+					continue;
+				}
+				iGraphics.render(g2);
+				continue;
+			}
 			iGraphics.render(g2);
 		}
 	}

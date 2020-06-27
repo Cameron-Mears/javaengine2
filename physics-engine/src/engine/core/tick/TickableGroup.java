@@ -30,8 +30,12 @@ public class TickableGroup extends Layer
 				
 				Tickable t = (Tickable) tickable;
 				
-				t.onTick(info);
-				return null;
+				synchronized (t) 
+				{
+					t.onTick(info);
+					return null;
+				}
+				
 			}
 		};
 		

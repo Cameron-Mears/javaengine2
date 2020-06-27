@@ -50,17 +50,23 @@ public class CollisionLayer
 	
 	public void addHitBox(HitBox box)
 	{
-		CollisionNode<HitBox> node = new CollisionNode<HitBox>(box.getBounds().getPosition(), box, box);
 		members.addNode(box.getOwner().getID().getID(), box);
 		quadTree.insert(box.getNode());
 		box.setCollisionLayer(this);
 	}
 	
-	public void addHitBoxDirect(HitBox box) //direct insertion to quadtree
+	public void addHitBoxDirect(HitBox box) //direct insertion to quadtree will not check for collisions every tick
 	{
-		CollisionNode<HitBox> node = new CollisionNode<HitBox>(box.getBounds().getPosition(), box, box);
 		members.addNode(box.getOwner().getID().getID(), box);
 		box.setCollisionLayer(this);
+	}
+	
+	public void checkCollisions(HitBox... boxes)
+	{
+		for (HitBox hitBox : boxes) 
+		{
+			onCollision.apply(hitBox);
+		}
 	}
 	
 	public void resloveCollisions()

@@ -19,14 +19,23 @@ import physics.general.Vector2;
 
 public class HitBox implements Tickable
 {
-	private LinkedList<CollisionEventListener> listeners;
-	private EngineInstance owner;
-	private long id;
+	
+	public static enum TYPE
+	{
+		RECT,
+		CIRCLE,
+		PIXEL_PERFECT
+	}
+	
+	protected LinkedList<CollisionEventListener> listeners;
+	protected EngineInstance owner;
+	protected long id;
 
-	private CollisionNode<HitBox> myNode;
-	private CollisionLayer myLayer;
-	private Vector2 lastPosition;
-	private Rectangle bounds;
+	protected CollisionNode<HitBox> myNode;
+	protected CollisionLayer myLayer;
+	protected Vector2 lastPosition;
+	protected Rectangle bounds;
+	protected TYPE type;
 	
 	@Override
 	public boolean equals(Object other)
@@ -43,7 +52,8 @@ public class HitBox implements Tickable
 
 		this.bounds = bounds;
 		this.listeners = new LinkedList<CollisionEventListener>();
-		this.id = owner.getID().getID();
+		if (owner == null) this.id = (long)(Math.random() * Long.MAX_VALUE);
+		else this.id = owner.getID().getID();
 		this.myNode = new CollisionNode<HitBox>(bounds.getPosition(), this, this);
 		this.owner = owner;
 		this.lastPosition = bounds.getPosition().clone();
@@ -51,7 +61,7 @@ public class HitBox implements Tickable
 	}
 	
 	
-	public QuadTreeNode<HitBox> getNode()
+	public CollisionNode<HitBox> getNode()
 	{
 		return myNode;
 	}
@@ -82,6 +92,7 @@ public class HitBox implements Tickable
 		if (!lastPosition.equals(bounds.getPosition()))
 		{
 			try {
+				//this will remove it from the quadtree at the end of the engine tick and it will be reinserted
 				TickHandler.getInstance().queueTickable(this);
 			} catch (JSONException | InvalidInstanceException | EngineException | IOException e) {
 				e.printStackTrace();

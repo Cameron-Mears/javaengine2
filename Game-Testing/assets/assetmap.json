@@ -29,11 +29,14 @@
     {
         "type": "tilemapimageset",
         "name": "background",
+        "nTiles": 1,
+        "cellWidth": 32,
+        "cellHeight": 32,
         "images": [
             
             {
                 "int_code": 1,
-                "path": "null"
+                "path": "C:\\Users\\camer\\Downloads\\image0.jpg"
             }
         ]
     },
@@ -41,11 +44,22 @@
     {
         "type": "tilemap",
         "name": "background",
+        "rows":1,
+        "columns":2,
         "imageset": "background",
+        "chunksize": {
+            "cellsPerRow":1,
+            "cellsPerColumn": 2
+        },
+        "origin":
+        {
+            "origin_x": 0,
+            "origin_y": 0
+        },
         "map":[
 
-            [12,34,34,12,3,123,435,12,21,34,123],
-            [1212,0,13,3]
+            [1],
+            [1]
 
         ]
     }

@@ -63,8 +63,7 @@ public class TickHandler
 		
 		groups = new BST<String, TickableGroup>();
 		this.tickables = new LinkedList<Tickable>();
-		if ((boolean)Engine.getInstance().getProperty("doLoad")) this.parseJSONConfig((JSONArray) Engine.getInstance().getProperty("tickHandlerConfig"));
-		
+		if ((boolean) Engine.getInstance().getProperty("doLoad")) this.parseJSONConfig((JSONArray) Engine.getInstance().getProperty("tickHandlerConfig"));
 	}
 	
 	public boolean isGroupEnabled(String group)
@@ -125,7 +124,10 @@ public class TickHandler
 		return group;
 		
 	}
-	
+	/**
+	 * This will put the tickable into a queue, at the end of an engine tick all tickables in the queue will be run
+	 * @param the tickable to be queue
+	 */
 	public void queueTickable(Tickable tickable)
 	{
 		this.tickables.add(tickable);
