@@ -19,6 +19,13 @@ public class Window extends JFrame
 	private Graphics2D g2;
 	private boolean fullscreen;
 	
+	/**
+	 * 
+	 * @return the default game window
+	 * @throws JSONException
+	 * @throws IOException
+	 * @throws EngineException
+	 */
 	public static Window getInstance() throws JSONException, IOException, EngineException
 	{
 		if (instance == null)
@@ -36,6 +43,16 @@ public class Window extends JFrame
 	public static void refresh()
 	{
 		
+	}
+	
+	public Window(int width, int height, int x, int y, boolean fullScreen, String title)
+	{
+		this.setTitle(title);
+		this.setSize(width, height);
+		this.setLocation(x, y);
+		this.setUndecorated(fullScreen);
+		this.setSize(Toolkit.getDefaultToolkit().getScreenSize());
+		this.setResizable(true);
 	}
 	
 	private Window() throws JSONException, IOException, EngineException

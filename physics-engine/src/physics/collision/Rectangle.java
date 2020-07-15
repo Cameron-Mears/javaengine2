@@ -1,5 +1,6 @@
 package physics.collision;
 
+import graphics.transform.Matrix;
 import physics.general.Vector2;
 
 public class Rectangle extends Shape 
@@ -13,7 +14,7 @@ public class Rectangle extends Shape
 		this.height = height;
 		
 		vertices = new Vector2[4];
-		vertices[0] = position;
+		vertices[0] = tx.getPosition();
 		vertices[1] = new Vector2();
 		vertices[2] = new Vector2();
 		vertices[3] = new Vector2();
@@ -22,13 +23,13 @@ public class Rectangle extends Shape
 	public Rectangle(double x, double y, double width, double height)
 	{
 		this(width,height);
-		position.set(x, y);
+		tx.getPosition().set(x, y);
 	}
 	
 	public Rectangle(double width, double height, Vector2 position)
 	{
 		this(width,height);
-		this.position = position;
+		tx.setPosition(position);
 		this.width = width;
 		this.height = height;
 	}
@@ -44,23 +45,43 @@ public class Rectangle extends Shape
 	}
 	
 	
+	public double getRotation()
+	{
+		return tx.getRotation();
+	}
+	
 	public void setPosition(Vector2 postion)
 	{
-		this.position = postion;
+		tx.setPosition(postion);
 	}
 	
 	public Vector2[] getVerticies()
 	{
-		vertices[0] = position;
-		vertices[1].set(position.getX() + width, position.getY());
-		vertices[2].set(position.getX(), position.getY() + height);
-		vertices[3].set(position.getX() + width, position.getY() + height);
+		if (tx.getRotation() == 0)
+		{
+			Vector2 position = tx.getPosition();
+			vertices[0] = position;
+			vertices[1].set(position.getX() + width, position.getY());
+			vertices[2].set(position.getX(), position.getY() + height);
+			vertices[3].set(position.getX() + width, position.getY() + height);
+		}
+		else
+		{
+			double[][] transform = new double[2][2];
+			transform[0][0] = Math.cos(getRotation());
+			transform[0][1] = -Math.sin(getRotation());
+			transform[1][0] = Math.sin(getRotation());
+			transform[1][1] = Math.cos(getRotation());
+			Matrix matrix = new Matrix(transform);
+			
+		}
 		
 		return vertices;
 	}
 	
 	public boolean contains(Vector2 point)
 	{
+		Vector2 position = tx.getPosition();
 		return (point.getX() >= position.getX() && point.getX() <= position.getX() + width) 
 				&& 
 				(point.getY() >= position.getY() && point.getY() <= position.getY() + height);
@@ -82,9 +103,9 @@ public class Rectangle extends Shape
 		return false;
 	}
 	
-	
 	public boolean contains(Rectangle rect)
 	{
+		Vector2 position = tx.getPosition();
 		return (rect.getPosition().getX() + rect.getWidth() >= position.getX() && rect.getPosition().getX() <= position.getX() + width)
 				&&
 				(rect.getPosition().getY() + rect.getHeight() >= position.getY() && rect.getPosition().getY() <= position.getY() + height);
@@ -92,6 +113,7 @@ public class Rectangle extends Shape
 	
 	public boolean contains(Circle circle)
 	{
+		Vector2 position = tx.getPosition();
 		double testX = circle.getPosition().getX();
 		double testY = circle.getPosition().getY();
 		if (circle.getPosition().getX() < position.getX()) testX = position.getX();      // test left edge
@@ -112,6 +134,12 @@ public class Rectangle extends Shape
 		return false;
 	}
 		
+	
+	
+	private boolean rotatedRectCollision(Rectangle other)
+	{
+		return false;
+	}
 	
 	/*
 	 * Check if each vertex of the other rectangle is a point inside of this rectangle

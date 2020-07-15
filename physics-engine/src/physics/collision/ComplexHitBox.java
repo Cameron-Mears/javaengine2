@@ -3,12 +3,13 @@ package physics.collision;
 import java.awt.image.BufferedImage;
 
 import engine.core.instance.EngineInstance;
+import graphics.transform.Matrix;
 
 //a pixel perfect bounding box
 public class ComplexHitBox extends HitBox
 {
 
-	private boolean[][][] pixels; //keeps track of pixels that are considered collision pixels 3d array to keep track of multiple sprite frames
+	private Matrix a;
 	
 	public ComplexHitBox(Rectangle bounds, EngineInstance owner, BufferedImage...frames ) //outer bounds determine if it is worth trying pixel perfect collision
 	{
@@ -21,11 +22,11 @@ public class ComplexHitBox extends HitBox
 	{
 		if (bounds.contains(other.getBounds()))
 		{
-			//get overlap	
+			//get overlap
 		}
 	}
 	
-	public int[] getOverlap(Rectangle other)
+	public Rectangle getOverlap(Rectangle other)
 	{
 		return null;
 	}

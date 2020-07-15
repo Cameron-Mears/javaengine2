@@ -1,28 +1,29 @@
 package physics.collision;
 
+import physics.general.Transform;
 import physics.general.Vector2;
 
 public class Shape 
 {
-	protected Vector2 position;
+	protected Transform tx;
 	protected double width, height;
 	
 	protected Rectangle bounds;
 	
 	public Shape()
 	{
-		this.position = new Vector2(0,0);
+		tx = new Transform();
 	}
 	
 	public Shape(Vector2 position)
 	{
-		this.position = position;
+		tx = new Transform(position);
 	}
 	
 
 	public Vector2 getPosition() 
 	{
-		return position;
+		return tx.getPosition();
 	}
 	
 	protected double max(double... values)

@@ -1,5 +1,6 @@
 package engine.util.bst;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.function.Function;
@@ -8,14 +9,21 @@ public class BST<Key,Value>
 {
 	
 	Node<Value> root;
+	private Node<Value> cache1;
+	private Node<Value> cache2;
+	private HashMap<Double, Node<Value>> chaches;
 	
 	public BST()
 	{
-		
+		cache1 = cache2 = null;
 	}
 	
 	
-	
+	/**
+	 * 
+	 * @param k, the key as a value
+	 * @return the key as a number, if the key type is a number, it returns the number otherwise the hashCode of the value
+	 */
 	private double toKey(Key k)
 	{
 		double key;
@@ -28,12 +36,42 @@ public class BST<Key,Value>
 		return key;
 	}
 	
+	private void promote(Node<Value> node)
+	{
+		
+	}
+	
+	private Node<Value> findCached(double key)
+	{
+		return chaches.get(key);
+	}
+	
+	/**
+	 * 
+	 * @param k the key of the node
+	 * @return the Value linked to that key, returns null if no value is linked to the key
+	 */
+	
 	public Value find(Key k)
 	{
+		double key = toKey(k);
+		Node<Value> cachedValue = findCached(key);
+		if (cachedValue != null) return cachedValue.value;
+		if (cache1.key == key) return cache1.value;
+		else
+		{
+			if (cache2.key == key)
+			{
+				Node<Value> tempPointer = cache1;
+				cache1 = cache2;
+				cache2 = tempPointer; //premote cache 2
+				return cache2.value;
+			}
+			
+		}
 		if (root != null)
 		{
 			Node<Value> focus = root;
-			double key = toKey(k);
 			
 			if (root.key == key) return root.value;
 			
@@ -58,6 +96,11 @@ public class BST<Key,Value>
 	}
 	
 	
+	/**
+	 * 
+	 * @param k, the key of the node
+	 * @return Returns true if the node exists
+	 */
 	public boolean findNode(Key k)
 	{
 		if (root != null)
@@ -87,10 +130,6 @@ public class BST<Key,Value>
 	}
 	
 	
-	Node<Value> insertRec(int key, Value value)
-	{
-		return null;
-	}
 	
 	double minValue(Node<Value> root) 
     { 

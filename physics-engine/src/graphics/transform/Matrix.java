@@ -1,14 +1,18 @@
 package graphics.transform;
 
-import physics.general.Vector2;
 
 public class Matrix 
 {
-	private Vector2 xHat;
-	private Vector2 yHat;
+	private int width, height;
+	private double[][] data;
 	
-	public Vector2 multiply(Vector2 vector)
+	public Matrix(double[][] data)
 	{
-		return new Vector2();
+		
+	}
+	
+	public void transform(Matrix other)
+	{
+		
 	}
 }

@@ -33,7 +33,7 @@ public class GraphicsLayerManager
 	}
 	
 	
-	public static synchronized GraphicsLayerManager getInstance()
+	public static GraphicsLayerManager getInstance()
 	{
 		if (instance == null)
 		{

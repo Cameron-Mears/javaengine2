@@ -10,7 +10,7 @@ import graphics.instance.InvalidInstanceException;
 import graphics.layer.Layer;
 
 
-public class TickableGroup extends Layer
+public class TickableGroup extends Layer implements Tickable
 {
 	private boolean enabled;
 	private TickInfo info;
@@ -76,6 +76,14 @@ public class TickableGroup extends Layer
 		}
 		
 		return false;
+	}
+
+
+
+	@Override
+	public void onTick(TickInfo info) 
+	{
+		tick(info);
 	}
 		
 	

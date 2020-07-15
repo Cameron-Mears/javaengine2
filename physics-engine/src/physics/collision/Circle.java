@@ -19,6 +19,7 @@ public class Circle extends Shape
 	
 	public boolean contains(Vector2 point)
 	{
+		Vector2 position = tx.getPosition();
 		double dx = Math.abs(point.getX() - position.getX());
 		double dy = Math.abs(point.getY() - position.getY());
 		return radius * radius >= dx*dx + dy*dy;

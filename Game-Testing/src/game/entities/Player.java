@@ -8,6 +8,7 @@ import engine.core.input.InputHandler;
 import engine.core.instance.EngineInstance;
 import engine.core.tick.TickInfo;
 import engine.core.tick.Tickable;
+import engine.util.json.JSONSerializable;
 import external.org.json.JSONObject;
 import graphics.Camera;
 import graphics.instance.IGraphics;
@@ -27,7 +28,7 @@ import physics.collision.Rectangle;
 import physics.collision.Shape;
 import physics.general.Transform;
 
-public class Player extends EngineInstance implements Tickable, IGraphics, CollisionEventListener
+public class Player extends EngineInstance implements Tickable, IGraphics, CollisionEventListener, JSONSerializable
 {
 	
 	private Sprite playerSprite;
@@ -93,6 +94,12 @@ public class Player extends EngineInstance implements Tickable, IGraphics, Colli
 	public Rectangle renderBoundingArea() 
 	{
 		return hitbox.getBounds();
+	}
+
+	@Override
+	public JSONObject serialize() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 

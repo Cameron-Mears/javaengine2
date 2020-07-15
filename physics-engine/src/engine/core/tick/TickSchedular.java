@@ -8,10 +8,32 @@ import java.util.Queue;
  */
 public class TickSchedular 
 {
-	private Queue<Tickable> queue;
+	private static class Node
+	{
+		Tickable tickable;
+		double delta;
+		
+		Node(Tickable tickable, double delta)
+		{
+			this.tickable = tickable;
+			this.delta = delta;
+		}
+	}
 	
 	private TickSchedular()
 	{
-		queue = new LinkedList<Tickable>();
+		
 	}
+	
+	public Node schedule(Tickable t, long delta)
+	{
+		return null;
+	}
+	
+	public Node addPeriodic(Tickable t, long interval)
+	{
+		return null;
+	}
+	
+	
 }

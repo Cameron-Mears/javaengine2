@@ -18,6 +18,8 @@ class GameLoop extends Thread
 	private boolean running = true;
 	private long lastTime = 0;
 	
+	private boolean doSleep;
+	
 	private TickHandler tickHandler;
 	private GraphicsLayerManager gManager;
 	private CollisionLayerManager collisionManager;
@@ -31,6 +33,17 @@ class GameLoop extends Thread
 		deltaU = ((long)(1e9))/tickRate;
 		tickHandler = TickHandler.getInstance();
 		collisionManager = CollisionLayerManager.getInstance();
+	}
+	
+	
+	private void loopAccurate()
+	{
+		
+	}
+	
+	private void loopSleep()
+	{
+		
 	}
 	
 	@Override
@@ -101,6 +114,13 @@ class GameLoop extends Thread
 			
 			
 		}
+	}
+	
+	
+	
+	public void recompute()
+	{
+		
 	}
 	
 	private void tick(long delta)

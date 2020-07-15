@@ -14,7 +14,15 @@ public class Transform
 	{
 		position = new Vector2(x,y);
 	}
+	public Transform(Vector2 vector)
+	{
+		position = vector;
+	}
 	
+	public void setPosition(Vector2 vector)
+	{
+		position = vector;
+	}
 	public Vector2 getPosition()
 	{
 		return position;

@@ -97,9 +97,16 @@ public class TileMap implements IGraphics
 			
 		}
 		
+		subdivide();
+		
 	}
 	
 	public void toAstarGrid()
+	{
+		
+	}
+	
+	private void subdivide() //create the chunks
 	{
 		
 	}

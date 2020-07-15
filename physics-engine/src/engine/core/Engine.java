@@ -169,6 +169,11 @@ public class Engine                                                             
 		// TODO Auto-generated method stub
 		
 	}
+
+	public static GameFiles getGameFiles() 
+	{
+		return null;
+	}
 	
 	
 	
