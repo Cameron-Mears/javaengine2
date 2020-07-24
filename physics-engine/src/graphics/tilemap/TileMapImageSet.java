@@ -15,22 +15,26 @@ public class TileMapImageSet
 	private ArrayList<BufferedImage> imageList;
 	private int cellWidth, cellHeight;
 
+	/**
+	 * Loads in a tilemapiamge set from an json file
+	 * @param json
+	 * @throws IOException
+	 */
 	public TileMapImageSet(JSONObject json) throws IOException
 	{
 		this.name = json.getString("name");
-		imageList = new ArrayList<BufferedImage>(json.getInt("nTiles")+1);
-		imageList.add(0, null);
-		this.cellHeight = json.getInt("cellHeight");
-		this.cellWidth = json.getInt("cellWidth");
-		imageList.add(0, null); //tile id zero represents an empty cell
+		imageList = new ArrayList<BufferedImage>(json.getInt("nTiles")+1); //number of images in the in the image set (+1 for null image index 0 (empty cell))
+		imageList.add(0, null); //tile_id 0 represents a empty cell
+		this.cellHeight = json.getInt("cellHeight"); //width of the images in the tilemap
+		this.cellWidth = json.getInt("cellWidth"); //height of the images in the tilemap
 		
-		JSONArray images = json.getJSONArray("images");
+		JSONArray images = json.getJSONArray("images"); //each index the array contains a json object one of which contains the code for the tile, the other contains the path to the image
 		
 		for (int index = 0; index < images.length(); index++) 
 		{
 			JSONObject object = images.getJSONObject(index);
 			int tileID = object.getInt("int_code");
-			BufferedImage tile = ImageParser.parseImage(new File(object.getString("path")));
+			BufferedImage tile = ImageParser.parseImage(new File(object.getString("path"))); //load the image
 			imageList.add(tileID, tile);
 		}
 	}

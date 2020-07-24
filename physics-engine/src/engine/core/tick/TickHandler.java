@@ -1,7 +1,6 @@
 package engine.core.tick;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.function.Function;
@@ -9,8 +8,10 @@ import java.util.function.Function;
 import engine.core.Engine;
 import engine.core.JSON_CONSTANTS;
 import engine.core.exceptions.EngineException;
+import engine.core.instance.EngineInstance;
 import engine.util.bst.BST;
-import engine.util.bst.Node;
+import engine.util.tree.HashTreeMap;
+import engine.util.tree.TraverseFunction;
 import external.org.json.JSONArray;
 import external.org.json.JSONException;
 import external.org.json.JSONObject;
@@ -18,21 +19,31 @@ import graphics.instance.InvalidInstanceException;
 
 public class TickHandler 
 {
-	private BST<String,TickableGroup> groups;
+	private HashTreeMap<String,TickableGroup> groups;
 	
 	private int nProcessors = 0;
-	private Function<TickableGroup, Void> inOrderTraversalFunction;
+	private TraverseFunction<TickableGroup> inOrderTraversalFunction;
 	private long deltaNS;
 	private Queue<Tickable> tickables;
 	
 	
 	private static TickHandler instance;
 	
-	public static TickHandler getInstance() throws JSONException, InvalidInstanceException, EngineException, IOException
+	public static TickHandler getInstance()
 	{
 		if (instance == null)
 		{
-			init();
+			try
+			{
+				init();
+				instance.load();
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+				throw new EngineException(e.getMessage());
+			}
+			
 		}
 		return instance;
 	}
@@ -43,11 +54,11 @@ public class TickHandler
 		this.nProcessors = (int) Engine.getInstance().getProperty("numberOfProcessors");
 		
 		
-		inOrderTraversalFunction = new Function<TickableGroup, Void>() 
+		inOrderTraversalFunction = new TraverseFunction<TickableGroup>() 
 		{
 
 			@Override
-			public Void apply(TickableGroup tickGroup) {
+			public void apply(TickableGroup tickGroup) {
 				
 				String groupName = tickGroup.getName();
 				TickInfo tf = new TickInfo();
@@ -56,19 +67,22 @@ public class TickHandler
 				tf.delta = ((double)deltaNS)/(1e9);
 				
 				tickGroup.tick(tf);
-				
-				return null;
 			}
 		};
 		
-		groups = new BST<String, TickableGroup>();
+		groups = new HashTreeMap<String, TickableGroup>();
 		this.tickables = new LinkedList<Tickable>();
+		
+	}
+	
+	private void load() throws EngineException, JSONException, InvalidInstanceException
+	{
 		if ((boolean) Engine.getInstance().getProperty("doLoad")) this.parseJSONConfig((JSONArray) Engine.getInstance().getProperty("tickHandlerConfig"));
 	}
 	
 	public boolean isGroupEnabled(String group)
 	{
-		return groups.findNode(group);
+		return groups.get(group).isEnabled();
 		
 	}
 	
@@ -87,7 +101,7 @@ public class TickHandler
 		{
 			JSONObject groupJSON = groupList.getJSONObject(index);
 			TickableGroup group = this.parseGroupfromJSON(groupJSON);
-			groups.addNode(group.getName(), group);
+			groups.put(group.getName(), group);
 		}
 		
 	}
@@ -131,5 +145,10 @@ public class TickHandler
 	public void queueTickable(Tickable tickable)
 	{
 		this.tickables.add(tickable);
+	}
+	
+	public void addTickable(String group, EngineInstance tickable)
+	{
+		this.groups.get(group).addTickable(tickable);
 	}
 }

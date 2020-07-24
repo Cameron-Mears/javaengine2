@@ -6,4 +6,6 @@ public class CommandMap
 {
 	private HashMap<String, ConsoleCommand> commands;
 	
+	
+	
 }

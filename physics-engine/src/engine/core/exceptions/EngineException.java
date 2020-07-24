@@ -1,6 +1,6 @@
 package engine.core.exceptions;
 
-public class EngineException extends Exception
+public class EngineException extends RuntimeException
 {
 	public EngineException(String message) 
 	{

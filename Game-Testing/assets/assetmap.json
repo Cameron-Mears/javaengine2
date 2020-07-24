@@ -19,6 +19,20 @@
             
         }
     },
+
+    {
+        "type": "sprite",
+        "name": "enemy",
+        "numFrames": 1,
+        "fps": 0,
+        "path": [
+            "C:\\Users\\camer\\Downloads\\New Piskel.png"
+        ],
+
+        "hitbox": {
+            
+        }
+    },
     
     {
         "type": "sound",
@@ -36,7 +50,7 @@
             
             {
                 "int_code": 1,
-                "path": "C:\\Users\\camer\\Downloads\\image0.jpg"
+                "path": "C:\\Users\\camer\\Downloads\\New Piskel.png"
             }
         ]
     },
@@ -44,12 +58,12 @@
     {
         "type": "tilemap",
         "name": "background",
-        "rows":1,
+        "rows":4,
         "columns":2,
         "imageset": "background",
         "chunksize": {
             "cellsPerRow":1,
-            "cellsPerColumn": 2
+            "cellsPerColumn": 1
         },
         "origin":
         {
@@ -58,8 +72,8 @@
         },
         "map":[
 
-            [1],
-            [1]
+            [1,1,1,1],
+            [1,1,1,1]
 
         ]
     }

@@ -4,13 +4,18 @@ public final class InstanceID
 {
 	private long id;
 	
-	public InstanceID()
+	public InstanceID(long id)
 	{
-		id = (long) (Math.random() * Long.MAX_VALUE);
+		this.id = id;
 	}
 	
 	public long getID()
 	{
 		return id;
+	}
+	
+	public void delete()
+	{
+		InstanceMap.removeID(this);
 	}
 }

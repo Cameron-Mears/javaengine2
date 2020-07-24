@@ -17,7 +17,6 @@ public class TileMapChunk
 	private int width;
 	private int height;
 	private int cellWidth, cellHeight;
-	private int[][] tileIds;
 	
 	private TileMap parent;
 	
@@ -32,27 +31,27 @@ public class TileMapChunk
 		this.parent = parent;
 		this.cellHeight = parent.getCellHeight();
 		this.cellWidth = parent.getCellWidth();
-		this.setChunck(chunkData);
+		this.setChunk(chunkData);
 	}
 	
-	public void setChunck(int[][] chunkData) throws EngineException
+	public void setChunk(int[][] chunkData) throws EngineException
 	{
-		if (chunkData.length*cellWidth != width) throw new EngineException("TileMapChunk: chunckData width must be equal to tileMapChuck width");
-		if (chunkData[0].length*cellHeight != height) throw new EngineException("TileMapChunk: chunckData height must be equal to tileMapChuck height");
+		if (chunkData.length*cellHeight != height) throw new EngineException("TileMapChunk: chunckData height must be equal to tileMapChuck height");
+		if (chunkData[0].length*cellWidth != width) throw new EngineException("TileMapChunk: chunckData width must be equal to tileMapChuck width");
 		
 		//create an image to draw the chunk on
 		chunkImage = CompatibleImageFactory.createCompatibleImage(width, height, Transparency.BITMASK);
 		Graphics2D g2 = chunkImage.createGraphics();
 		
 		//iterate through the chunk data
-		for (int row = 0; row < chunkData.length; row ++) 
+		for (int col = 0; col < chunkData.length; col ++) 
 		{
-			for (int col = 0; col < chunkData.length; col ++) 
+			for (int row = 0; row < chunkData[col].length; row ++) 
 			{
-				if (chunkData[row][col] != 0)
+				if (chunkData[col][row] != 0)
 				{
-					BufferedImage tile = parent.getTileByID(chunkData[row][col]);
-					g2.drawImage(tile, row*cellWidth, row*cellHeight, null);
+					BufferedImage tile = parent.getTileByID(chunkData[col][row]);
+					g2.drawImage(tile, row*cellWidth, col*cellHeight, null);
 				}
 			}
 		}

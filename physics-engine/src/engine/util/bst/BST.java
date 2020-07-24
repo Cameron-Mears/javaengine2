@@ -3,6 +3,7 @@ package engine.util.bst;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.TreeMap;
 import java.util.function.Function;
 
 public class BST<Key,Value> 
@@ -38,7 +39,6 @@ public class BST<Key,Value>
 	
 	private void promote(Node<Value> node)
 	{
-		
 	}
 	
 	private Node<Value> findCached(double key)
@@ -55,6 +55,7 @@ public class BST<Key,Value>
 	public Value find(Key k)
 	{
 		double key = toKey(k);
+		/*
 		Node<Value> cachedValue = findCached(key);
 		if (cachedValue != null) return cachedValue.value;
 		if (cache1.key == key) return cache1.value;
@@ -69,6 +70,7 @@ public class BST<Key,Value>
 			}
 			
 		}
+		*/
 		if (root != null)
 		{
 			Node<Value> focus = root;

@@ -2,20 +2,20 @@ package graphics.layer;
 
 import java.awt.Graphics2D;
 import java.util.HashMap;
-import java.util.function.Function;
 
 import engine.core.exceptions.EngineException;
-import engine.util.bst.BST;
+import engine.util.tree.HashTreeMap;
+import engine.util.tree.TraverseFunction;
 import graphics.Camera;
 
 public class GraphicsLayerManager 
 {
-	private BST<Long,GraphicsLayer> graphicsLayers;
-	private BST<Long, Camera> cameras;
+	private HashTreeMap<Long,GraphicsLayer> graphicsLayers;
+	private HashTreeMap<Long, Camera> cameras;
 	private HashMap<String, Integer> cameramap;
 	private HashMap<String, GraphicsLayerNode> layerMap;
-	private Function<GraphicsLayer, Void> traverse;
-	private Function<Camera, Void> cameraTraverse;
+	private TraverseFunction<GraphicsLayer> traverse;
+	private TraverseFunction<Camera> cameraTraverse;
 	private Graphics2D g2;
 	
 	private static GraphicsLayerManager instance;
@@ -49,32 +49,31 @@ public class GraphicsLayerManager
 	
 	private GraphicsLayerManager()
 	{
-		graphicsLayers = new BST<Long, GraphicsLayer>();
-		cameras = new BST<Long, Camera>();
+		graphicsLayers = new HashTreeMap<Long, GraphicsLayer>();
+		cameras = new HashTreeMap<Long, Camera>();
 		cameramap = new HashMap<String, Integer>();
 		layerMap = new HashMap<String, GraphicsLayerNode>();
 		GraphicsLayer defaultlayer = new GraphicsLayer("default");
 		GraphicsLayerNode node = new GraphicsLayerNode(defaultlayer, 0L);
 		layerMap.put(defaultlayer.getName(), node);
-		graphicsLayers.addNode(0L, defaultlayer);
+		graphicsLayers.put(0L, defaultlayer);
 		
-		traverse = new Function<GraphicsLayer, Void>() {
+		traverse = new TraverseFunction<GraphicsLayer>() {
 
 			@Override
-			public Void apply(GraphicsLayer t) 
+			public void apply(GraphicsLayer t) 
 			{
 				t.render(g2);
-				return null;
 			}
 		};
 	
 		
-		cameraTraverse = new Function<Camera, Void>() 
+		cameraTraverse = new TraverseFunction<Camera>() 
 		{
 			@Override
-			public Void apply(Camera camera)
+			public void apply(Camera camera)
 			{				
-				return null;
+
 			}
 		};
 	}
@@ -93,10 +92,10 @@ public class GraphicsLayerManager
 		else
 		{
 			long currentDepth = node.depth;
-			graphicsLayers.remove(currentDepth);
-			if (graphicsLayers.find(newDepth) != null) throw new EngineException("The GraphicsLayer depth " + Long.toString(newDepth) + " is already in use.");
+			graphicsLayers.put(currentDepth, null);
+			if (graphicsLayers.get(newDepth) != null) throw new EngineException("The GraphicsLayer depth " + Long.toString(newDepth) + " is already in use.");
 			
-			graphicsLayers.addNode(newDepth, node.layer);
+			graphicsLayers.put(newDepth, node.layer);
 			node.depth = newDepth;
 			
 			
@@ -120,12 +119,15 @@ public class GraphicsLayerManager
 	 */
 	public void addLayer(GraphicsLayer layer, long depth) throws EngineException
 	{
-		String name = layer.getName();
-		if (layerMap.get(name) != null) throw new EngineException("Graphicslayer [\"" + layer.getName() + "\"] already exists");
-		if (graphicsLayers.find(depth) != null) throw new EngineException("A GraphicsLayer already exists at depth: " + Long.toString(depth));
-		GraphicsLayerNode node = new GraphicsLayerNode(layer, depth);
-		layerMap.put(name, node);
-		graphicsLayers.addNode(depth, layer);
+		synchronized (layer) 
+		{
+			String name = layer.getName();
+			if (layerMap.get(name) != null) throw new EngineException("Graphicslayer [\"" + layer.getName() + "\"] already exists");
+			if (graphicsLayers.get(depth) != null) throw new EngineException("A GraphicsLayer already exists at depth: " + Long.toString(depth));
+			GraphicsLayerNode node = new GraphicsLayerNode(layer, depth);
+			layerMap.put(name, node);
+			graphicsLayers.put(depth, layer);
+		}
 		
 	}
 	

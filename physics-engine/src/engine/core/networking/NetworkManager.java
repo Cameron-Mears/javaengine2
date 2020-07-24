@@ -10,18 +10,15 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.HashMap;
-import java.util.function.Function;
 
-import javax.crypto.NoSuchPaddingException;
-
-import engine.util.bst.BST;
+import engine.util.tree.HashTreeMap;
+import engine.util.tree.TraverseFunction;
 import external.org.json.JSONArray;
 import external.org.json.JSONObject;
 
@@ -45,19 +42,19 @@ public class NetworkManager
 		return instance;
 	}
 	
-	private BST<Long, Connection> connections;
-	private Function<Connection, Void> travese;
+	private HashTreeMap<Long, Connection> connections;
+	private TraverseFunction<Connection>travese;
 	private Thread acceptConnections;
 	
 	private NetworkManager()
 	{
 		
-		connections = new BST<Long, Connection>();
+		connections = new HashTreeMap<Long, Connection>();
 		
-		travese = new Function<Connection, Void>() 
+		travese = new TraverseFunction<Connection>() 
 		{
 			@Override
-			public Void apply(Connection connection)
+			public void apply(Connection connection)
 			{
 				synchronized (connection) 
 				{
@@ -69,7 +66,6 @@ public class NetworkManager
 						}
 					} catch (Exception e) {e.printStackTrace();}
 				}
-				return null;
 			}
 		};
 		try {
@@ -86,7 +82,7 @@ public class NetworkManager
 	
 	void addConnection(Connection connection) throws NetworkException
 	{
-		connections.addNode(connection.getID(), connection);
+		connections.put(connection.getID(), connection);
 		initConnection(connection);
 	}
 	
@@ -159,10 +155,7 @@ public class NetworkManager
 					System.out.println(object.toString());
 					connection.write(object);
 					connection.flush();
-					BufferedReader test = new BufferedReader(new InputStreamReader(connection.getSocket().getInputStream()));
-					String test1 = test.readLine();
-					System.out.println(test1);
-					//JSONObject response = connection.getNext();
+					JSONObject response = connection.getNext();
 					JSONArray aeskey = object.getJSONArray("publicRSA");
 					byte[] aes = new byte[aeskey.length()];
 					for (int index = 0; index < aes.length; index++) 

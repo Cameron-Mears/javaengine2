@@ -4,7 +4,10 @@ import java.awt.Graphics2D;
 import java.util.function.Function;
 
 import engine.core.Engine;
-import engine.util.bst.BST;
+import engine.core.exceptions.EngineException;
+import engine.core.instance.EngineInstance;
+import engine.util.tree.HashTreeMap;
+import engine.util.tree.TraverseFunction;
 import graphics.Camera;
 import graphics.instance.IGraphics;
 import physics.collision.Rectangle;
@@ -38,26 +41,25 @@ public class GraphicsLayer
 		DEPTH_QUAD_TREE
 	}
 	
-	private BST<Long, Object> members;
-	private BST<Long,GraphicsInstance> renderOrder;
+	private HashTreeMap<Long, Object> members;
+	private HashTreeMap<Long,GraphicsInstance> renderOrder;
 	private Graphics2D g2;
-	private Function<GraphicsInstance, Void> traverse;
+	private TraverseFunction<GraphicsInstance> traverse;
 	private RENDER_QUERY_MODE mode;
 
 	public GraphicsLayer(String name) 
 	{
 		this.name = name;
 		this.mode = RENDER_QUERY_MODE.BST;
-		renderOrder = new BST<Long, GraphicsInstance>();
-		members = new BST<Long, Object>();
-		traverse = new Function<GraphicsInstance, Void>() 
+		renderOrder = new HashTreeMap<Long, GraphicsInstance>();
+		members = new HashTreeMap<Long, Object>();
+		traverse = new TraverseFunction<GraphicsInstance>() 
 		{
 
 			@Override
-			public Void apply(GraphicsInstance graphics) 
+			public void apply(GraphicsInstance graphics) 
 			{						
 				graphics.render(g2, camera);
-				return null;
 			}
 		};
 	}
@@ -115,19 +117,23 @@ public class GraphicsLayer
 	
 	/**
 	 * 
-	 * @param instance the IGraphics instance to add
+	 * @param eInstance the EngineInstance to add, must implement ten IGraphics EngineComponent
 	 * @param depth the desired depth for the instance, if a user create GraphicsInstance exists at that depth, a different depth will be assigned
 	 * @return the assigned depth for the IGraphics instance
 	 */
-	public long addIGrpahics(IGraphics instance, long depth) 
+	public long addGraphics(EngineInstance eInstance, long depth) 
 	{
+		if (eInstance.getComponent("IGraphics") == null) throw new EngineException("Instance : " + eInstance.getClass().getName() + " does not implement IGrpahics or is not defined in the EngineInstances.json file");
+		
+		IGraphics instance = (IGraphics) eInstance;
+		
 		Rectangle nullCheck = instance.renderBoundingArea();
 		if (nullCheck == null)
 		{
 			Engine.printWarningMessage("Rendering Area of: " + instance.getClass().getName() + " is null this instance will always be rendered, many of instances may lead to preformace issues", this);
 		}
 		
-		GraphicsInstance g = renderOrder.find(depth);
+		GraphicsInstance g = renderOrder.get(depth);
 		if (g != null)
 		{
 			if (g.isCreatedFromGraphicsLayer())
@@ -137,21 +143,22 @@ public class GraphicsLayer
 			}
 			else
 			{
-				depth++;
-				return addIGrpahics(instance, depth);
+
+				g.addInterface(instance);
+				return depth;
 			}
 		}
 		GraphicsInstance gInstance = new GraphicsInstance(depth, true);
 		gInstance.addInterface(instance);
 		gInstance.assignedToLayer(renderOrder);
-		renderOrder.addNode(depth, gInstance);
+		renderOrder.put(depth, gInstance);
 		return depth;
 	}
 	
 	
-	public boolean removeIGraphics(IGraphics instance, int depth)
+	public void removeIGraphics(IGraphics instance, long depth)
 	{
-		return false;
+		members.put(depth, instance);
 	}
 	
 	public boolean addGraphicsInstance(GraphicsInstance g)

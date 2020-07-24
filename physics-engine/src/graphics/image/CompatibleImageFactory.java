@@ -10,8 +10,7 @@ public class CompatibleImageFactory
 	{
 		GraphicsConfiguration gConfig = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();	
 		
-		
-		BufferedImage optimized = gConfig.createCompatibleImage(width, height, transparency);
+		BufferedImage optimized = gConfig.createCompatibleImage(width, height, gConfig.getColorModel().getTransparency());
 		return optimized;
 	}
 }

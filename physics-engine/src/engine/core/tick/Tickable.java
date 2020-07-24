@@ -1,6 +1,8 @@
 package engine.core.tick;
 
-public interface Tickable
+import engine.core.instance.EngineComponent;
+
+public interface Tickable extends EngineComponent
 {
 	public void onTick(TickInfo info);
 

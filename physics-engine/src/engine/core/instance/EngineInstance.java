@@ -1,13 +1,16 @@
 package engine.core.instance;
 
-import java.io.IOException;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.concurrent.ConcurrentHashMap;
 
+import engine.core.Engine;
+import engine.core.GameFiles;
 import engine.core.JSON_CONSTANTS;
 import engine.core.exceptions.EngineException;
-import engine.util.bst.BST;
+import engine.util.tree.HashTreeMap;
+import external.org.json.JSONArray;
 import external.org.json.JSONObject;
 import graphics.instance.IGraphics;
 import graphics.instance.InvalidInstanceException;
@@ -17,7 +20,63 @@ public abstract class EngineInstance
 {
 	protected InstanceID id;
 	
-	protected LinkedList<BST<Long,Object>> listmembers;
+	protected LinkedList<HashTreeMap<Long,Object>> listmembers;
+	
+	protected LinkedList<EngineComponent> components;
+	
+	/**
+	 * Provides a list of Intefaces that a EngineInstance Uses
+	 */
+	public static final HashMap<Class<?>, HashMap<String,Class<?>>> componentMap;
+	
+	static
+	{
+		JSONObject obj = Engine.getGameFiles().get("EngineInstances.json");
+		JSONArray array = obj.getJSONArray("engineInstances");
+		componentMap = new HashMap<Class<?>, HashMap<String,Class<?>>>();
+		for (int index = 0; index < array.length(); index ++)
+		{
+			String clazz = array.getString(index);
+			Class<?> rootClass = null;
+			try
+			{
+				rootClass = Class.forName(clazz);
+			} catch (Exception e) {}
+			
+			if (rootClass == null) continue;
+			HashMap<String, Class<?>> components = new HashMap<String, Class<?>>();
+			if (!EngineInstance.class.isAssignableFrom(rootClass)) continue;
+			Class<?> superIterator = rootClass;
+			do
+			{
+				
+				Class<?>[] interfaces = superIterator.getInterfaces();
+				for (Class<?> interFace : interfaces) 
+				{
+					if (EngineComponent.class.isAssignableFrom(interFace))
+					{
+						components.put(interFace.getSimpleName(), interFace);
+					}
+				}
+				superIterator = superIterator.getSuperclass();
+				
+			}  while (EngineInstance.class.isAssignableFrom(superIterator));
+			
+			componentMap.put(rootClass, components);
+		}
+	}
+	
+	public EngineComponent getComponent(String name)
+	{
+		try
+		{
+			return (EngineComponent) componentMap.get(this.getClass()).get(name).cast(this);
+		}
+		catch (Exception e) {
+			System.out.println("sd");
+		}
+		return null;
+	}
 	
 	
 	@Override
@@ -32,7 +91,7 @@ public abstract class EngineInstance
 	
 	public EngineInstance()
 	{
-		this.id = new InstanceID();
+		this.id = InstanceMap.newInstanceID(this);		
 	}
 	
 	public final InstanceID getID()
@@ -40,16 +99,16 @@ public abstract class EngineInstance
 		return id;
 	}	
 	
-	public boolean addedToTree(BST<InstanceID,EngineInstance> tree)
+	public boolean addedToTree(HashTreeMap<Long,EngineInstance> tree)
 	{
 		return false;
 	}
 	
-	public final boolean remove()
+	public final boolean delete()
 	{
-		for (BST<Long, Object> bst : listmembers) 
+		for (HashTreeMap<Long, Object> tree : listmembers) 
 		{
-			bst.deleteRec(bst.getRoot(), this.id.getID());
+			tree.put(id.getID(), null);
 		}
 		return true;
 	}
@@ -93,14 +152,13 @@ public abstract class EngineInstance
 				
 				constructor = type.getConstructor(cls); //get the constructor with specified arguments
 				
-				
 				instance = (EngineInstance) constructor.newInstance(json);
 				
 				String gLayer = object.getString("graphicsLayer");
 				long depth = object.getLong("graphicsDepth");
 				
 				if (gLayer != "none")
-					GraphicsLayerManager.getInstance().getLayer(gLayer).addIGrpahics((IGraphics)instance, depth);
+					GraphicsLayerManager.getInstance().getLayer(gLayer).addGraphics(instance, depth);
 			
 			} 
 			catch (Exception e) 

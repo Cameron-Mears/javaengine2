@@ -26,7 +26,7 @@ import physics.collision.Shape;
 import physics.general.Transform;
 import physics.general.Vector2;
 
-public class Player2 extends EngineInstance implements Tickable, IGraphics
+public class Player2 extends Entity
 {
 	
 	private Sprite playerSprite;
@@ -40,10 +40,10 @@ public class Player2 extends EngineInstance implements Tickable, IGraphics
 		super();
 		input = new InputHandler();
 		playerSprite = SpriteMap.getClonedSprite("player");
-		body = new PhysicsBody(new MassData(1), new Material(), new Shape(), new Transform(23,2));
+		body = new PhysicsBody(new MassData(1), new Material(), new Transform(100,100));
 		hitbox = playerSprite.getHitBox(body.getPosition(), this);
 		layer = CollisionLayerManager.getInstance().getDefaultlayer();
-		layer.addHitBox(hitbox);
+		layer.addCollidable(this);
 	}
 	
 	public Player2(JSONObject json)
@@ -55,11 +55,12 @@ public class Player2 extends EngineInstance implements Tickable, IGraphics
 	@Override
 	public void onTick(TickInfo info) 
 	{
+		/*
 		if (input.isKeyDown('W')) body.applyForce(0,-100);
 		if (input.isKeyDown('S')) body.applyForce(0,100);
 		if (input.isKeyDown('A')) body.applyForce(-100,0);
 		if (input.isKeyDown('D')) body.applyForce(100,0);
-		
+		*/
 		double friction_x = (Math.abs(body.getVelocity().getX()) > 0)? 40 * -Math.signum(body.getVelocity().getX()):0;
 		double friction_y = (Math.abs(body.getVelocity().getY()) > 0)? 40 * -Math.signum(body.getVelocity().getY()):0;
 		
@@ -80,6 +81,29 @@ public class Player2 extends EngineInstance implements Tickable, IGraphics
 	public Rectangle renderBoundingArea() 
 	{
 		return hitbox.getBounds();
+	}
+
+	@Override
+	public HitBox getHitBox() {
+		return hitbox;
+	}
+
+	@Override
+	public void onCollision(HitBox other) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public PhysicsBody getPhysicsBody() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Vector2 getPosition() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

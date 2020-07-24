@@ -42,18 +42,33 @@ public class HitBox implements Tickable
 	{
 		if (other instanceof HitBox)
 		{
-			return ((HitBox) other).getOwner().equals(owner);
+			return ((HitBox) other).id == id;
 		}
 		return false;
 	}
 	
 	public HitBox(Rectangle bounds, EngineInstance owner)
 	{
-
 		this.bounds = bounds;
 		this.listeners = new LinkedList<CollisionEventListener>();
-		if (owner == null) this.id = (long)(Math.random() * Long.MAX_VALUE);
-		else this.id = owner.getID().getID();
+		if (owner == null)
+		{
+			this.id = (long)(Math.random() * Long.MAX_VALUE);
+		}
+		else
+		{
+			this.id = owner.getID().getID();
+			if (owner.getComponent("Collidable") != null)
+			{
+				this.addCollisionEventListener(new CollisionEventListener() {
+					
+					@Override
+					public void onCollision(CollisionEvent event) {
+						((Collidable) owner).onCollision(null);
+					}
+				});
+			}
+		}
 		this.myNode = new CollisionNode<HitBox>(bounds.getPosition(), this, this);
 		this.owner = owner;
 		this.lastPosition = bounds.getPosition().clone();
@@ -91,12 +106,8 @@ public class HitBox implements Tickable
 		boolean collision = other.getBounds().contains(bounds);
 		if (!lastPosition.equals(bounds.getPosition()))
 		{
-			try {
 				//this will remove it from the quadtree at the end of the engine tick and it will be reinserted
-				TickHandler.getInstance().queueTickable(this);
-			} catch (JSONException | InvalidInstanceException | EngineException | IOException e) {
-				e.printStackTrace();
-			}
+			TickHandler.getInstance().queueTickable(this);
 		}
 		if (collision)
 		{

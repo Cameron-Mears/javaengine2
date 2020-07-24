@@ -46,24 +46,13 @@ public class InputHandler implements MouseListener, KeyListener, MouseWheelListe
 	
 	public InputHandler()
 	{
-		try {
-			Window.getInstance().addKeyListener(this);
-			Window.getInstance().addMouseListener(this);
-			Window.getInstance().addMouseMotionListener(this);
-			Window.getInstance().addMouseWheelListener(this);
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (EngineException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		Window.getInstance().addKeyListener(this);
+		Window.getInstance().addMouseListener(this);
+		Window.getInstance().addMouseMotionListener(this);
+		Window.getInstance().addMouseWheelListener(this);
 		
 		/*
-		 * Populate hashmaps with
+		 * Populate hashmaps
 		 */
 		
 		
@@ -176,16 +165,12 @@ public class InputHandler implements MouseListener, KeyListener, MouseWheelListe
 		if (!(boolean)keyIsDown.get(key)) keyWasPressed.put(key,true);
 		keyIsDown.put(key, true);
 		keyPresses.add(key);
-		try {
-			if (!isQueued) 
-			{
+		if (!isQueued) 
+		{
 				TickHandler.getInstance().queueTickable(this);
 				isQueued = true;
-			}
-		} catch (JSONException | InvalidInstanceException | EngineException | IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
 		}
+	
 		
 	}
 
@@ -197,12 +182,8 @@ public class InputHandler implements MouseListener, KeyListener, MouseWheelListe
 		keyWasReleased.put(key, true);
 		keyReleases.add(key);
 		
-		try {
 			TickHandler.getInstance().queueTickable(this);
-		} catch (JSONException | InvalidInstanceException | EngineException | IOException e1) {
 		
-			e1.printStackTrace();
-		}
 	}
 
 	@Override
@@ -222,9 +203,7 @@ public class InputHandler implements MouseListener, KeyListener, MouseWheelListe
 			mouseWasPressed.put(button, true);
 			mousePresses.add(button);
 		}
-		try {
-			TickHandler.getInstance().queueTickable(this);
-		} catch (JSONException | InvalidInstanceException | EngineException | IOException e1) { e1.printStackTrace(); }
+		TickHandler.getInstance().queueTickable(this);
 	}
 
 	@Override
@@ -238,9 +217,7 @@ public class InputHandler implements MouseListener, KeyListener, MouseWheelListe
 			mouseWasReleased.put(button, true);
 			mouseReleases.add(button);
 		}
-		try {
-			TickHandler.getInstance().queueTickable(this);
-		} catch (JSONException | InvalidInstanceException | EngineException | IOException e1) { e1.printStackTrace(); }
+		TickHandler.getInstance().queueTickable(this);
 	}
 		
 	

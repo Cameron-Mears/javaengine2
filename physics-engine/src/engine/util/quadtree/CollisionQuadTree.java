@@ -124,6 +124,7 @@ public class CollisionQuadTree<Value> extends QuadTree<Value>
 			else
 			{
 				leafs.add(node);
+				node.setParentList(leafs);
 				node.checked();
 			}
 			

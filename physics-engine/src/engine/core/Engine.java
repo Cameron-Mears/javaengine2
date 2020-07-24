@@ -5,15 +5,17 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import engine.core.exceptions.EngineException;
+import engine.util.files.FileUtils;
 import engine.util.parsers.AssetMapParser;
 import external.org.json.JSONException;
 import external.org.json.JSONObject;
 import external.org.json.JSONTokener;
 import graphics.instance.InvalidInstanceException;
 
-public class Engine                                                                                                                                             implements Runnable
+public final class Engine                                                                                                                                             implements Runnable
 {
 	
 	private long deltaF, deltaU;	
@@ -22,9 +24,10 @@ public class Engine                                                             
 	
 	private static String USER_DIR = System.getProperty("user.dir");
 	
+	private GameLoop gameLoop;
 	
-	private HashMap<String,Object> engineProperties;
-	
+	private ConcurrentHashMap<String,Object> engineProperties;
+	private GameFiles files;
 	
 	private static Engine instance;
 	
@@ -33,10 +36,11 @@ public class Engine                                                             
 	{
 		long now = System.currentTimeMillis();
 		instance = new Engine();
+		instance.recomputeParams();
 		System.out.println("init complete time: " + Long.toString(System.currentTimeMillis() - now) + "ms");
 	}
 	
-	public static synchronized Engine getInstance() throws JSONException, IOException, EngineException
+	public static Engine getInstance()
 	{
 		if (instance == null)
 			try {
@@ -44,18 +48,40 @@ public class Engine                                                             
 			} catch (FileNotFoundException e) {
 				System.out.println("Engine Properties File not Found");
 			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+				throw new EngineException(e.getMessage());
+			}
 		return instance;
 	}
 	
-
+	/**
+	 * 
+	 * @param property
+	 * @param value
+	 * @throws EngineException, if the key does not point to a property or the value does not match the type in the map
+	 */
+	public void setProperty(String property, Object value)
+	{
+		if (property == null) throw new EngineException("Null Key");
+		Object currentValue = engineProperties.get(property);
+		if (currentValue == null) throw new EngineException("The key does not point to any properties");
+		if (currentValue.getClass().isInstance(value))
+		{
+			engineProperties.put(property, value);
+			recomputeParams();
+		} else throw new EngineException("Class of value: [\"" + value.getClass().getName() + "\"] does not match the excepted type: " + currentValue.getClass().getName());
+	}
+	
 	
 	private Engine() throws JSONException, IOException, EngineException
 	{
 		
-		engineProperties = new HashMap<String, Object>();
+		engineProperties = new ConcurrentHashMap<String, Object>();
 		engineProperties.put("numberOfProcessors", Runtime.getRuntime().availableProcessors());
 	
-		
+		//System.out.println(System.getProperty("user.dir")+"\\engine_properties.json");
 		JSONObject jobj = new JSONObject(new JSONTokener(new FileInputStream(new File(System.getProperty("user.dir")+"\\engine_properties.json"))));
 		
 		
@@ -107,10 +133,8 @@ public class Engine                                                             
 		//add to seperate parsing methods
 		engineProperties.put("tickHandlerConfig", new JSONObject(new JSONTokener(new FileInputStream(new File(USER_DIR+"\\config\\tickHandlerConfig.json")))).getJSONArray("tick_handler"));
 		
+		files = new GameFiles(USER_DIR + "\\assets\\gamefiles"); 
 		AssetMapParser.parseAssetMap(new File(System.getProperty("user.dir") + "\\assets\\assetmap.json"));
-	
-		this.recomputeParams();
-
 	}
 	
 	
@@ -119,26 +143,18 @@ public class Engine                                                             
 		return engineProperties.get(property);
 	}
 	
-	public boolean setProperty(String property, int value)
-	{
-		if (engineProperties.containsKey(property))
-		{
-			engineProperties.put(property,value);
-			return true;
-		}
-		return false;
-	}
-	
 	private void recomputeParams()
 	{
 		this.deltaF = (1000000000)/(int)engineProperties.get("framerate");
 		this.deltaU = (1000000000)/(int)engineProperties.get("tickrate");
+		
+		if (gameLoop != null) gameLoop.newParamters();
 	}
 
-	public void start() throws JSONException, EngineException, InvalidInstanceException, IOException 
+	public void start()
 	{
-		GameLoop gl = new GameLoop(this, (int) this.getProperty("tickrate"), (int) this.getProperty("framerate"));
-		gl.start();
+		if (gameLoop == null) gameLoop = new GameLoop(this, (int) engineProperties.get("tickrate"), (int) engineProperties.get("framerate"));
+		gameLoop.start();
 	}
 	
 	
@@ -150,8 +166,8 @@ public class Engine                                                             
 	
 	public static void printWarningMessage(Object message, Object sender)
 	{
-		System.out.print("[WARNING][" + sender.getClass().getName() + "]: ");
-		System.out.println(message);
+		//System.out.print("[WARNING][" + sender.getClass().getName() + "]: ");
+		//System.out.println(message);
 	}
 	
 	
@@ -172,7 +188,7 @@ public class Engine                                                             
 
 	public static GameFiles getGameFiles() 
 	{
-		return null;
+		return getInstance().files;
 	}
 	
 	

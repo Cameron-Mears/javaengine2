@@ -1,0 +1,29 @@
+{
+	"window": {
+		"title": "Engine",
+		"screen": 2,
+		"fullscreen": false,
+		"window_width": 1200,
+		"window_height": 800
+	},
+	
+	"engine": {
+		
+		"tickrate": 40000,
+		"framerate": 14440,
+		"doTickAndFrameRatePrint" : true,
+		"doLoad": true,
+		"collisionDefaultLayerBounds":{
+			"origin_x": -100,
+			"origin_y": -100,
+			"width": 2000,
+			"height": 2000
+		}
+	
+	},
+
+	"server": {
+		"server_port": 6969
+	}
+	
+}

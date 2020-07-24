@@ -72,6 +72,11 @@ public class QuadTree<Value> implements IGraphics
 		return boundary;
 	}
 	
+	public LinkedList<QuadTreeNode<Value>> getAll()
+	{
+		return this.queryRange(this.boundary);
+	}
+	
 	public boolean insert(QuadTreeNode<Value> treeNode)
 	{
 		if (!boundary.contains(treeNode.getPosition()))

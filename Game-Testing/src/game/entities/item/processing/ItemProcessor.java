@@ -148,4 +148,9 @@ public class ItemProcessor
 			return amount;
 		} else return ITEM_INCOMPATIBLE;
 	}
+
+	public boolean testValadity(Item item) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

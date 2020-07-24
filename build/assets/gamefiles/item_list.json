@@ -1,0 +1,16 @@
+[
+    {
+        "id": 12,
+        "stacksize": 1000,
+        "img": "IMG_PATH",
+        "name": "Iron Ore"
+    },
+    {
+        "id": 1,
+        "img": "IMG_PATH",
+        "name": "Iron Ignot"
+    },
+    {
+
+    }
+]

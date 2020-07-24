@@ -26,7 +26,7 @@ public class Window extends JFrame
 	 * @throws IOException
 	 * @throws EngineException
 	 */
-	public static Window getInstance() throws JSONException, IOException, EngineException
+	public static Window getInstance()
 	{
 		if (instance == null)
 		{
@@ -35,7 +35,7 @@ public class Window extends JFrame
 		return instance;
 	}
 	
-	public static Window init() throws JSONException, IOException, EngineException
+	public static Window init()
 	{
 		return new Window();
 	}
@@ -55,7 +55,7 @@ public class Window extends JFrame
 		this.setResizable(true);
 	}
 	
-	private Window() throws JSONException, IOException, EngineException
+	private Window()
 	{
 		int width = (int) Engine.getInstance().getProperty("window_width");
 		int height = (int) Engine.getInstance().getProperty("window_height");

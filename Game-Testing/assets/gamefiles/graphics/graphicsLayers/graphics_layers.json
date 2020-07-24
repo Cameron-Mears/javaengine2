@@ -1,0 +1,9 @@
+{
+    "layers":[
+        {
+            "name": "buildings",
+            "mode": "quad_tree",
+            "layer_number": 1        
+        }
+    ]
+}

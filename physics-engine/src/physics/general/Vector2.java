@@ -41,6 +41,17 @@ public class Vector2
 		this.x = x;
 		this.y = y;
 	}
+	
+	/**
+	 * Sets the x and y components of the vector based off a directon and mangitude
+	 * @param theta the angle in radians
+	 * @param mangnitude the magnitude of the vectoe
+	 */
+	public void setDirMag(double theta, double mangnitude)
+	{
+		this.x = Math.cos(theta) * mangnitude;
+		this.y = Math.sin(theta) * mangnitude;
+	}
 
 	public double getX() 
 	{

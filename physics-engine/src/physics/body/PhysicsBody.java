@@ -16,19 +16,18 @@ public class PhysicsBody
 	private Vector2 force;
 	
 	
-	public PhysicsBody(MassData md, Material mat, Shape shape, Transform tx)
+	public PhysicsBody(MassData md, Material mat, Transform tx)
 	{
 		this.massData = md;
 		this.material = mat;
 		this.tx = tx;
-		this.hitbox = hitbox;
 		this.force = new Vector2(0,0);
 		this.velocity = new Vector2(0,0);
 	}
 	
-	public PhysicsBody(MassData md, Material mat, Shape shape, Transform tx, Vector2 vel, Vector2 force)
+	public PhysicsBody(MassData md, Material mat, Transform tx, Vector2 vel, Vector2 force)
 	{
-		this(md, mat, shape, tx);
+		this(md, mat, tx);
 		this.force = force;
 		this.velocity = vel;
 	}

@@ -20,6 +20,8 @@ class GameLoop extends Thread
 	
 	private boolean doSleep;
 	
+	private boolean newParamaters; //
+	private Engine engine;
 	private TickHandler tickHandler;
 	private GraphicsLayerManager gManager;
 	private CollisionLayerManager collisionManager;
@@ -27,8 +29,9 @@ class GameLoop extends Thread
 	private long deltaF; //time delta for a frame render
 	private long deltaU; //time delta for a tick
 	
-	public GameLoop(Engine engine, int tickRate, int frameRate) throws EngineException, JSONException, InvalidInstanceException, IOException
+	public GameLoop(Engine engine, int tickRate, int frameRate)
 	{
+		this.engine = engine;
 		deltaF = ((long)(1e9))/frameRate;
 		deltaU = ((long)(1e9))/tickRate;
 		tickHandler = TickHandler.getInstance();
@@ -46,6 +49,17 @@ class GameLoop extends Thread
 		
 	}
 	
+	private void updateParamters()
+	{
+		deltaF = ((long)(1e9))/ (int)engine.getProperty("framerate");
+		deltaU = ((long)(1e9))/ (int)engine.getProperty("tickrate");
+	}
+	
+	public void newParamters() //called from different to notify of changes in target frame and tick rates
+	{
+		newParamaters = true;
+	}
+	
 	@Override
 	public void start()
 	{
@@ -60,6 +74,13 @@ class GameLoop extends Thread
 		lastTime = System.nanoTime();
 		while (running)
 		{
+			
+			if (newParamaters)
+			{
+				updateParamters();
+				newParamaters = false;
+			}
+			
 			long now = System.nanoTime();
 			long delta = now - this.lastTime;
 			
@@ -69,18 +90,7 @@ class GameLoop extends Thread
 			
 			if (deltaFsum >= deltaF)
 			{
-				try {
-					this.render();
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (EngineException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				this.render();
 				deltaFsum = 0;
 				frames++;
 			}
@@ -116,22 +126,16 @@ class GameLoop extends Thread
 		}
 	}
 	
-	
-	
-	public void recompute()
-	{
-		
-	}
-	
 	private void tick(long delta)
 	{
 		tickHandler.tick(delta);
 		collisionManager.resloveAllCollisions();
 	}
 	
-	private void render() throws JSONException, IOException, EngineException
+	private void render()
 	{
 		Graphics2D g2 = Window.getInstance().createGraphics();
+		g2.translate(10, 10);
 		GraphicsLayerManager.getInstance().render(g2);
 		Window.getInstance().showGraphics();
 	}

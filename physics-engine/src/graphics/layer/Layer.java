@@ -3,18 +3,19 @@ package graphics.layer;
 import engine.core.instance.EngineInstance;
 import engine.core.instance.InstanceID;
 import engine.util.bst.BST;
+import engine.util.tree.HashTreeMap;
 
 public class Layer 
 {
 	protected String name;
 	
-	protected BST<Long, Object> members;
+	protected HashTreeMap<Long, Object> members;
 
 	
 	public Layer(String name)
 	{
 		this.name = name;
-		members = new BST<Long,Object>();
+		members = new HashTreeMap<Long,Object>();
 	}
 	
 	
@@ -31,7 +32,7 @@ public class Layer
 	public void addInstance(EngineInstance eInstance)
 	{
 		
-		members.addNode(eInstance.getID().getID(), eInstance);
+		members.put(eInstance.getID().getID(), eInstance);
 	}
 	
 }

@@ -1,0 +1,39 @@
+{
+    "tick_handler": [
+
+		{
+			"name": "default",
+			"enabled": true,
+			"members":[
+
+				{
+					"class" : "game.entities.BackgroundManager",
+					"graphicsLayer": "default",
+					"graphicsDepth": -1,
+					"constructor": {
+						"test":1f
+					}
+				},
+				{
+					"class" : "game.entities.Player",
+					"graphicsLayer": "default",
+					"graphicsDepth": 1,
+					"constructor": {
+						"test":1
+					}
+				},
+				{
+					"class" : "game.entities.Player2",
+					"graphicsLayer": "default",
+					"graphicsDepth": 1,
+					"constructor": {
+						"test":1
+					}
+				}
+			]
+		}
+
+		
+		
+	]
+}

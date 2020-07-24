@@ -2,9 +2,12 @@ package graphics.tilemap;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Set;
 
 import engine.core.exceptions.EngineException;
+import engine.util.pathing.AStarGrid;
 import engine.util.quadtree.CollisionNode;
 import engine.util.quadtree.CollisionQuadTree;
 import engine.util.quadtree.QuadTreeNode;
@@ -15,7 +18,7 @@ import physics.collision.HitBox;
 import physics.collision.Rectangle;
 import physics.general.Vector2;
 
-public class TileMap implements IGraphics
+public class TileMap
 {
 	private String name;
 	private TileMapImageSet imageSet;
@@ -29,20 +32,30 @@ public class TileMap implements IGraphics
 	private int chuckWidth;
 	private int chunkHeight;
 	private int chunkRows, chunkColumns;
+	private int nChunkRows, nChunkColumns;
 	
+	/**
+	 * the quadtree to capture chunks in the frame //maybe change to array
+	 */
 	private CollisionQuadTree<TileMapChunk> chunkTree;
 	
 	private int[][] tileMap;
 	
-	public TileMap(JSONObject json, TileMapImageSet set, String name) throws EngineException
+	/**
+	 * 
+	 * @param json the json object containing the properties of this tilemap
+	 * @param set the image set to use
+	 * @param name the name of this tilemap
+	 */
+	public TileMap(JSONObject json, TileMapImageSet set, String name)
 	{
 		this.imageSet = set;
 		this.columns = json.getInt("columns");
-		this.rows = json.getInt("rows");
+		this.rows = json.getInt("rows"); 
 		this.cellWidth = set.getCellWidth();
 		this.cellHeight = set.getCellHeight();
-		this.width = cellWidth * rows;
-		this.height = cellHeight * columns;
+		this.width = cellWidth * rows; //total width of the tilemap
+		this.height = cellHeight * columns; //total height of the tilemap
 		
 		JSONObject origin = json.getJSONObject("origin");
 		
@@ -57,22 +70,25 @@ public class TileMap implements IGraphics
 		
 		int chunkCellsPerRow = chunkSize.getInt("cellsPerRow");
 		int chunkCellsPerColumn = chunkSize.getInt("cellsPerColumn");
-		this.chuckWidth = chunkCellsPerRow * cellWidth;
-		this.chuckWidth = chunkCellsPerColumn * cellHeight;
-		Number nChunkRows = rows/chunkCellsPerRow;
-		Number nChunkColumns = columns/chunkCellsPerColumn;
+		this.chuckWidth = chunkCellsPerRow;
+		this.chunkHeight = chunkCellsPerColumn;
+		double nChunkRowsTest = rows/chunkCellsPerRow;
+		double nChunkColumnsTest = columns/chunkCellsPerColumn;
 		
-		if (!(nChunkRows instanceof Integer)) throw new EngineException("TileMapChunk: property cellsPerRow must be a multiple of tilemap rows");
-		if (!(nChunkRows instanceof Integer)) throw new EngineException("TileMapChunk: property cellsPerColumn must be a multiple of tilemap columns");
 		
-		this.chunks = new TileMapChunk[nChunkColumns.intValue()][nChunkRows.intValue()];
+		if (nChunkRowsTest % 1 != 0) throw new EngineException("TileMapChunk: property cellsPerRow must be a multiple of tilemap rows");
+		if (nChunkRowsTest % 1 != 0) throw new EngineException("TileMapChunk: property cellsPerColumn must be a multiple of tilemap columns");
 		
-		JSONArray tileMapData = json.getJSONArray("map");	
+		nChunkRows = (int) nChunkRowsTest;
+		nChunkColumns = (int) nChunkColumnsTest;
 		
-		int[][] chunkData = new int[chunkCellsPerColumn][chunkCellsPerRow];
+		JSONArray tileMapData = json.getJSONArray("map");
+		
+		int[][] chunkData = new int[columns][rows]; //create the int code map for the tilemap
 		
 		int chunkCol = 0, chunkRow = 0;
 		
+		//load codes into the array
 		for (int column = 0; column < tileMapData.length(); column++) 
 		{			
 			JSONArray arr = tileMapData.getJSONArray(column);			
@@ -82,33 +98,44 @@ public class TileMap implements IGraphics
 				tileMap[column][row] = arr.getInt(row);
 				
 			}		
-		}
-		
-		int row = 0, col = 0;
-		int[][] chuckData = new int[chunkCellsPerColumn][chunkCellsPerColumn];
-		
-		
-		for (col = 0; col < nChunkColumns.intValue(); col++) 
-		{
-			for (row = 0; row < nChunkRows.intValue(); row++) 
-			{
-				System.arraycopy(tileMap[col], row*chunkCellsPerRow, chuckData[col], 0, chunkCellsPerRow);
-			}
-			
-		}
-		
+		}		
 		subdivide();
 		
 	}
 	
-	public void toAstarGrid()
+	public AStarGrid toAstarGrid(Set<Integer> ingoredCells)
 	{
-		
+		return null;
 	}
 	
 	private void subdivide() //create the chunks
 	{
+		this.chunks = new TileMapChunk[nChunkColumns][nChunkRows];
+		for (int col = 0; col < chunks.length; col++) 
+		{
+			for (int row = 0; row < chunks[col].length; row++) 
+			{
+				int[][] chunkData = new int[chunkHeight][chuckWidth];
+				copyChuckData(chunkData, col, row);				
+				chunks[col][row] = new TileMapChunk(this, chuckWidth*cellWidth, chunkHeight*cellHeight, chunkData);
+				CollisionNode<TileMapChunk> node = new CollisionNode<TileMapChunk>(new Vector2(row * cellWidth, col * cellHeight), chunks[col][row], new HitBox(new Rectangle(cellWidth, cellHeight, new Vector2(row * cellWidth, col * cellHeight)), null));
+				chunkTree.insert(node);
+			}
+		}
+	}
+	
+	private void copyChuckData(int[][] newChunkData, int colStart, int rowStart)
+	{
+		int column = colStart * chunkHeight;
+		int row = rowStart * chuckWidth;
 		
+		for (int c = 0; c < newChunkData.length; c++)
+		{
+			for (int r = 0; r < newChunkData[c].length; r++) 
+			{
+				newChunkData[c][r] = tileMap[column + c][row + r];
+			}
+		}
 	}
 	
 	
@@ -133,21 +160,25 @@ public class TileMap implements IGraphics
 	}
 
 
-	@Override
-	public void render(Graphics2D g2) 
+
+	public void render(Graphics2D g2, Rectangle bounds) 
 	{
-		LinkedList<QuadTreeNode<TileMapChunk>> node = chunkTree.queryRange(null);
+		LinkedList<QuadTreeNode<TileMapChunk>> node = chunkTree.queryRange(bounds);
 		
 		for (QuadTreeNode<TileMapChunk> quadTreeNode : node)
 		{
+			CollisionNode<TileMapChunk> e = (CollisionNode<TileMapChunk>) quadTreeNode;
 			BufferedImage img = quadTreeNode.get().getRenderedChuck();
 			Vector2 pos = quadTreeNode.getPosition();
-			g2.drawImage(img, (int)pos.getX(), (int)pos.getY(), null);
+			HitBox box = e.getHitbox();
+			if (box.getBounds().contains(bounds)) g2.drawImage(img, (int)pos.getX(), (int)pos.getY(), null);
+			box.drawHitBox(g2);
 		}
 	}
 
-	@Override
-	public Rectangle renderBoundingArea() {
+	
+	public Rectangle renderBoundingArea() 
+	{
 		// TODO Auto-generated method stub
 		return null;
 	}

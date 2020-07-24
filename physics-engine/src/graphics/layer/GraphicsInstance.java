@@ -3,7 +3,7 @@ package graphics.layer;
 import java.awt.Graphics2D;
 import java.util.LinkedList;
 
-import engine.util.bst.BST;
+import engine.util.tree.HashTreeMap;
 import graphics.Camera;
 import graphics.instance.IGraphics;
 import physics.collision.Rectangle;
@@ -12,7 +12,7 @@ public class GraphicsInstance
 {
 	private long renderPriority;
 	private LinkedList<IGraphics> renderInterfaces;
-	private LinkedList<BST<Long,GraphicsInstance>> gLayers;
+	private LinkedList<HashTreeMap<Long,GraphicsInstance>> gLayers;
 	
 	private boolean isCreatedFromGraphicsLayer;
 	
@@ -22,7 +22,7 @@ public class GraphicsInstance
 		this.renderPriority = depth;
 		this.renderInterfaces = new LinkedList<IGraphics>();
 		this.isCreatedFromGraphicsLayer = false;
-		this.gLayers = new LinkedList<BST<Long,GraphicsInstance>>();
+		this.gLayers = new LinkedList<HashTreeMap<Long,GraphicsInstance>>();
 	}
 	
 	GraphicsInstance(long depth, boolean createdFromGraphicsLayer)
@@ -46,13 +46,13 @@ public class GraphicsInstance
 	
 	public void removeFromAllLayers()
 	{
-		for (BST<Long, GraphicsInstance> bst : gLayers) 
+		for (HashTreeMap<Long, GraphicsInstance> tree : gLayers) 
 		{
-			bst.deleteRec(bst.getRoot(), this.renderPriority);
+			tree.put(renderPriority, null);
 		}
 	}
 	
-	public void assignedToLayer(BST<Long, GraphicsInstance> g)
+	public void assignedToLayer(HashTreeMap<Long, GraphicsInstance> g)
 	{
 		gLayers.add(g);
 	}

@@ -1,6 +1,6 @@
 package engine.core.networking;
 
-public class NetworkException extends Exception
+public class NetworkException extends RuntimeException
 {
 	private static final long serialVersionUID = -10971075258341693L;
 	

@@ -1,11 +1,11 @@
 package physics.collision;
 
 import java.io.IOException;
-import java.util.function.Function;
 
 import engine.core.Engine;
 import engine.core.exceptions.EngineException;
-import engine.util.bst.BST;
+import engine.util.tree.HashTreeMap;
+import engine.util.tree.TraverseFunction;
 import external.org.json.JSONException;
 import external.org.json.JSONObject;
 import physics.general.Vector2;
@@ -14,9 +14,9 @@ public class CollisionLayerManager
 {
 	private static CollisionLayerManager instance;
 	
-	private BST<String, CollisionLayer> layers;
+	private HashTreeMap<String, CollisionLayer> layers;
 	
-	private Function<CollisionLayer, Void> traverse;
+	private TraverseFunction<CollisionLayer> traverse;
 	
 	public static CollisionLayerManager getInstance()
 	{
@@ -27,7 +27,7 @@ public class CollisionLayerManager
 	
 	private CollisionLayerManager()
 	{
-		layers = new BST<String, CollisionLayer>();
+		layers = new HashTreeMap<String, CollisionLayer>();
 		
 		JSONObject properties;
 		try {
@@ -35,31 +35,30 @@ public class CollisionLayerManager
 			Vector2 vector = new Vector2(properties.getDouble("origin_x"), properties.getDouble("origin_y"));
 			Rectangle rect = new Rectangle(properties.getDouble("width"), properties.getDouble("height"));
 			CollisionLayer defaultLayer = new CollisionLayer("default", rect, vector);
-			layers.addNode("default", defaultLayer);
-		} catch (JSONException | IOException | EngineException e) 
+			layers.put("default", defaultLayer);
+		} catch (JSONException | EngineException e) 
 		{
 			e.printStackTrace();
 			System.out.println("[WARNING][ENGINE_INIT]: The defualt collison layer could not be cretaed");
 		}
 		
-		traverse = new Function<CollisionLayer, Void>() {
+		traverse = new TraverseFunction<CollisionLayer>() {
 			
 			@Override
-			public Void apply(CollisionLayer layer) {
+			public void apply(CollisionLayer layer) {
 				layer.resloveCollisions();
-				return null;
 			}
 		};
 	}
 	
 	public CollisionLayer getDefaultlayer()
 	{
-		return layers.find("default");
+		return layers.get("default");
 	}
 	
 	public void resloveCollisions(String name) throws EngineException
 	{
-		CollisionLayer layer = layers.find(name);
+		CollisionLayer layer = layers.get(name);
 		if (layer == null) throw new EngineException("The Collision Layer: \"" + name + "\" does not exist");
 		layer.resloveCollisions();
 	}
