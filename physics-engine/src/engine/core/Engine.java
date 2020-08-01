@@ -22,7 +22,7 @@ public final class Engine                                                       
 	
 	private boolean doLoad = true;
 	
-	private static String USER_DIR = System.getProperty("user.dir");
+	public final static String USER_DIR = System.getProperty("user.dir");
 	
 	private GameLoop gameLoop;
 	
@@ -74,7 +74,6 @@ public final class Engine                                                       
 		} else throw new EngineException("Class of value: [\"" + value.getClass().getName() + "\"] does not match the excepted type: " + currentValue.getClass().getName());
 	}
 	
-	
 	private Engine() throws JSONException, IOException, EngineException
 	{
 		
@@ -89,6 +88,7 @@ public final class Engine                                                       
 		
 		JSONObject enginePropertiesJSON = jobj.getJSONObject("engine");
 		
+		engineProperties.put("drawFunc", "100*sin(x/30)");
 		int tickrate = enginePropertiesJSON.getInt("tickrate");
 		this.engineProperties.put("tickrate",tickrate);
 		int framerate = enginePropertiesJSON.getInt("framerate");

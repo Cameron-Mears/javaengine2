@@ -2,11 +2,10 @@ package physics.body;
 
 import engine.core.tick.TickInfo;
 import physics.collision.HitBox;
-import physics.collision.Shape;
 import physics.general.Transform;
 import physics.general.Vector2;
 
-public class PhysicsBody 
+public class PhysicsBody
 {
 	private MassData massData;
 	private Material material;
@@ -14,7 +13,8 @@ public class PhysicsBody
 	private Transform tx;
 	private Vector2 velocity;
 	private Vector2 force;
-	
+	private boolean hasMoved;
+	private double xLast, yLast;
 	
 	public PhysicsBody(MassData md, Material mat, Transform tx)
 	{
@@ -46,6 +46,10 @@ public class PhysicsBody
 	
 	public void tick(TickInfo info)
 	{
+		this.xLast = getPosition().getX();
+		this.yLast = getPosition().getY();
+		hasMoved = false;
+		
 		double acceleration_x = force.getX() * massData.getInvMass();
 		double acceleration_y = force.getY() * massData.getInvMass();
 		
@@ -55,8 +59,20 @@ public class PhysicsBody
 		tx.getPosition().add(velocity.scaled(info.delta));
 		
 		this.force.set(0, 0);
+		hasMoved = xLast == getPosition().getX();
+		hasMoved = yLast == getPosition().getY() || hasMoved; //incase x case is true and y case is false
+		
 	}
 	
+	public boolean hasMoved()
+	{
+		return hasMoved;
+	}
+	
+	public Transform getTansform()
+	{
+		return tx;
+	}
 	
 	public Vector2 getVelocity()
 	{

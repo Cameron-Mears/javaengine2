@@ -20,8 +20,6 @@ public class TileMapChunk
 	
 	private TileMap parent;
 	
-	private HitBox hitbox;
-	
 	private BufferedImage chunkImage;
 	
 	public TileMapChunk(TileMap parent, int width, int height, int[][] chunkData) throws EngineException
@@ -40,7 +38,7 @@ public class TileMapChunk
 		if (chunkData[0].length*cellWidth != width) throw new EngineException("TileMapChunk: chunckData width must be equal to tileMapChuck width");
 		
 		//create an image to draw the chunk on
-		chunkImage = CompatibleImageFactory.createCompatibleImage(width, height, Transparency.BITMASK);
+		chunkImage = CompatibleImageFactory.createCompatibleImage(width, height, CompatibleImageFactory.DEFAULT_TRANSPARENCY);
 		Graphics2D g2 = chunkImage.createGraphics();
 		
 		//iterate through the chunk data

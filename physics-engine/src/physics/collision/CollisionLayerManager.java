@@ -51,6 +51,17 @@ public class CollisionLayerManager
 		};
 	}
 	
+	
+	public CollisionLayer getLayer(String name)
+	{
+		return layers.get(name);
+	}
+	
+	public void addLayer(CollisionLayer layer)
+	{
+		layers.put(layer.getName(), layer);
+	}
+	
 	public CollisionLayer getDefaultlayer()
 	{
 		return layers.get("default");

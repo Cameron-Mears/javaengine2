@@ -16,7 +16,7 @@ public class Rand
 	 * @param max
 	 * @return a random number between min and max
 	 */
-	public double range(double min, double max)
+	public static double range(double min, double max)
 	{
 		return ((max - min) * Math.random()) + min;
 	}

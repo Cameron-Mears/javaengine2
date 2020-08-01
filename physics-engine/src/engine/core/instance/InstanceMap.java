@@ -4,16 +4,16 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import engine.core.random.Rand;
 
-public final class InstanceMap 
+public final class InstanceMap<Value>
 {
-	private final static ConcurrentHashMap<Long, EngineInstance> instanceMap = new ConcurrentHashMap<Long, EngineInstance>();
+	private final ConcurrentHashMap<Long, Value> instanceMap = new ConcurrentHashMap<Long, Value>();
 	
 	/**
 	 * 
 	 * @param instance the instance to add the map
 	 * @return an instance id pointing to this instance
 	 */
-	public static InstanceID newInstanceID(EngineInstance instance)
+	public final InstanceID<Value> newInstanceID()
 	{
 		long id;
 		do
@@ -21,7 +21,7 @@ public final class InstanceMap
 			id = Rand.randomLong();
 		} while (instanceMap.get(id) != null);
 		
-		return new InstanceID(id);
+		return new InstanceID<Value>(id,this);
 	}
 	
 	/**
@@ -29,20 +29,21 @@ public final class InstanceMap
 	 * @param id the id of the instance
 	 * @return the instance with that id
 	 */
-	public static EngineInstance getInstanceFromID(long id)
+	public Value getInstanceFromID(long id)
 	{
 		return instanceMap.get(id);
 	}
 	
-	public static EngineInstance getInstanceFromID(InstanceID id)
+	public Value getInstanceFromID(InstanceID id)
 	{
 		return instanceMap.get(id.getID());
 	}
 	
-	static void removeID(InstanceID id)
+	public void removeID(InstanceID id)
 	{
 		instanceMap.put(id.getID(), null);
 	}
+
 	
 	
 }

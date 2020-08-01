@@ -1,4 +1,4 @@
-package engine.util;
+package engine.util.tree;
 
 import java.util.AbstractMap;
 import java.util.AbstractSet;
@@ -722,6 +722,11 @@ check these three cases stopping after any rotations, reaching the root or when 
             while (p.left != null)
                 p = p.left;
         return p;
+    }
+    
+    final Entry<K, V> getRoot()
+    {
+    	return root;
     }
 
     /**

@@ -21,6 +21,8 @@ import graphics.tilemap.TileMapImageSet;
 
 public class AssetMapParser 
 {
+	private static final String USER_DIR = System.getProperty("user.dir")+"\\";
+	
 	public static void parseAssetMap(File assetMap) throws JSONException, IOException, EngineException
 	{
 		JSONArray assets = new JSONArray(new JSONTokener(new FileInputStream(assetMap)));
@@ -63,7 +65,7 @@ public class AssetMapParser
 		
 		for (int frame = 0; frame < nFrames; frame++) 
 		{
-			BufferedImage img = ImageParser.parseImage(new File(images.getString(frame)));
+			BufferedImage img = ImageParser.parseImage(new File(USER_DIR + images.getString(frame)));
 			img.setAccelerationPriority(1);
 			frames.add(frame, img);
 		}

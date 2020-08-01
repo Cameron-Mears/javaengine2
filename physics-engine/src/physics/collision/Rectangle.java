@@ -6,6 +6,8 @@ import physics.general.Vector2;
 public class Rectangle extends Shape 
 {
 	private Vector2[] vertices;
+	private double area;
+	
 	
 	public Rectangle(double width, double height)
 	{
@@ -18,6 +20,7 @@ public class Rectangle extends Shape
 		vertices[1] = new Vector2();
 		vertices[2] = new Vector2();
 		vertices[3] = new Vector2();
+		calculateArea();
 	}
 	
 	public Rectangle(double x, double y, double width, double height)
@@ -32,6 +35,16 @@ public class Rectangle extends Shape
 		tx.setPosition(position);
 		this.width = width;
 		this.height = height;
+	}
+	
+	public double area()
+	{
+		return area;
+	}
+	
+	private void calculateArea()
+	{
+		area = width*height;
 	}
 	
 	public double getWidth()

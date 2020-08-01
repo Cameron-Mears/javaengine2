@@ -48,6 +48,11 @@ public class TickHandler
 		return instance;
 	}
 	
+	public TickableGroup getGroup(String name)
+	{
+		return groups.get(name);
+	}
+	
 	private TickHandler() throws EngineException, JSONException, InvalidInstanceException, IOException
 	{
 		

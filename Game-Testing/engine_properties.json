@@ -3,15 +3,15 @@
 		"title": "Engine",
 		"screen": 2,
 		"fullscreen": false,
-		"window_width": 1200,
-		"window_height": 800
+		"window_width": 1600,
+		"window_height": 900
 	},
 	
 	"engine": {
 		
 		"tickrate": 40000,
 		"framerate": 14440,
-		"doTickAndFrameRatePrint" : true,
+		"doTickAndFrameRatePrint" : false,
 		"doLoad": true,
 		"collisionDefaultLayerBounds":{
 			"origin_x": -100,

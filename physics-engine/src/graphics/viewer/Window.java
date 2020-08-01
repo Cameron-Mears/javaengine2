@@ -15,6 +15,8 @@ public class Window extends JFrame
 {
 	private static final long serialVersionUID = 7882469958177323612L;
 	private static Window instance;
+	public static int WIDTH;
+	public static int HEIGHT;
 	private BufferStrategy bs;
 	private Graphics2D g2;
 	private boolean fullscreen;
@@ -59,13 +61,14 @@ public class Window extends JFrame
 	{
 		int width = (int) Engine.getInstance().getProperty("window_width");
 		int height = (int) Engine.getInstance().getProperty("window_height");
-		
+		WIDTH = width;
+		HEIGHT = height;
 		fullscreen = (boolean) Engine.getInstance().getProperty("window_fullscreen");
 		
 		this.setTitle((String) Engine.getInstance().getProperty("title"));
 		
 		this.setLocation(100, 100);
-		this.setResizable(false);
+		this.setResizable(true);
 		
 		if (fullscreen)
 		{
@@ -80,6 +83,7 @@ public class Window extends JFrame
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setVisible(true);
 		
+		this.setFocusTraversalKeysEnabled(false);
 	}
 	
 	
@@ -97,13 +101,13 @@ public class Window extends JFrame
 			bs = this.getBufferStrategy();
 			if (bs == null)
 			{
-				this.createBufferStrategy(2);
+				this.createBufferStrategy(4);
 				bs = getBufferStrategy();
 				return createGraphics();
 			}
 		}
 		this.g2 = (Graphics2D) bs.getDrawGraphics();
-		g2.translate(0, 32);
+		if (!fullscreen)g2.translate(0, 31);
 		return g2;
 	}
 }

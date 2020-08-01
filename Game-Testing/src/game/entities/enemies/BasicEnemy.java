@@ -24,8 +24,8 @@ public class BasicEnemy extends Enemy
 	
 	public BasicEnemy(double x, double y, Player player)
 	{
+		super(new PhysicsBody(new MassData(1), new Material(), new Transform(x,y)));
 		this.player = player;
-		body = new PhysicsBody(new MassData(1), new Material(), new Transform(x,y));
 		depth = GraphicsLayerManager.getInstance().getLayer("default").addGraphics(this, 0);
 		TickHandler.getInstance().addTickable("default", this);
 		sprite = SpriteMap.getClonedSprite("enemy");
@@ -33,7 +33,7 @@ public class BasicEnemy extends Enemy
 	}
 
 	@Override
-	public void onTick(TickInfo info) 
+	public void onTick(TickInfo info, Object t) 
 	{
 		tickLife --;
 		if (tickLife == 0)

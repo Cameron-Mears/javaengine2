@@ -1,7 +1,10 @@
 package graphics;
 
+import java.awt.Graphics2D;
 import java.awt.Transparency;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.util.LinkedList;
 
 import engine.core.exceptions.EngineException;
 import graphics.image.CompatibleImageFactory;
@@ -11,8 +14,10 @@ import physics.general.Vector2;
 
 public class Camera 
 {
+	private String name;
 	private Rectangle bounds;
 	private boolean enabled;
+	private double scale;
 	
 	public boolean isEnabled() 
 	{
@@ -35,8 +40,10 @@ public class Camera
 		bounds.getPosition().set(x, y);
 	}
 	
-	public Camera(Rectangle bounds)
+	public Camera(Rectangle bounds, double scale, String name)
 	{
+		this.name = name;
+		this.scale = scale;
 		this.enabled = true;
 		this.bounds = bounds;
 	}
@@ -44,6 +51,20 @@ public class Camera
 	public Rectangle getBounds()
 	{
 		return bounds;
+	}
+	
+	
+	public BufferedImage capture(LinkedList<GraphicsLayer> layerQueue)
+	{
+		BufferedImage img = CompatibleImageFactory.createCompatibleImage((int)bounds.getWidth(), (int)bounds.getHeight(), CompatibleImageFactory.DEFAULT_TRANSPARENCY);
+		Graphics2D g2 = img.createGraphics();
+		
+		for (GraphicsLayer graphicsLayer : layerQueue) 
+		{
+			capture(graphicsLayer, g2);
+		}
+		g2.dispose();
+		return img;
 	}
 	
 	/**
@@ -77,10 +98,16 @@ public class Camera
 	 * @param layer The GraphicsLayer to be captured
 	 * @return a bufferedImage of the 
 	 */
-	public BufferedImage capture(GraphicsLayer layer)
+	public void capture(GraphicsLayer layer, Graphics2D g2)
 	{
-		//create the img to be capture
-		BufferedImage img = CompatibleImageFactory.createCompatibleImage((int)bounds.getWidth(), (int)bounds.getHeight(), Transparency.BITMASK);
-		return null;
+		g2.setTransform(new AffineTransform());
+		g2.scale(scale, scale);
+		g2.translate(bounds.getPosition().getX(), bounds.getPosition().getY());
+		layer.render(this,g2);
+	}
+
+	public String getName() 
+	{
+		return name;
 	}
 }

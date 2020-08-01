@@ -32,10 +32,9 @@ class GameLoop extends Thread
 	public GameLoop(Engine engine, int tickRate, int frameRate)
 	{
 		this.engine = engine;
-		deltaF = ((long)(1e9))/frameRate;
-		deltaU = ((long)(1e9))/tickRate;
 		tickHandler = TickHandler.getInstance();
 		collisionManager = CollisionLayerManager.getInstance();
+		updateParamters();
 	}
 	
 	
@@ -134,8 +133,13 @@ class GameLoop extends Thread
 	
 	private void render()
 	{
-		Graphics2D g2 = Window.getInstance().createGraphics();
-		g2.translate(10, 10);
+		Graphics2D g2 = null;
+		try
+		{ g2 = Window.getInstance().createGraphics();
+			
+		}
+		catch (Exception e) {e.printStackTrace();}
+		if (g2 == null) return;
 		GraphicsLayerManager.getInstance().render(g2);
 		Window.getInstance().showGraphics();
 	}

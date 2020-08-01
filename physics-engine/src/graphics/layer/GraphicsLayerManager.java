@@ -7,6 +7,7 @@ import engine.core.exceptions.EngineException;
 import engine.util.tree.HashTreeMap;
 import engine.util.tree.TraverseFunction;
 import graphics.Camera;
+import graphics.instance.IGraphics;
 
 public class GraphicsLayerManager 
 {
@@ -17,6 +18,8 @@ public class GraphicsLayerManager
 	private TraverseFunction<GraphicsLayer> traverse;
 	private TraverseFunction<Camera> cameraTraverse;
 	private Graphics2D g2;
+	
+	private IGraphics renderer = null;
 	
 	private static GraphicsLayerManager instance;
 	
@@ -32,6 +35,15 @@ public class GraphicsLayerManager
 		}
 	}
 	
+	public void setRenderer(IGraphics renderer)
+	{
+		this.renderer= renderer;
+	}
+	
+	public HashTreeMap<Long, GraphicsLayer> getAllLayers()
+	{
+		return graphicsLayers;
+	}
 	
 	public static GraphicsLayerManager getInstance()
 	{
@@ -133,7 +145,14 @@ public class GraphicsLayerManager
 	
 	public void render(Graphics2D g2)
 	{
-		this.g2 = g2;
-		graphicsLayers.inOrderTraverse(traverse);
+		if (renderer == null)
+		{
+			this.g2 = g2;
+			graphicsLayers.inOrderTraverse(traverse);
+		}
+		else
+		{
+			renderer.render(g2);
+		}
 	}
 }

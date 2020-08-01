@@ -20,7 +20,7 @@ public class SpriteMap
 	public static Sprite getClonedSprite(String name)
 	{
 		Sprite sprite = sprites.get(name);
-		return sprite.clone();
+		return (sprite != null)? sprite.clone() : null;
 	}
 	
 }

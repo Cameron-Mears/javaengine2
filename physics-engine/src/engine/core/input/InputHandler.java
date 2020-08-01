@@ -15,17 +15,24 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import engine.core.exceptions.EngineException;
+import engine.core.instance.InstanceID;
+import engine.core.instance.InstanceMap;
 import engine.core.tick.TickHandler;
 import engine.core.tick.TickInfo;
 import engine.core.tick.Tickable;
 import external.org.json.JSONException;
 import graphics.instance.InvalidInstanceException;
 import graphics.viewer.Window;
+import physics.general.Transform;
 import physics.general.Vector2;
 
 public class InputHandler implements MouseListener, KeyListener, MouseWheelListener, MouseMotionListener, Tickable
 {	
 
+	private static InstanceMap<InputHandler> map = new InstanceMap<InputHandler>();
+	
+	private InstanceID<InputHandler> id;
+	
 	private HashMap<Integer, Boolean> keyWasPressed;
 	private HashMap<Integer, Boolean> keyWasReleased;
 	private HashMap<Integer, Boolean> keyIsDown;
@@ -40,19 +47,29 @@ public class InputHandler implements MouseListener, KeyListener, MouseWheelListe
 	private Queue<Integer> mousePresses;
 	private Queue<Integer> mouseReleases;
 	
+	private LinkedList<InputEventListener> listeners;
 	
-	private boolean isQueued = false; //stops this from getting queued multiple times if
+	private Transform transform;
+	
+	private boolean isQueued = false; //stops this from getting queued multiple times
+	private int mouseX;
+	private int mouseY;
 	
 	
-	public InputHandler()
+	@Override
+	public boolean equals(Object o)
 	{
-		Window.getInstance().addKeyListener(this);
-		Window.getInstance().addMouseListener(this);
-		Window.getInstance().addMouseMotionListener(this);
-		Window.getInstance().addMouseWheelListener(this);
+		return (o instanceof InputHandler)? ((InputHandler)o).id.equals(id): false;
+	}
+	
+	public InputHandler(boolean enable)
+	{
+		listeners = new LinkedList<InputEventListener>();
+		id = map.newInstanceID();
+		if (enable) enable();
 		
 		/*
-		 * Populate hashmaps
+		 * Populate hashmaps with all keys and mouse buttons
 		 */
 		
 		
@@ -116,6 +133,16 @@ public class InputHandler implements MouseListener, KeyListener, MouseWheelListe
 	}
 	
 	
+	public void setTransform(Transform tx)
+	{
+		this.transform = tx;
+	}
+	
+	public void addListener(InputEventListener listener)
+	{
+		listeners.add(listener); //listener can access input from methods
+	}
+	
 	public boolean isKeyDown(int key)
 	{
 		return keyIsDown.get(key);
@@ -148,10 +175,30 @@ public class InputHandler implements MouseListener, KeyListener, MouseWheelListe
 	
 	public Vector2 getMousePosition()
 	{
-		return null;
+		Vector2 pos = new Vector2(mouseX, mouseY);
+		if (transform != null)
+		{
+			pos.add(transform.getPosition());
+		}
+		return pos;
 	}
 	
 	
+	public void disable()
+	{
+		Window.getInstance().removeKeyListener(this);
+		Window.getInstance().removeMouseListener(this);
+		Window.getInstance().removeMouseMotionListener(this);
+		Window.getInstance().removeMouseWheelListener(this);
+	}
+	
+	public void enable()
+	{
+		Window.getInstance().addKeyListener(this);
+		Window.getInstance().addMouseListener(this);
+		Window.getInstance().addMouseMotionListener(this);
+		Window.getInstance().addMouseWheelListener(this);
+	}
 	
 	
 	@Override
@@ -170,9 +217,17 @@ public class InputHandler implements MouseListener, KeyListener, MouseWheelListe
 				TickHandler.getInstance().queueTickable(this);
 				isQueued = true;
 		}
-	
+		
+		informListeners();
+	}
+
+	private void informListeners() {
+		for (InputEventListener inputEventListener : listeners) {
+			inputEventListener.newInput();
+		}
 		
 	}
+
 
 	@Override
 	public void keyReleased(KeyEvent e) 
@@ -218,6 +273,7 @@ public class InputHandler implements MouseListener, KeyListener, MouseWheelListe
 			mouseReleases.add(button);
 		}
 		TickHandler.getInstance().queueTickable(this);
+		informListeners();
 	}
 		
 	
@@ -242,7 +298,8 @@ public class InputHandler implements MouseListener, KeyListener, MouseWheelListe
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		// TODO Auto-generated method stub
+		mouseX = e.getX();
+		mouseY = e.getY();
 		
 	}
 
@@ -257,24 +314,24 @@ public class InputHandler implements MouseListener, KeyListener, MouseWheelListe
 	{
 		while (!keyPresses.isEmpty())
 		{
-			int key = keyPresses.poll();
+			Integer key = keyPresses.poll();
 			keyWasPressed.put(key,false);
 		}
 		
 		while (!keyReleases.isEmpty())
 		{
-			int key = keyReleases.poll();
+			Integer key = keyReleases.poll();
 			keyWasReleased.put(key,false);
 		}
 		while (!mousePresses.isEmpty())
 		{
-			int key = mousePresses.poll();
+			Integer key = mousePresses.poll();
 			mouseWasPressed.put(key,false);
 		}
 		
 		while (!keyReleases.isEmpty())
 		{
-			int key = mouseReleases.poll();
+			Integer key = mouseReleases.poll();
 			mouseWasReleased.put(key,false);
 		}
 		isQueued = false;

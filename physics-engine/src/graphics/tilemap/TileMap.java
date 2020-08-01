@@ -18,6 +18,12 @@ import physics.collision.HitBox;
 import physics.collision.Rectangle;
 import physics.general.Vector2;
 
+/**
+ * 
+ * @author Cameron
+ * Provides the ability to create tilemaps which allow for more complex backgrounds in a game
+ * tilemaps are subdivided into chunks so only the parts in the frame are render and to reduce render calss
+ */
 public class TileMap
 {
 	private String name;
@@ -29,7 +35,7 @@ public class TileMap
 	private Rectangle bounds;
 	private int width, height;
 	private int cellWidth, cellHeight;
-	private int chuckWidth;
+	private int chunkWidth;
 	private int chunkHeight;
 	private int chunkRows, chunkColumns;
 	private int nChunkRows, nChunkColumns;
@@ -40,6 +46,7 @@ public class TileMap
 	private CollisionQuadTree<TileMapChunk> chunkTree;
 	
 	private int[][] tileMap;
+	private boolean drawChunkBoxes;
 	
 	/**
 	 * 
@@ -70,7 +77,7 @@ public class TileMap
 		
 		int chunkCellsPerRow = chunkSize.getInt("cellsPerRow");
 		int chunkCellsPerColumn = chunkSize.getInt("cellsPerColumn");
-		this.chuckWidth = chunkCellsPerRow;
+		this.chunkWidth = chunkCellsPerRow;
 		this.chunkHeight = chunkCellsPerColumn;
 		double nChunkRowsTest = rows/chunkCellsPerRow;
 		double nChunkColumnsTest = columns/chunkCellsPerColumn;
@@ -103,6 +110,11 @@ public class TileMap
 		
 	}
 	
+	public void setDrawChunkBounds(boolean drawBounds)
+	{
+		drawChunkBoxes = drawBounds;
+	}
+	
 	public AStarGrid toAstarGrid(Set<Integer> ingoredCells)
 	{
 		return null;
@@ -115,10 +127,10 @@ public class TileMap
 		{
 			for (int row = 0; row < chunks[col].length; row++) 
 			{
-				int[][] chunkData = new int[chunkHeight][chuckWidth];
+				int[][] chunkData = new int[chunkHeight][chunkWidth];
 				copyChuckData(chunkData, col, row);				
-				chunks[col][row] = new TileMapChunk(this, chuckWidth*cellWidth, chunkHeight*cellHeight, chunkData);
-				CollisionNode<TileMapChunk> node = new CollisionNode<TileMapChunk>(new Vector2(row * cellWidth, col * cellHeight), chunks[col][row], new HitBox(new Rectangle(cellWidth, cellHeight, new Vector2(row * cellWidth, col * cellHeight)), null));
+				chunks[col][row] = new TileMapChunk(this, chunkWidth*cellWidth, chunkHeight*cellHeight, chunkData);
+				CollisionNode<TileMapChunk> node = new CollisionNode<TileMapChunk>(new Vector2(row * cellWidth * chunkWidth, col * cellHeight * chunkHeight), chunks[col][row], new HitBox(new Rectangle(cellWidth * chunkWidth, cellHeight * chunkHeight, new Vector2(row * cellWidth * chunkWidth, col * cellHeight * chunkHeight)), null));
 				chunkTree.insert(node);
 			}
 		}
@@ -127,7 +139,7 @@ public class TileMap
 	private void copyChuckData(int[][] newChunkData, int colStart, int rowStart)
 	{
 		int column = colStart * chunkHeight;
-		int row = rowStart * chuckWidth;
+		int row = rowStart * chunkWidth;
 		
 		for (int c = 0; c < newChunkData.length; c++)
 		{
@@ -172,7 +184,7 @@ public class TileMap
 			Vector2 pos = quadTreeNode.getPosition();
 			HitBox box = e.getHitbox();
 			if (box.getBounds().contains(bounds)) g2.drawImage(img, (int)pos.getX(), (int)pos.getY(), null);
-			box.drawHitBox(g2);
+			if (drawChunkBoxes) box.drawHitBox(g2);
 		}
 	}
 

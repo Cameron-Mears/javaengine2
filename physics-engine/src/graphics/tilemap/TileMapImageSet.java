@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import engine.core.Engine;
 import engine.util.parsers.image.ImageParser;
 import external.org.json.JSONArray;
 import external.org.json.JSONObject;
@@ -34,7 +35,7 @@ public class TileMapImageSet
 		{
 			JSONObject object = images.getJSONObject(index);
 			int tileID = object.getInt("int_code");
-			BufferedImage tile = ImageParser.parseImage(new File(object.getString("path"))); //load the image
+			BufferedImage tile = ImageParser.parseImage(new File(Engine.USER_DIR+"\\"+object.getString("path"))); //load the image
 			imageList.add(tileID, tile);
 		}
 	}

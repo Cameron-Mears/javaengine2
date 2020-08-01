@@ -78,4 +78,9 @@ public class CollisionLayer
 	{
 		members.inOrderTraverse(onCollision);
 	}
+
+	public String getName() {
+		
+		return name;
+	}
 }

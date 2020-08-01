@@ -38,9 +38,8 @@ public class Player2 extends Entity
 	public Player2(int x)
 	{
 		super();
-		input = new InputHandler();
+		input = new InputHandler(true);
 		playerSprite = SpriteMap.getClonedSprite("player");
-		body = new PhysicsBody(new MassData(1), new Material(), new Transform(100,100));
 		hitbox = playerSprite.getHitBox(body.getPosition(), this);
 		layer = CollisionLayerManager.getInstance().getDefaultlayer();
 		layer.addCollidable(this);
@@ -53,7 +52,7 @@ public class Player2 extends Entity
 	
 	
 	@Override
-	public void onTick(TickInfo info) 
+	public void onTick(TickInfo info, Object o) 
 	{
 		/*
 		if (input.isKeyDown('W')) body.applyForce(0,-100);

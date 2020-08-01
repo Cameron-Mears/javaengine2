@@ -20,6 +20,15 @@ public final class Commands
 		}
 	};
 	
+	private ConsoleCommand changeDrawFunc = new ConsoleCommand() {
+		
+		@Override
+		public String exucute(String... args) {
+			Engine.getInstance().setProperty("drawFunc", args[0]);
+			return "";
+		}
+	};
+	
 	private ConsoleCommand changeTickRate = new ConsoleCommand() {
 		
 		@Override
@@ -39,6 +48,16 @@ public final class Commands
 			}
 			
 			return "Tickrate Succesfully Changed to " + numberToString(value);
+		}
+	};
+	
+	private ConsoleCommand printRates = new ConsoleCommand() {
+		
+		@Override
+		public String exucute(String... args) {
+			boolean b = Boolean.parseBoolean(args[0]);
+			Engine.getInstance().setProperty("printRates", b);
+			return null;
 		}
 	};
 	
@@ -181,6 +200,8 @@ public final class Commands
 	{
 		commands = new ConcurrentHashMap<String, ConsoleCommand>();
 		commands.put("exit", exit);
+		commands.put("draw", changeDrawFunc);
+		commands.put("printRates",printRates);
 		subCommands = new ConcurrentHashMap<String, ConcurrentHashMap<String,ConsoleCommand>>();
 		subCommands.put("tick", new ConcurrentHashMap<String, ConsoleCommand>());
 		subCommands.put("render", new ConcurrentHashMap<String, ConsoleCommand>());
