@@ -6,13 +6,15 @@ import java.util.function.Function;
 import engine.core.Engine;
 import engine.core.exceptions.EngineException;
 import engine.core.instance.EngineInstance;
+import engine.core.instance.InstanceID;
+import engine.util.EngineRemovable;
 import engine.util.tree.HashTreeMap;
 import engine.util.tree.TraverseFunction;
 import graphics.Camera;
 import graphics.instance.IGraphics;
 import physics.collision.Rectangle;
 
-public class GraphicsLayer 
+public class GraphicsLayer implements EngineRemovable
 {
 	
 	private String name;
@@ -41,18 +43,31 @@ public class GraphicsLayer
 		DEPTH_QUAD_TREE
 	}
 	
-	private HashTreeMap<Long, Object> members;
+	private HashTreeMap<Long, GraphicsNode> members;
 	private HashTreeMap<Long,GraphicsInstance> renderOrder;
 	private Graphics2D g2;
 	private TraverseFunction<GraphicsInstance> traverse;
 	private RENDER_QUERY_MODE mode;
 
+	private static class GraphicsNode
+	{
+		InstanceID<EngineInstance> id;
+		long requestedDepth;
+		long putAtDepth;
+	}
+	
+	@Override
+	public boolean equals(Object other)
+	{
+		return (other instanceof GraphicsLayer)?  ((GraphicsLayer) other).getName().equals(name):false;
+	}
+	
 	public GraphicsLayer(String name) 
 	{
 		this.name = name;
 		this.mode = RENDER_QUERY_MODE.BST;
 		renderOrder = new HashTreeMap<Long, GraphicsInstance>();
-		members = new HashTreeMap<Long, Object>();
+		members = new HashTreeMap<>();
 		traverse = new TraverseFunction<GraphicsInstance>() 
 		{
 
@@ -98,7 +113,6 @@ public class GraphicsLayer
 	{
 		this.g2 = g2;
 		
-		
 		switch (mode) 
 		{
 			case BST:
@@ -125,7 +139,14 @@ public class GraphicsLayer
 	{
 		if (eInstance.getComponent("IGraphics") == null) throw new EngineException("Instance : " + eInstance.getClass().getName() + " does not implement IGrpahics or is not defined in the EngineInstances.json file");
 		
+		GraphicsNode node = new GraphicsNode();
+		node.id = eInstance.getID();
+		node.requestedDepth = depth;
+		members.put(node.id.getID(), node);
+		System.out.print("In -> ");
+		System.out.println(node.id);
 		IGraphics instance = (IGraphics) eInstance;
+		eInstance.addedToRemovableStruct(this);
 		
 		Rectangle nullCheck = instance.renderBoundingArea();
 		if (nullCheck == null)
@@ -138,32 +159,75 @@ public class GraphicsLayer
 		{
 			if (g.isCreatedFromGraphicsLayer())
 			{
-				g.addInterface(instance);
+				node.putAtDepth = depth;
+				g.addInterface(node.requestedDepth, instance); //stuff can be overridden
 				return depth;
 			}
 			else
 			{
-
-				g.addInterface(instance);
-				return depth;
+				boolean shouldBreak;
+				do 
+				{
+					depth++;
+					g = renderOrder.get(depth);
+					shouldBreak = true;
+					if (g != null)
+					{
+						shouldBreak = g.isCreatedFromGraphicsLayer();
+					}
+					
+				} while (!shouldBreak);
+				
+				if (g == null)
+				{
+					GraphicsInstance gInstance = new GraphicsInstance(depth, true);
+					node.putAtDepth = depth;
+					gInstance.addInterface(node.requestedDepth,instance);
+					gInstance.assignedToLayer(renderOrder);
+					renderOrder.put(depth, gInstance);
+					return depth;
+				}
+				else
+				{
+					node.putAtDepth = depth;
+					g.addInterface(depth, instance);
+					return depth;
+				}
+				
 			}
 		}
+		node.putAtDepth = depth;
 		GraphicsInstance gInstance = new GraphicsInstance(depth, true);
-		gInstance.addInterface(instance);
+		gInstance.addInterface(node.requestedDepth,instance);
 		gInstance.assignedToLayer(renderOrder);
 		renderOrder.put(depth, gInstance);
 		return depth;
 	}
 	
 	
-	public void removeIGraphics(IGraphics instance, long depth)
-	{
-		members.put(depth, instance);
-	}
-	
 	public boolean addGraphicsInstance(GraphicsInstance g)
 	{
 		return false;
+	}
+
+	@Override
+	public void remove(InstanceID<EngineInstance> id) 
+	{
+		GraphicsNode node = members.get(id.getID());
+		if (node == null)
+		{
+			System.out.print("Error -> ");
+			System.out.println(id);
+		}
+		GraphicsInstance gi = renderOrder.get(node.putAtDepth);
+		gi.remove(node.requestedDepth);
+		members.put(id.getID(), null);
+		System.out.print("Out -> ");
+		System.out.println(id);
+	}
+
+	public boolean contains(InstanceID<EngineInstance> id) {
+		return members.get(id.getID()) != null;
 	}
 	
 	

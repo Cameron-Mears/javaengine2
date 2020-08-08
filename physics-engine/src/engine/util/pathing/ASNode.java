@@ -4,19 +4,19 @@ import java.util.LinkedList;
 
 import physics.general.Vector2;
 
-public class Node 
+public class ASNode 
 {
 	private Vector2 position;
-	private Node parent;
-	private LinkedList<Node> neighbours;
+	private ASNode parent;
+	private LinkedList<ASNode> neighbours;
 	private double h = 0, g = 0;
 	
 	private boolean isTraverseable;
 	
-	public Node(Vector2 position, AStarGrid grid)
+	public ASNode(Vector2 position, AStarGrid grid)
 	{
 		this.position = position;
-		this.neighbours = new LinkedList<Node>();
+		this.neighbours = new LinkedList<ASNode>();
 	}
 	
 	public double getH()
@@ -40,7 +40,7 @@ public class Node
 		{
 			int x = (int) position.getX();
 			int y = (int) position.getY();
-			Node node = null;
+			ASNode node = null;
 			if (grid.allowDiagonal())
 			{
 				for (int dOffset = -1; dOffset < 1; dOffset++) 
@@ -66,17 +66,17 @@ public class Node
 		}
 	}
 	
-	private void setParent(Node node) 
+	private void setParent(ASNode node) 
 	{
 		parent = node;		
 	}
 	
-	public Node parent()
+	public ASNode parent()
 	{
 		return parent;
 	}
 
-	private Node getNeighbour(int x, int y, AStarGrid grid)
+	private ASNode getNeighbour(int x, int y, AStarGrid grid)
 	{
 		if (x > 0 && x < grid.width() && y > 0 && y < grid.height())
 		{

@@ -35,5 +35,14 @@ public class Shape
 		}
 		return max;
 	}
-
+	
+	public double getX()
+	{
+		return tx.getPosition().getX();
+	}
+	
+	public double getY()
+	{
+		return tx.getPosition().getY();
+	}
 }

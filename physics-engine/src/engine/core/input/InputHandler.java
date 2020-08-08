@@ -65,7 +65,7 @@ public class InputHandler implements MouseListener, KeyListener, MouseWheelListe
 	public InputHandler(boolean enable)
 	{
 		listeners = new LinkedList<InputEventListener>();
-		id = map.newInstanceID();
+		id = map.newInstanceID(this);
 		if (enable) enable();
 		
 		/*

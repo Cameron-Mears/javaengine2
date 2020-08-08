@@ -56,7 +56,7 @@ import engine.util.tree.AVL.Entry;
  * 
  * 
  *
- * 	Combination of HashMap and a RedBlack tree
+ * 	Combination of HashMap and a WAVL tree
  * 	insert -> log(n)
  *  delete -> log(n)
  *  find() -> O(1)
@@ -78,7 +78,7 @@ import engine.util.tree.AVL.Entry;
     	
     	if (value == null)
     	{
-    		map.put(key, null);
+    		map.remove(key);
         	tree.remove(key);
         	return;
     	}
@@ -104,7 +104,7 @@ import engine.util.tree.AVL.Entry;
     
     public void inOrderTraverse(TraverseFunction<Value> traverse)
     {
-    	Entry<Key, Value> root = tree.getFirstEntry();
+    	Entry<Key, Value> root = tree.getRoot();
     	if (root != null) inOrderTraverse(traverse, root);
     }
     private void inOrderTraverse(TraverseFunction<Value> traverse, Entry<Key, Value> n)

@@ -9,18 +9,20 @@ import engine.core.Engine;
 import engine.core.GameFiles;
 import engine.core.JSON_CONSTANTS;
 import engine.core.exceptions.EngineException;
+import engine.util.EngineRemovable;
 import engine.util.tree.HashTreeMap;
 import external.org.json.JSONArray;
 import external.org.json.JSONObject;
 import graphics.instance.IGraphics;
 import graphics.instance.InvalidInstanceException;
+import graphics.layer.GraphicsLayer;
 import graphics.layer.GraphicsLayerManager;
 
 public abstract class EngineInstance 
 {
-	protected InstanceID id;
+	protected InstanceID<EngineInstance> id;
 	
-	protected LinkedList<HashTreeMap<Long,Object>> listmembers;
+	protected LinkedList<EngineRemovable> listmembers;
 	
 	protected LinkedList<EngineComponent> components;
 	protected final static InstanceMap<EngineInstance> instanceMap = new InstanceMap<EngineInstance>();
@@ -106,7 +108,8 @@ public abstract class EngineInstance
 	
 	public EngineInstance()
 	{
-		this.id = instanceMap.newInstanceID();
+		this.id = instanceMap.newInstanceID(this);
+		listmembers = new LinkedList<>();
 	}
 	
 	public final InstanceID<EngineInstance> getID()
@@ -114,19 +117,25 @@ public abstract class EngineInstance
 		return id;
 	}	
 	
-	public boolean addedToTree(HashTreeMap<Long,EngineInstance> tree)
+	public boolean addedToRemovableStruct(EngineRemovable struct)
 	{
-		return false;
+		if (listmembers.contains(struct)) System.out.println("ok");
+		return listmembers.add(struct);
 	}
 	
 	public final boolean delete()
 	{
-		for (HashTreeMap<Long, Object> tree : listmembers) 
-		{
-			tree.put(id.getID(), null);
+		synchronized (listmembers) {
+			while (!listmembers.isEmpty())
+			{
+				EngineRemovable struct = listmembers.poll();
+				synchronized (struct) {
+					struct.remove(id);	
+				}
+			}
+			id.delete();
+			return true;
 		}
-		id.delete();
-		return true;
 	}
 	
 	

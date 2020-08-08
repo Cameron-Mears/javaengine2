@@ -122,9 +122,11 @@ public class TickHandler
 		tf.delta = deltaNS/(1e9);
 		tf.deltaNS = deltaNS;
 		
+		TickScheduler.getInstance().update(tf);
 		while (!this.tickables.isEmpty())
 		{
-			tickables.poll().onTick(tf);
+			Tickable t = tickables.poll();
+			if (t != null) t.onTick(tf);
 		}
 	}
 	

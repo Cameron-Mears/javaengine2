@@ -25,12 +25,12 @@ import java.util.Spliterator;
  */
 public class AVL<K, V> extends AbstractMap<K, V> {
     
-    protected transient Entry<K, V> root = null;
+    protected Entry<K, V> root = null;
 
     /**
      * The number of entries in the tree
      */
-    protected transient int size = 0;
+    protected int size = 0;
     
     /**
      * The comparator used to maintain order in this tree map, or
@@ -149,13 +149,13 @@ public class AVL<K, V> extends AbstractMap<K, V> {
      * Doubles as a means to pass key-value pairs back to
      * user (see Map.Entry).
      */
-    static final class Entry<K,V> implements Map.Entry<K,V> {
-        K key;
-        V value;
-        Entry<K,V> left = null;
-        Entry<K,V> right = null;
-        Entry<K,V> parent = null;
-        byte rank = 0;
+    public static final class Entry<K,V> implements Map.Entry<K,V> {
+    	public K key;
+    	public V value;
+    	public Entry<K,V> left = null;
+    	public Entry<K,V> right = null;
+    	public Entry<K,V> parent = null;
+    	public byte rank = 0;
 
         /**
          * Make a new cell with given key, value, and parent, and with

@@ -13,14 +13,14 @@ public final class InstanceMap<Value>
 	 * @param instance the instance to add the map
 	 * @return an instance id pointing to this instance
 	 */
-	public final InstanceID<Value> newInstanceID()
+	public final InstanceID<Value> newInstanceID(Value value)
 	{
 		long id;
 		do
 		{
 			id = Rand.randomLong();
 		} while (instanceMap.get(id) != null);
-		
+		instanceMap.put(id, value);
 		return new InstanceID<Value>(id,this);
 	}
 	
@@ -34,14 +34,14 @@ public final class InstanceMap<Value>
 		return instanceMap.get(id);
 	}
 	
-	public Value getInstanceFromID(InstanceID id)
+	public Value getInstanceFromID(InstanceID<?> id)
 	{
 		return instanceMap.get(id.getID());
 	}
 	
-	public void removeID(InstanceID id)
+	public void removeID(InstanceID<?> id)
 	{
-		instanceMap.put(id.getID(), null);
+		instanceMap.remove(id.getID());
 	}
 
 	

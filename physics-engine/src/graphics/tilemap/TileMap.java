@@ -171,6 +171,11 @@ public class TileMap
 		return name;
 	}
 
+	
+	public int[][] getData()
+	{
+		return tileMap;
+	}
 
 
 	public void render(Graphics2D g2, Rectangle bounds) 

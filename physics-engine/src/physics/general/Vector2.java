@@ -1,9 +1,26 @@
 package physics.general;
 
-public class Vector2 
+import engine.util.json.JSONSerializable;
+import external.org.json.JSONObject;
+
+public class Vector2 implements JSONSerializable
 {
-	private double x;
-	private double y;
+	public double x;
+	public double y;
+	
+	public static void translateVectors(double dx, double dy, Vector2 ...vectors)
+	{
+		for (Vector2 vector : vectors) 
+		{
+			vector.addX(dx);
+			vector.addY(dy);
+		}
+	}
+	
+	public static Vector2 fromJSON(JSONObject obj)
+	{
+		return new Vector2(obj.getDouble("x"), obj.getDouble("y"));
+	}
 	
 	
 	@Override
@@ -17,6 +34,22 @@ public class Vector2
 		return false;
 	}
 	
+	
+	public Vector2 duplicate()
+	{
+		return new Vector2(x, y);
+	}
+	
+	@Override
+	public String toString()
+	{
+		return "(" + Double.toString(x) + ", " + Double.toString(y) + ")";
+	}
+	
+	public boolean equals(double x, double y)
+	{
+		return x == this.x && y == this.y;
+	}
 	
 	@Override
 	public Vector2 clone()
@@ -105,7 +138,7 @@ public class Vector2
 		return (angle < 0)? (2*Math.PI)+angle:angle;
 	}
 	
-	public double getAngle()
+	public double direction()
 	{
 		double angle =  Math.atan2(y, x);
 		return (angle < 0)? (2*Math.PI)+angle:angle;
@@ -119,6 +152,22 @@ public class Vector2
 	public double dotProduct(Vector2 other)
 	{
 		return other.x * this.x + this.y*other.y;
+	}
+
+
+	public double distanceTo(Vector2 position) 
+	{
+		return Math.hypot(position.x - x, position.y - y);
+	}
+
+	@Override
+	public JSONObject serialize() 
+	
+	{
+		JSONObject obj = new JSONObject();
+		obj.put("x", x);
+		obj.put("y", y);
+		return obj;
 	}
 	
 }

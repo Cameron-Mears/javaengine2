@@ -7,16 +7,16 @@ public class AStarSolver
 {
 	private AStarGrid grid;
 	
-	private Node start, end;
+	private PathNode start, end;
 	
-	private ArrayList<Node> openlist;
-	private ArrayList<Node> closedList;
+	private ArrayList<PathNode> openlist;
+	private ArrayList<PathNode> closedList;
 	
-	private HashMap<Node, Path> pathcache; 
+	private HashMap<PathNode, Path> pathcache; 
 	
-	AStarSolver(AStarGrid grid, Node start, Node end)
+	AStarSolver(AStarGrid grid, PathNode start, PathNode end)
 	{
-		this.pathcache = new HashMap<Node, Path>();
+		this.pathcache = new HashMap<PathNode, Path>();
 		this.start = start;
 		this.end = end;
 	}
@@ -39,8 +39,8 @@ public class AStarSolver
 			path.append(end);
 			return path;
 		}
-		this.openlist = new ArrayList<Node>();
-		this.closedList = new ArrayList<Node>();
+		this.openlist = new ArrayList<PathNode>();
+		this.closedList = new ArrayList<PathNode>();
 		
 		pathcache.put(start, path);
 		return null;

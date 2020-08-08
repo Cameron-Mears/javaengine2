@@ -1,9 +1,7 @@
 package game.renderer;
 
 import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
 import java.util.HashMap;
-import java.util.LinkedList;
 
 import engine.core.instance.EngineInstance;
 import engine.util.tree.HashTreeMap;
@@ -31,10 +29,6 @@ public class Renderer extends EngineInstance implements IGraphics
 	private GraphicsLayerManager layerManager;
 	private Graphics2D g2;
 	
-	private Object queueLock = new Object();
-	
-	private LinkedList<BufferedImage> cameraCaptureQueue;
-	private boolean allCaptured;
 	
 	private Camera activeCamera;
 	
@@ -47,7 +41,6 @@ public class Renderer extends EngineInstance implements IGraphics
 	public Renderer()
 	{
 		instance = this;
-		cameraCaptureQueue = new LinkedList<BufferedImage>();
 		layerManager = GraphicsLayerManager.getInstance();
 		layerManager.setRenderer(this);
 		cameras = new HashTreeMap<Long, Camera>();
@@ -66,6 +59,12 @@ public class Renderer extends EngineInstance implements IGraphics
 		};
 	}
 	
+	/**
+	 * 
+	 * @param id the id of the camera, lower id cameras
+	 * @param camera
+	 */
+	
 	public void addCamera(long id, Camera camera)
 	{
 		cameras.put(id, camera);
@@ -77,7 +76,7 @@ public class Renderer extends EngineInstance implements IGraphics
 	{
 		this.g2 = g2;
 		
-			cameras.inOrderTraverse(traverseCameras);
+		cameras.inOrderTraverse(traverseCameras);
 			
 			
 		

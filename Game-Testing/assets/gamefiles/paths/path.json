@@ -1,0 +1,12 @@
+{
+    "mode": "SPLIT",
+    "path": [
+        {
+            "isJunction": false,
+            "pos":{
+                "x":10,
+                "y":20
+            }
+        }
+    ]
+}

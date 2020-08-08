@@ -9,6 +9,11 @@ import engine.util.tree.TraverseFunction;
 import graphics.Camera;
 import graphics.instance.IGraphics;
 
+/**
+ * 
+ * @author Cameron
+ *
+ */
 public class GraphicsLayerManager 
 {
 	private HashTreeMap<Long,GraphicsLayer> graphicsLayers;
@@ -35,6 +40,10 @@ public class GraphicsLayerManager
 		}
 	}
 	
+	/**
+	 * Using a renderer will make so that only the {@code render(Graphics2D g2)}} of the specified object instead of the standard render of the GraphicsLayerManager
+	 * @param renderer the IGraphics object to be called
+	 */
 	public void setRenderer(IGraphics renderer)
 	{
 		this.renderer= renderer;
@@ -115,7 +124,11 @@ public class GraphicsLayerManager
 		return newDepth;
 		
 	}
-	
+	/**
+	 * Returns the GraphicsLayer with the specified name
+	 * @param name
+	 * @return the GraphicsLayer with, that or null if it does not exist
+	 */
 	public GraphicsLayer getLayer(String name)
 	{
 		GraphicsLayerNode node = layerMap.get(name);

@@ -1,5 +1,7 @@
 package game.entities;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.util.LinkedList;
@@ -7,8 +9,10 @@ import java.util.LinkedList;
 import engine.core.input.InputHandler;
 import engine.core.tick.TickInfo;
 import engine.util.json.JSONSerializable;
+import engine.util.pathing.Path;
 import engine.util.quadtree.ConcurrentQuadTreeNode;
 import external.org.json.JSONObject;
+import game.Level;
 import game.entities.enemies.BasicEnemy;
 import game.entities.item.Item;
 import game.inventory.Inventory;
@@ -40,6 +44,12 @@ public class Player extends Entity implements JSONSerializable
 	private double x;
 	private Inventory inv;
 	private LinkedList<Vector2> points;
+	private Path p;
+	
+	private double vel = 600;
+	private boolean c;
+	private double periodic;
+	
 	public Player(int x)
 	{
 		inv = new Inventory(100);
@@ -53,6 +63,7 @@ public class Player extends Entity implements JSONSerializable
 		inv.addItems(Item.getItem("Iron Ore"), 4);
 		inv.addItems(Item.getItem("Iron Ore"), 1000);
 		camera = Renderer.getInstance().getCamera("main");
+		camera.setBoundries(new Rectangle(0, 0, 64*32, 24*32));
 	}
 	
 	public Player(JSONObject json)
@@ -64,29 +75,30 @@ public class Player extends Entity implements JSONSerializable
 	@Override
 	public void onTick(TickInfo info, Object s) 
 	{
-		//enemy = new BasicEnemy((Math.random() * 300) + 100, (Math.random() * 300) + 100, this);
 		Vector2 velocity = body.getVelocity();
 		int yDirection = 0;
 		if (input.isKeyDown(KeyEvent.VK_W)) --yDirection;
 		if (input.isKeyDown(KeyEvent.VK_S)) ++yDirection;
-		velocity.setY(300 * yDirection);
+		velocity.setY(vel * yDirection);
 		int xDirection = 0;
 		if (input.isKeyDown(KeyEvent.VK_D)) ++xDirection;
 		if (input.isKeyDown(KeyEvent.VK_A)) --xDirection;
 		
-		velocity.setX(300 * xDirection);
+		velocity.setX(vel * xDirection);
 		double friction_x = (Math.abs(body.getVelocity().getX()) > 0)? 40 * -Math.signum(body.getVelocity().getX()):0;
 		double friction_y = (Math.abs(body.getVelocity().getY()) > 0)? 40 * -Math.signum(body.getVelocity().getY()):0;
 		
 		body.applyForce(friction_x, friction_y);
 		body.tick(info);
 		playerSprite.tick(info);
+		
 	}
 
 
 	@Override
 	public void render(Graphics2D g2) 
 	{
+		camera.setPosition(getPosition().getX() - 860/2,getPosition().getY() - 540/2);
 		TileMap tm = TileMapAssetMap.getInstance().getTileMap("background");
 		tm.render(g2, camera.getBounds());
 		g2.drawImage(playerSprite.getCurrentFrame(), (int)body.getPosition().getX(), (int)body.getPosition().getY(), null);
@@ -96,6 +108,7 @@ public class Player extends Entity implements JSONSerializable
 			inv.setActive(true);
 		}
 		inv.render(g2, (int)getPosition().getX(), (int)getPosition().getY());
+		Level.getLevelPath().drawPath(Color.RED, new BasicStroke(3), g2);
 		//g2.translate(10, 100);
 		
 		//g2.translate(-10, -100);
@@ -137,6 +150,8 @@ public class Player extends Entity implements JSONSerializable
 		System.out.println("as");
 		
 	}
+
+	
 
 	/*
 	 * private static class MathFunction 

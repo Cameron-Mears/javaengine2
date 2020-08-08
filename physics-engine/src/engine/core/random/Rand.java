@@ -20,4 +20,9 @@ public class Rand
 	{
 		return ((max - min) * Math.random()) + min;
 	}
+	
+	public static int randInt(int min, int max)
+	{
+		return (int) (((max - min) * Math.random()) + min);
+	}
 }

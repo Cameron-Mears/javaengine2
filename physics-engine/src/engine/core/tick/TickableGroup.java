@@ -2,26 +2,29 @@ package engine.core.tick;
 
 import engine.core.exceptions.EngineException;
 import engine.core.instance.EngineInstance;
+import engine.core.instance.InstanceID;
 import engine.core.random.Rand;
+import engine.util.EngineRemovable;
 import engine.util.tree.HashTreeMap;
 import engine.util.tree.TraverseFunction;
 import external.org.json.JSONArray;
 import external.org.json.JSONException;
 import graphics.instance.InvalidInstanceException;
+import graphics.viewer.Window;
 
 
-public class TickableGroup implements Tickable
+public class TickableGroup implements Tickable, EngineRemovable
 {
 	private boolean enabled;
 	private TickInfo info;
 	private TraverseFunction<Tickable> function;
-	private HashTreeMap<Long, Tickable> members;
+	private HashTreeMap<InstanceID<EngineInstance>, Tickable> members;
 	private String name;
 	
 	public TickableGroup(String name) 
 	{
 		this.name = name;
-		this.members = new HashTreeMap<Long, Tickable>();
+		this.members = new HashTreeMap<>();
 		function = new TraverseFunction<Tickable>() 
 		{
 			
@@ -58,7 +61,6 @@ public class TickableGroup implements Tickable
 	public void tick(TickInfo info)
 	{
 		int size = members.size();
-		if (size % 1000 == 0)System.out.println(members.size());
 		this.info = info;
 		members.inOrderTraverse(function);
 	}
@@ -74,7 +76,7 @@ public class TickableGroup implements Tickable
 			addTickable(instance);
 		}
 	}
-	catch (Exception e) {};
+	catch (Exception e) {e.printStackTrace();};
 		
 		return false;
 	}
@@ -83,10 +85,11 @@ public class TickableGroup implements Tickable
 	{
 		if (tickable.getComponent("Tickable") == null)
 		{
-			System.out.println(tickable.getClass());
-			//System.out.println("must be tickable");
+			System.out.print(tickable.getClass());
+			System.out.println(" -> Must be tickable");
 		}
-		members.put(Rand.randomLong(), (Tickable)tickable);
+		members.put(tickable.getID(), (Tickable)tickable);
+		tickable.addedToRemovableStruct(this);
 	}
 
 	@Override
@@ -101,6 +104,14 @@ public class TickableGroup implements Tickable
 	public String getName() {
 		
 		return name;
+	}
+
+
+
+	@Override
+	public void remove(InstanceID<EngineInstance> id) 
+	{		
+		members.put(id, null);
 	}
 		
 	

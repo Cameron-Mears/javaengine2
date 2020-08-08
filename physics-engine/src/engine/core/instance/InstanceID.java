@@ -1,14 +1,20 @@
 package engine.core.instance;
 
-public final class InstanceID<Value>
+public final class InstanceID<Value> implements Comparable<InstanceID<?>>
 {
-	private long id;
+	private final long id;
 	private InstanceMap<Value> map;
 	
 	@Override
 	public boolean equals(Object anObject)
 	{
-		return (anObject instanceof InstanceID)? ((InstanceID)anObject).id == id: false;
+		return (anObject instanceof InstanceID)? ((InstanceID<?>)anObject).id == id: false;
+	}
+	
+	@Override
+	public String toString()
+	{
+		return Long.toString(id);
 	}
 	
 	public InstanceID(long id, InstanceMap<Value> map)
@@ -25,5 +31,10 @@ public final class InstanceID<Value>
 	public void delete()
 	{
 		map.removeID(this);
+	}
+
+	@Override
+	public int compareTo(InstanceID<?> o) {
+		return (int)(o.id - id);
 	}
 }

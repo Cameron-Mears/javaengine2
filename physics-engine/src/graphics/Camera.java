@@ -12,12 +12,18 @@ import graphics.layer.GraphicsLayer;
 import physics.collision.Rectangle;
 import physics.general.Vector2;
 
+/**
+ * 
+ * @author Cameron
+ *
+ */
 public class Camera 
 {
 	private String name;
-	private Rectangle bounds;
+	private Rectangle bounds; //camera size
 	private boolean enabled;
 	private double scale;
+	private Rectangle boundries; //camera boundry
 	
 	public boolean isEnabled() 
 	{
@@ -38,6 +44,7 @@ public class Camera
 	public void setPosition(double x, double y)
 	{
 		bounds.getPosition().set(x, y);
+		clamp();
 	}
 	
 	public Camera(Rectangle bounds, double scale, String name)
@@ -48,6 +55,12 @@ public class Camera
 		this.bounds = bounds;
 	}
 	
+	
+	public void setBoundries(Rectangle rect)
+	{
+		this.boundries = rect;
+	}
+	
 	public Rectangle getBounds()
 	{
 		return bounds;
@@ -56,6 +69,9 @@ public class Camera
 	
 	public BufferedImage capture(LinkedList<GraphicsLayer> layerQueue)
 	{
+		
+		clamp();
+		
 		BufferedImage img = CompatibleImageFactory.createCompatibleImage((int)bounds.getWidth(), (int)bounds.getHeight(), CompatibleImageFactory.DEFAULT_TRANSPARENCY);
 		Graphics2D g2 = img.createGraphics();
 		
@@ -67,6 +83,59 @@ public class Camera
 		return img;
 	}
 	
+	private void clamp() 
+	{
+		if (boundries == null) return;
+		if (boundries.fullyContains(bounds)) return;
+		else
+		{
+			Vector2[] rectVertices = bounds.getVerticies();		
+
+			Vector2 tl = rectVertices[0];
+			Vector2 bl = rectVertices[2];
+			Vector2 tr = rectVertices[1];
+			Vector2 br = rectVertices[3];
+			
+			if (!boundries.contains(tl)) //clamp left x boundries
+			{
+				if (tl.getX() < boundries.getX())
+				{
+					double dx = boundries.getX() - tl.getX();
+					Vector2.translateVectors(dx, 0, rectVertices);
+				}
+			}
+			
+			if (!boundries.contains(tr)) //clamp x right boundry
+			{
+				if (tr.getX() > boundries.getVerticies()[1].getX())
+				{
+					double dx =  boundries.getVerticies()[1].getX() - tr.getX();
+					Vector2.translateVectors(dx, 0, rectVertices);
+				}
+			}
+			
+			if (!boundries.contains(tr)) //clamp y top boundry
+			{
+				if (tr.getY() < boundries.getY())
+				{
+					double dy = boundries.getY() - tr.getY();
+					Vector2.translateVectors(0, dy, rectVertices);
+				}
+			}
+			
+			if (!boundries.contains(bl)) //clamp y top boundry
+			{
+				if (bl.getY() < boundries.getVerticies()[2].getY())
+				{
+					double dy =  boundries.getVerticies()[2].getY() - bl.getY();
+					Vector2.translateVectors(0, dy, rectVertices);
+				}
+			}
+			
+		}
+		
+	}
+
 	/**
 	 * 
 	 * @param pos - The position to the camera to go to
@@ -102,7 +171,7 @@ public class Camera
 	{
 		g2.setTransform(new AffineTransform());
 		g2.scale(scale, scale);
-		g2.translate(bounds.getPosition().getX(), bounds.getPosition().getY());
+		g2.translate(-bounds.getPosition().getX(), -bounds.getPosition().getY());
 		layer.render(this,g2);
 	}
 

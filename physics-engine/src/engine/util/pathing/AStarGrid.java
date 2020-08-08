@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class AStarGrid 
 {
-	private ArrayList<ArrayList<Node>> grid;
+	private ArrayList<ArrayList<ASNode>> grid;
 	
 	private int width, height;
 	
@@ -13,10 +13,10 @@ public class AStarGrid
 		this.width = width;
 		this.height = height;
 		
-		grid = new ArrayList<ArrayList<Node>>(height);
-		for (ArrayList<Node> arrayList : grid) 
+		grid = new ArrayList<ArrayList<ASNode>>(height);
+		for (ArrayList<ASNode> arrayList : grid) 
 		{
-			arrayList = new ArrayList<Node>(width);
+			arrayList = new ArrayList<ASNode>(width);
 		}
 	}
 	
@@ -30,7 +30,7 @@ public class AStarGrid
 		return false;
 	}
 	
-	public Node at(int x, int y)
+	public ASNode at(int x, int y)
 	{
 		return grid.get(y).get(x);
 	}

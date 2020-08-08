@@ -6,4 +6,10 @@ public class TickInfo
 	public double delta;
 	public long deltaNS;
 	
+	@Override
+	public String toString()
+	{
+		return "TickInfo: delta: " + Double.toString(delta) + " group: " + groupName;
+	}
+	
 }

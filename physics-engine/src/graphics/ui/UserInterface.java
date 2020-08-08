@@ -26,7 +26,7 @@ public class UserInterface implements InputEventListener
 	public void addElement(UIElement elem)
 	{
 		if (elem == null) throw new NullPointerException();
-		elem.setID(elementMap.newInstanceID());
+		elem.setID(elementMap.newInstanceID(elem));
 		ConcurrentQuadTreeNode<UIElement> node = new ConcurrentQuadTreeNode<UIElement>(elem.getHitBox().getBounds(), elem);
 		tree.put(node);
 	}

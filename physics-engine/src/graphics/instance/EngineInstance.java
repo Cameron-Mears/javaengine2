@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import engine.core.JSON_CONSTANTS;
 import engine.core.exceptions.EngineException;
 import engine.core.instance.InstanceID;
+import engine.core.instance.InstanceMap;
 import engine.util.bst.BST;
 import engine.util.string.StringHexConverter;
 import external.org.json.JSONArray;
@@ -22,22 +23,24 @@ import external.org.json.JSONObject;
 
 public abstract class EngineInstance 
 {
-	protected InstanceID id;
+	public static InstanceMap<EngineInstance> map;
+	
+	protected InstanceID<EngineInstance> id;
 	
 	protected LinkedList<BST<Long,Object>> listmembers;
 	
 	
 	public EngineInstance()
 	{
-		this.id = new InstanceID();
+		this.id = map.newInstanceID(this);
 	}
 	
-	public final InstanceID getID()
+	public final InstanceID<EngineInstance> getID()
 	{
 		return id;
 	}	
 	
-	public boolean addedToTree(BST<InstanceID,EngineInstance> tree)
+	public boolean addedToTree(BST<InstanceID<EngineInstance>,EngineInstance> tree)
 	{
 		return false;
 	}

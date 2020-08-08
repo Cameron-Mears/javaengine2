@@ -18,15 +18,13 @@ import physics.general.Vector2;
 
 public class BasicEnemy extends Enemy
 {
-	private Player player;
 	private int tickLife = 100;
 	private long depth;
 	
-	public BasicEnemy(double x, double y, Player player)
+	public BasicEnemy()
 	{
-		super(new PhysicsBody(new MassData(1), new Material(), new Transform(x,y)));
-		this.player = player;
-		depth = GraphicsLayerManager.getInstance().getLayer("default").addGraphics(this, 0);
+		super(new PhysicsBody(new MassData(1), new Material(), new Transform()));
+		depth = GraphicsLayerManager.getInstance().getLayer("default").addGraphics(this,0);
 		TickHandler.getInstance().addTickable("default", this);
 		sprite = SpriteMap.getClonedSprite("enemy");
 		hitbox = new HitBox(new Rectangle(32, 32, getPosition()), this);
@@ -35,22 +33,13 @@ public class BasicEnemy extends Enemy
 	@Override
 	public void onTick(TickInfo info, Object t) 
 	{
-		tickLife --;
-		if (tickLife == 0)
-		{
-			GraphicsLayerManager.getInstance().getLayer("default").removeIGraphics(this, depth);
-		}
-		Vector2 position = body.getPosition();
-		double direcitonToPlayer = position.angleTo(player.getPosition());
-		body.getVelocity().setDirMag(direcitonToPlayer, 100);
-		body.tick(info);
-		
+		pathFollower.onTick(info);
 	}
 
 	@Override
 	public void render(Graphics2D g2) {
 		
-		g2.drawImage(sprite.getCurrentFrame(), (int)body.getPosition().getX(), (int)body.getPosition().getY(), null);
+		g2.drawImage(sprite.getCurrentFrame(), (int)(body.getPosition().getX()*32), (int)(body.getPosition().getY()*32), null);
 	}
 
 	@Override
