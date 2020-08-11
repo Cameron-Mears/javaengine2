@@ -26,7 +26,7 @@ public abstract class Enemy extends Entity implements EndOfPathListener
 	
 	static
 	{
-		TickScheduler.getInstance().addPeriodic(periodicGenerator, TimeUtils.secondsToNanos(0.1));
+		//TickScheduler.getInstance().addPeriodic(periodicGenerator, TimeUtils.secondsToNanos(0.2));
 	}
 	
 	public Enemy(PhysicsBody body) 
@@ -34,7 +34,7 @@ public abstract class Enemy extends Entity implements EndOfPathListener
 		
 		super();
 		this.body = body;
-		pathFollower = new PathFollower(Rand.range(50, 50),this);
+		pathFollower = new PathFollower(Rand.range(8, 8),this);
 		Vector2 pos = body.getPosition();
 		Vector2 pathHead = Level.getLevelPath().head().getPosition();
 		pos.set(pathHead.x, pathHead.y);

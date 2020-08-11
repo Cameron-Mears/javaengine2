@@ -1,6 +1,9 @@
 package graphics.sprite;
 
+import java.awt.image.BufferedImage;
 import java.util.HashMap;
+
+import engine.core.exceptions.EngineException;
 
 public class SpriteMap 
 {
@@ -21,6 +24,13 @@ public class SpriteMap
 	{
 		Sprite sprite = sprites.get(name);
 		return (sprite != null)? sprite.clone() : null;
+	}
+
+	public static BufferedImage getSpriteImage(String name, int frameIndex) 
+	{
+		Sprite sprite = sprites.get(name);
+		if (sprite == null) throw new EngineException("No such Sprite -> " + name);
+		return sprite.getFrame(frameIndex);	
 	}
 	
 }

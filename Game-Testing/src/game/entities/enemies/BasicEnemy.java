@@ -1,5 +1,6 @@
 package game.entities.enemies;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 
 import engine.core.tick.TickHandler;
@@ -34,11 +35,14 @@ public class BasicEnemy extends Enemy
 	public void onTick(TickInfo info, Object t) 
 	{
 		pathFollower.onTick(info);
+		sprite.tick(info);
 	}
 
 	@Override
 	public void render(Graphics2D g2) {
 		
+		//g2.setColor(Color.RED);
+		//g2.fillRect((int)(body.getPosition().getX()*32), (int)(body.getPosition().getY()*32), 32, 32);
 		g2.drawImage(sprite.getCurrentFrame(), (int)(body.getPosition().getX()*32), (int)(body.getPosition().getY()*32), null);
 	}
 

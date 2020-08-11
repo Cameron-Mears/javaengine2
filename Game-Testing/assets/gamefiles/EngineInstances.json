@@ -4,6 +4,7 @@
         "game.enetities.Entity",
         "game.entities.Player2",
         "game.entities.enemies.BasicEnemy",
-        "game.entities.BackgroundManager"
+        "game.entities.BackgroundManager",
+        "game.entities.buildings.turrets.Turret"
     ]
 }

@@ -8,6 +8,11 @@ public class Rectangle extends Shape
 	private Vector2[] vertices;
 	private double area;
 	
+	@Override
+	public String toString()
+	{
+		return "[at=" + getPosition().toString() + "][width=" + Double.toString(width) + "height=" + Double.toString(width) + "]";
+	}
 	
 	public Rectangle(double width, double height)
 	{
@@ -70,15 +75,13 @@ public class Rectangle extends Shape
 	
 	public Vector2[] getVerticies()
 	{
-		if (tx.getRotation() == 0)
-		{
 			Vector2 position = tx.getPosition();
-			vertices[0] = position;
+			vertices[0] = tx.getPosition();
 			vertices[1].set(position.getX() + width, position.getY());
 			vertices[2].set(position.getX(), position.getY() + height);
 			vertices[3].set(position.getX() + width, position.getY() + height);
-		}
-		else
+		
+		if (tx.getRotation() != 0d)
 		{
 			double[][] transform = new double[2][2];
 			transform[0][0] = Math.cos(getRotation());
@@ -98,6 +101,14 @@ public class Rectangle extends Shape
 		return (point.getX() >= position.getX() && point.getX() <= position.getX() + width) 
 				&& 
 				(point.getY() >= position.getY() && point.getY() <= position.getY() + height);
+	}
+	
+	public boolean contains(double x, double y)
+	{
+		Vector2 position = tx.getPosition();
+		return (x >= position.x && x <= position.x+ width) 
+				&& 
+				(y >= position.y && y <= position.y + height);
 	}
 	
 	
@@ -146,7 +157,16 @@ public class Rectangle extends Shape
 		}
 		return false;
 	}
-		
+	
+	
+	public void clamp(Rectangle rect)
+	{
+		Vector2 other = rect.getPosition();
+		if (other.x  < position.x) other.x = position.x;
+		if (other.x + rect.width  > position.x + width) other.x = position.x + width - rect.width;
+		if (other.y  < position.y) other.y = position.y;
+		if (other.y + rect.height > position.y + height) other.y = position.y + height - rect.height;
+	}
 	
 	
 	private boolean rotatedRectCollision(Rectangle other)
@@ -161,9 +181,7 @@ public class Rectangle extends Shape
 	 */
 	
 	public boolean fullyContains(Rectangle rect)
-	{
-		Vector2[] vertices = rect.getVerticies();
-		
-		return (this.contains(vertices[0]) && this.contains(vertices[3]));
+	{		
+		return (this.contains(rect.getPosition()) && this.contains(rect.getPosition().x + rect.width, rect.getPosition().y + rect.height));
 	}
 }

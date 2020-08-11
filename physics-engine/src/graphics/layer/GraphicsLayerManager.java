@@ -1,8 +1,12 @@
 package graphics.layer;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.util.HashMap;
 
+import engine.core.Engine;
 import engine.core.exceptions.EngineException;
 import engine.util.tree.HashTreeMap;
 import engine.util.tree.TraverseFunction;
@@ -22,6 +26,7 @@ public class GraphicsLayerManager
 	private HashMap<String, GraphicsLayerNode> layerMap;
 	private TraverseFunction<GraphicsLayer> traverse;
 	private TraverseFunction<Camera> cameraTraverse;
+	private Font drawRatesFont;
 	private Graphics2D g2;
 	
 	private IGraphics renderer = null;
@@ -78,6 +83,8 @@ public class GraphicsLayerManager
 		GraphicsLayerNode node = new GraphicsLayerNode(defaultlayer, 0L);
 		layerMap.put(defaultlayer.getName(), node);
 		graphicsLayers.put(0L, defaultlayer);
+		
+		drawRatesFont = new Font("Arial", 0, 50);
 		
 		traverse = new TraverseFunction<GraphicsLayer>() {
 

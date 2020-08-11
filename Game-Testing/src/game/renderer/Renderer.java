@@ -1,8 +1,12 @@
 package game.renderer;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.util.HashMap;
 
+import engine.core.Engine;
 import engine.core.instance.EngineInstance;
 import engine.util.tree.HashTreeMap;
 import engine.util.tree.TraverseFunction;
@@ -28,6 +32,7 @@ public class Renderer extends EngineInstance implements IGraphics
 	private TraverseFunction<Camera> traverseCameras;
 	private GraphicsLayerManager layerManager;
 	private Graphics2D g2;
+	private Font drawRatesFont;
 	
 	
 	private Camera activeCamera;
@@ -57,6 +62,8 @@ public class Renderer extends EngineInstance implements IGraphics
 			layerManager.getAllLayers().inOrderTraverse(traverseLayers);
 			
 		};
+		
+		drawRatesFont = new Font("Arial", Font.BOLD, 18);
 	}
 	
 	/**
@@ -77,7 +84,17 @@ public class Renderer extends EngineInstance implements IGraphics
 		this.g2 = g2;
 		
 		cameras.inOrderTraverse(traverseCameras);
-			
+		
+		if ((boolean) Engine.getInstance().getProperty("drawRates"))
+		{
+			g2.setTransform(new AffineTransform());
+			g2.setFont(drawRatesFont);
+			g2.setColor(Color.black);
+			String fps = Integer.toString((int)Engine.getInstance().getProperty("lastFrameRate"));
+			String tps = Integer.toString((int)Engine.getInstance().getProperty("lastTickRate"));
+			g2.drawString("FPS: " + fps, 20, g2.getFontMetrics().getHeight()+30);
+			g2.drawString("TPS: " + tps, 20, g2.getFontMetrics().getHeight()*2+30);
+		}
 			
 		
 	}

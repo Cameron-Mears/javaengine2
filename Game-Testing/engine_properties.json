@@ -10,7 +10,7 @@
 	"engine": {
 		
 		"tickrate": 40000,
-		"framerate": 14440,
+		"framerate": 20000,
 		"doTickAndFrameRatePrint" : true,
 		"doLoad": true,
 		"collisionDefaultLayerBounds":{

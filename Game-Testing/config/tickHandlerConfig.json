@@ -2,7 +2,7 @@
     "tick_handler": [
 
 		{
-			"name": "default",
+			"name": "main",
 			"enabled": true,
 			"members":[
 

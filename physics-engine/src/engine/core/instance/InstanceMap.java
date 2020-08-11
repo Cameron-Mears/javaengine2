@@ -39,9 +39,19 @@ public final class InstanceMap<Value>
 		return instanceMap.get(id.getID());
 	}
 	
-	public void removeID(InstanceID<?> id)
+	public boolean removeID(InstanceID<?> id)
 	{
-		instanceMap.remove(id.getID());
+		return instanceMap.remove(id.getID()) != null;
+	}
+	
+	public boolean removeID(long id)
+	{
+		return instanceMap.remove(id) != null;
+	}
+
+	public int size() {
+		
+		return instanceMap.size();
 	}
 
 	

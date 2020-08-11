@@ -86,54 +86,7 @@ public class Camera
 	private void clamp() 
 	{
 		if (boundries == null) return;
-		if (boundries.fullyContains(bounds)) return;
-		else
-		{
-			Vector2[] rectVertices = bounds.getVerticies();		
-
-			Vector2 tl = rectVertices[0];
-			Vector2 bl = rectVertices[2];
-			Vector2 tr = rectVertices[1];
-			Vector2 br = rectVertices[3];
-			
-			if (!boundries.contains(tl)) //clamp left x boundries
-			{
-				if (tl.getX() < boundries.getX())
-				{
-					double dx = boundries.getX() - tl.getX();
-					Vector2.translateVectors(dx, 0, rectVertices);
-				}
-			}
-			
-			if (!boundries.contains(tr)) //clamp x right boundry
-			{
-				if (tr.getX() > boundries.getVerticies()[1].getX())
-				{
-					double dx =  boundries.getVerticies()[1].getX() - tr.getX();
-					Vector2.translateVectors(dx, 0, rectVertices);
-				}
-			}
-			
-			if (!boundries.contains(tr)) //clamp y top boundry
-			{
-				if (tr.getY() < boundries.getY())
-				{
-					double dy = boundries.getY() - tr.getY();
-					Vector2.translateVectors(0, dy, rectVertices);
-				}
-			}
-			
-			if (!boundries.contains(bl)) //clamp y top boundry
-			{
-				if (bl.getY() < boundries.getVerticies()[2].getY())
-				{
-					double dy =  boundries.getVerticies()[2].getY() - bl.getY();
-					Vector2.translateVectors(0, dy, rectVertices);
-				}
-			}
-			
-		}
-		
+		boundries.clamp(bounds);		
 	}
 
 	/**

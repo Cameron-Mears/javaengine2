@@ -16,10 +16,9 @@ public class Sprite
 	
 	private int currentFrame;
 	private String name;
-	private int FPS;
+	private double FPS;
 	private ArrayList<BufferedImage> frames;
 	private boolean animated;
-	
 	
 	@Override
 	public Sprite clone()
@@ -28,7 +27,7 @@ public class Sprite
 	}
 	
 	
-	public Sprite(int fps, ArrayList<BufferedImage> frames, String assetName)
+	public Sprite(double fps, ArrayList<BufferedImage> frames, String assetName)
 	{
 		this.frames = frames;
 		this.name = assetName;
@@ -48,7 +47,7 @@ public class Sprite
 		this.animated = animated;
 	}
 	
-	public int getCurrentFPS()
+	public double getCurrentFPS()
 	{
 		return FPS;
 	}
@@ -59,9 +58,14 @@ public class Sprite
 		return new HitBox(rect, owner);
 	}
 	
-	public void setSpriteFPS(int fps)
+	public void setSpriteFPS(double fps)
 	{
 		this.FPS = fps;
+		if (fps <= 0)
+		{
+			animated = false;
+			return;
+		}
 		this.frameDelta = 1.0/this.FPS;
 	}
 	

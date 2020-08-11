@@ -1,5 +1,6 @@
 package game;
 
+import engine.util.VarArgUtil;
 import engine.util.pathing.Path;
 import engine.util.pathing.TileMapPathGenerator;
 import engine.util.pathing.PathNode.Mode;
@@ -14,12 +15,15 @@ public class Level
 	static
 	{
 		TileMap tm = TileMapAssetMap.getInstance().getTileMap("background");
-		TileMapPathGenerator tmpg = new TileMapPathGenerator(tm, Mode.SPLIT, 2);
+		int[] test =  VarArgUtil.range(2, 6);
+		for (int i = 0; i < test.length; i++) {
+			
+		}
+		TileMapPathGenerator tmpg = new TileMapPathGenerator(tm, Mode.SPLIT, VarArgUtil.range(2, 7));
 		
 		
 		long now = System.nanoTime();
 		levelPath = tmpg.solve(new Vector2(63,5), new Vector2(0,13));
-		System.out.println((System.nanoTime() - now)/1e9);
 	}
 	
 	public static Path getLevelPath()

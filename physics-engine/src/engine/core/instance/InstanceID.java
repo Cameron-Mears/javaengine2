@@ -14,7 +14,7 @@ public final class InstanceID<Value> implements Comparable<InstanceID<?>>
 	@Override
 	public String toString()
 	{
-		return Long.toString(id);
+		return "InstanceID<id=\""  + Long.toString(id) + "\">";
 	}
 	
 	public InstanceID(long id, InstanceMap<Value> map)

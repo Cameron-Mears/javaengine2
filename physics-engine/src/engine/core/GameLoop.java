@@ -13,18 +13,36 @@ import physics.collision.CollisionLayerManager;
 
 class GameLoop extends Thread
 {
-	private int tickRate;
+	private static interface ThreadListener
+	{
+		void notify(int code);
+	}
+	
+	private static final int TICK_THREAD = 0;
+	private static final int RENDER_THREAD = 1;
+	
+	private volatile int tickRate;
 	private int frameRate;
 	private boolean running = true;
 	private long lastTime = 0;
 	
+	private long deltaUsum;
+	
 	private boolean doSleep;
+	
+	private boolean tickThreadIsActive;
+	private boolean renderThreadIsActive;
 	
 	private boolean newParamaters; //
 	private Engine engine;
 	private TickHandler tickHandler;
 	private GraphicsLayerManager gManager;
 	private CollisionLayerManager collisionManager;
+	
+	private ThreadListener threadListener;
+	
+	Thread tickThread;
+	Thread renderThread;
 	
 	private long deltaF; //time delta for a frame render
 	private long deltaU; //time delta for a tick
@@ -35,6 +53,35 @@ class GameLoop extends Thread
 		tickHandler = TickHandler.getInstance();
 		collisionManager = CollisionLayerManager.getInstance();
 		updateParamters();
+		
+		threadListener = (code)->{
+			if (code == TICK_THREAD) tickThreadIsActive = false;
+			if (code == RENDER_THREAD) renderThreadIsActive = false;
+		};
+	}
+	
+	public Thread newTickThread()
+	{
+		return new Thread(()->{
+			try
+			{
+				tick(deltaUsum);
+			}
+			catch (Exception e) {e.printStackTrace();}
+			threadListener.notify(TICK_THREAD);
+		});
+	}
+	
+	public Thread newRenderThread()
+	{
+		return new Thread(()->{
+			try
+			{
+				render();
+			}
+			catch (Exception e) {e.printStackTrace();}
+			threadListener.notify(RENDER_THREAD);
+		});
 	}
 	
 	
@@ -45,8 +92,8 @@ class GameLoop extends Thread
 	
 	private void loopSleep()
 	{
-		
 	}
+	
 	
 	private void updateParamters()
 	{
@@ -58,14 +105,13 @@ class GameLoop extends Thread
 	{
 		newParamaters = true;
 	}
-	
 	@Override
 	public void start()
 	{
 		
 		long deltaFsum = 0;
 		
-		long deltaUsum = 0;
+		deltaUsum = 0;
 		long deltaSum = 0;
 		
 		int frames = 0, ticks = 0;
@@ -86,19 +132,20 @@ class GameLoop extends Thread
 			deltaFsum += delta;
 			deltaUsum += delta;
 			deltaSum += delta;
-			
 			if (deltaFsum >= deltaF)
 			{
 				this.render();
 				deltaFsum = 0;
 				frames++;
+				
 			}
 			
 			if (deltaUsum >= deltaU)
 			{
-				this.tick(deltaUsum);
+				tick(deltaUsum);
 				deltaUsum = 0;
 				ticks++;
+				
 			}
 			
 			
@@ -112,6 +159,9 @@ class GameLoop extends Thread
 						System.out.println("FPS: " + Long.toString(frames));
 						System.out.println("TICKS: " + Long.toString(ticks));
 					}
+					
+					Engine.getInstance().setProperty("lastFrameRate", frames);
+					Engine.getInstance().setProperty("lastTickRate", ticks);
 				}
 				catch (Exception e) {}
 				ticks = 0;

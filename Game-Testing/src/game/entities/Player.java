@@ -4,20 +4,30 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import engine.core.input.InputHandler;
+import engine.core.instance.InstanceID;
+import engine.core.random.Rand;
+import engine.core.tick.TickHandler;
 import engine.core.tick.TickInfo;
+import engine.core.tick.TickScheduler;
+import engine.core.tick.TickableGroup;
+import engine.util.TimeUtils;
 import engine.util.json.JSONSerializable;
 import engine.util.pathing.Path;
 import engine.util.quadtree.ConcurrentQuadTreeNode;
 import external.org.json.JSONObject;
 import game.Level;
+import game.entities.buildings.turrets.Turret;
 import game.entities.enemies.BasicEnemy;
 import game.entities.item.Item;
 import game.inventory.Inventory;
 import game.renderer.Renderer;
 import graphics.Camera;
+import graphics.layer.GraphicsLayer;
+import graphics.layer.GraphicsLayerManager;
 import graphics.sprite.Sprite;
 import graphics.sprite.SpriteMap;
 import graphics.tilemap.TileMap;
@@ -28,6 +38,8 @@ import physics.body.PhysicsBody;
 import physics.collision.CollisionLayer;
 import physics.collision.HitBox;
 import physics.collision.Rectangle;
+import physics.collision.quadtree.CRQuadTree;
+import physics.collision.quadtree.CRQuadTree.Node;
 import physics.general.Transform;
 import physics.general.Vector2;
 
@@ -46,12 +58,29 @@ public class Player extends Entity implements JSONSerializable
 	private LinkedList<Vector2> points;
 	private Path p;
 	
+	private Rectangle bounds;
+	
+	private CRQuadTree<QuadTreeTestInstance> tree;
+	
 	private double vel = 600;
 	private boolean c;
 	private double periodic;
 	
+	private static class QuadTreeTestInstance
+	{
+		Rectangle rect;
+		InstanceID<Node<QuadTreeTestInstance>> id;
+		public QuadTreeTestInstance(Rectangle rect, InstanceID<Node<QuadTreeTestInstance>> id) 
+		{
+			this.rect = rect;
+			this.id = id;
+		}
+	}
+	
 	public Player(int x)
 	{
+		tree = new CRQuadTree<QuadTreeTestInstance>(10, new Rectangle(10000, 10000));
+		buildQuadTree();
 		inv = new Inventory(100);
 		input = new InputHandler(true);
 		playerSprite = SpriteMap.getClonedSprite("player");
@@ -63,7 +92,11 @@ public class Player extends Entity implements JSONSerializable
 		inv.addItems(Item.getItem("Iron Ore"), 4);
 		inv.addItems(Item.getItem("Iron Ore"), 1000);
 		camera = Renderer.getInstance().getCamera("main");
-		camera.setBoundries(new Rectangle(0, 0, 64*32, 24*32));
+		bounds = new Rectangle(10000, 10000);
+		//camera.setBoundries(new Rectangle(0, 0, 64*32, 24*32));
+		camera.setBoundries(bounds);
+		Turret t = new Turret(new Vector2(128, 128+32));
+		t.addToLayers(null, "default", "default");
 	}
 	
 	public Player(JSONObject json)
@@ -81,7 +114,7 @@ public class Player extends Entity implements JSONSerializable
 		if (input.isKeyDown(KeyEvent.VK_S)) ++yDirection;
 		velocity.setY(vel * yDirection);
 		int xDirection = 0;
-		if (input.isKeyDown(KeyEvent.VK_D)) ++xDirection;
+		if (input.isKeyDown(KeyEvent.VK_D))++xDirection;
 		if (input.isKeyDown(KeyEvent.VK_A)) --xDirection;
 		
 		velocity.setX(vel * xDirection);
@@ -90,6 +123,13 @@ public class Player extends Entity implements JSONSerializable
 		
 		body.applyForce(friction_x, friction_y);
 		body.tick(info);
+		bounds.clamp(hitbox.getBounds());
+		LinkedList<QuadTreeTestInstance> collisions = tree.queryPossible(hitbox.getBounds());
+		for (QuadTreeTestInstance quadTreeTestInstance : collisions) 
+		{
+			tree.remove(quadTreeTestInstance.id);
+		}
+		
 		playerSprite.tick(info);
 		
 	}
@@ -98,17 +138,24 @@ public class Player extends Entity implements JSONSerializable
 	@Override
 	public void render(Graphics2D g2) 
 	{
-		camera.setPosition(getPosition().getX() - 860/2,getPosition().getY() - 540/2);
+		int x = (int) getPosition().x;
+		int y = (int) getPosition().y;
+		camera.setPosition(x - 860/2,y - 540/2);
+		g2.setColor(Color.blue);
+		g2.fillRect(x- 860/2, y- 860/2, 1000, 1000);
+		tree.render(g2,camera.getBounds());
+		g2.drawImage(playerSprite.getCurrentFrame(), x, y, null);
+		hitbox.drawHitBox(g2);
+		/*
 		TileMap tm = TileMapAssetMap.getInstance().getTileMap("background");
 		tm.render(g2, camera.getBounds());
-		g2.drawImage(playerSprite.getCurrentFrame(), (int)body.getPosition().getX(), (int)body.getPosition().getY(), null);
-		hitbox.drawHitBox(g2);
 		if (input.isKeyDown(KeyEvent.VK_TAB))
 		{
 			inv.setActive(true);
 		}
 		inv.render(g2, (int)getPosition().getX(), (int)getPosition().getY());
-		Level.getLevelPath().drawPath(Color.RED, new BasicStroke(3), g2);
+		*/
+		//Level.getLevelPath().drawPath(Color.RED, new BasicStroke(3), g2);
 		//g2.translate(10, 100);
 		
 		//g2.translate(-10, -100);
@@ -146,11 +193,45 @@ public class Player extends Entity implements JSONSerializable
 
 	@Override
 	public void onCollision(HitBox other) 
-	{
-		System.out.println("as");
-		
+	{		
 	}
-
+	
+	private void buildQuadTree()
+	{
+		Rectangle test = new Rectangle(10, 10, 100, 100);
+		int nInstances = 100000;
+		long now = System.nanoTime();
+		
+		LinkedList<InstanceID<Node<QuadTreeTestInstance>>> toRemove = new LinkedList<>();
+		LinkedList<InstanceID<Node<QuadTreeTestInstance>>> toMoveIDs = new LinkedList<>();
+		LinkedList<Rectangle> toMoveRects = new LinkedList<>();
+		
+		for (int i = 0; i < nInstances; i++) 
+		{
+			//tree.put(test, "h");
+			test = new Rectangle(Rand.range(0, 9800), Rand.range(0, 9800), Rand.range(0, 150), Rand.range(0, 150));
+			QuadTreeTestInstance instance = new QuadTreeTestInstance(test, null);
+			InstanceID<Node<QuadTreeTestInstance>> id = tree.put(test, instance);
+			instance.id = id;
+			if (i % 10 == 0) toRemove.add(id); 
+			if (i % 3 == 0 && i % 10 != 0)
+			{
+				toMoveIDs.add(id); 
+				toMoveRects.add(test);
+			}
+		}
+		test = new Rectangle(10, 10, 100, 100);
+		double seconds = TimeUtils.nanosToSeconds(System.nanoTime()  - now);
+		System.out.println("Insertion of 1000000 nodes -> " + Double.toString(seconds) +  " seconds");
+		System.out.println("Size -> " + Integer.toString(tree.size()));
+		now = System.nanoTime();
+		int size = toRemove.size();
+		for (InstanceID<Node<QuadTreeTestInstance>> instanceID : toRemove) 
+		{
+			//System.out.println(++i);
+			tree.remove(instanceID);
+		}
+	}
 	
 
 	/*

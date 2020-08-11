@@ -99,6 +99,9 @@ public final class Engine                                                       
 		this.engineProperties.put("doLoad", doLoad);
 		JSONObject collisionLayerProperties = enginePropertiesJSON.getJSONObject("collisionDefaultLayerBounds");
 		this.engineProperties.put("collisionDefaultLayerBounds", collisionLayerProperties);
+		engineProperties.put("lastFrameRate", 0);
+		engineProperties.put("lastTickRate", 0);
+		engineProperties.put("drawRates", true);
 		//window properties
 		
 		JSONObject windowProperties = jobj.getJSONObject("window");

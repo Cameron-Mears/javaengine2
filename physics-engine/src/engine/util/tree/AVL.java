@@ -356,6 +356,19 @@ public class AVL<K, V> extends AbstractMap<K, V> {
 	return null;
     }
     
+    public void inOrderTraverse(TraverseFunction<V> func)
+    {
+    	if (getRoot() == null) return;
+    	inOrderTraverse(getRoot(), func);
+    }
+    
+    private void inOrderTraverse(Entry<K, V> n, TraverseFunction<V> func)
+    {
+    	if (n.left != null) inOrderTraverse(n.left, func);
+    	func.apply(n.value);
+    	if (n.right != null) inOrderTraverse(n.right, func);
+    }
+    
     public void inOrderTraversal(Entry<K, V> x) {
 	if (x == null)
 	    return;

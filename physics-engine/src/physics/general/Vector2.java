@@ -127,6 +127,12 @@ public class Vector2 implements JSONSerializable
 		this.y += y;
 	}
 	
+	public void add(double x, double y)
+	{
+		this.x += x;
+		this.y += y;
+	}
+	
 	public Vector2 scaled(double scalar)
 	{
 		return new Vector2(this.x * scalar, this.y * scalar);

@@ -1,15 +1,93 @@
 package test.quadtree;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 
+import engine.core.instance.InstanceID;
 import engine.core.random.Rand;
-import engine.util.math.MathUtils;
-import engine.util.quadtree.ConcurrentQuadTree;
-import engine.util.quadtree.ConcurrentQuadTreeNode;
+import engine.util.TimeUtils;
 import physics.collision.Rectangle;
+import physics.collision.quadtree.CRQuadTree;
+import physics.collision.quadtree.CRQuadTree.Node;
 
 public class QuadTreeTester 
 {
+	
+	public static void main(String[] args)
+	{
+		CRQuadTree<String> tree = new CRQuadTree<String>(10, new Rectangle(10000, 10000));
+		
+		//Thread 2 for concurrency testing
+		/*
+		new Thread(()->{
+			
+			Rectangle test = new Rectangle(10, 10, 100, 100);
+			int nInstances = 1000000;
+			long now = System.nanoTime();
+			for (int i = 0; i < nInstances; i++) 
+			{
+				test = new Rectangle(Rand.range(0, 980), Rand.range(0, 980), Rand.range(0, 150), Rand.range(0, 150));
+				tree.put(test, "h");
+			}
+			System.out.println(TimeUtils.nanosToSeconds(System.nanoTime()  - now));
+			test = new Rectangle(10, 10, 100, 100);
+			now = System.nanoTime();
+			tree.put(test, "d");
+			System.out.println(TimeUtils.nanosToSeconds(System.nanoTime()  - now));
+			
+		}).start();
+		*/
+		Rectangle test = new Rectangle(10, 10, 100, 100);
+		int nInstances = 1000000;
+		long now = System.nanoTime();
+		
+		LinkedList<InstanceID<Node<String>>> toRemove = new LinkedList<>();
+		LinkedList<InstanceID<Node<String>>> toMoveIDs = new LinkedList<>();
+		LinkedList<Rectangle> toMoveRects = new LinkedList<>();
+		
+		for (int i = 0; i < nInstances; i++) 
+		{
+			//tree.put(test, "h");
+			test = new Rectangle(Rand.range(0, 9800), Rand.range(0, 980), Rand.range(0, 150), Rand.range(0, 150));
+			InstanceID<Node<String>> id = tree.put(test, "h");
+			if (i % 10 == 0) toRemove.add(id); 
+			if (i % 3 == 0 && i % 10 != 0)
+			{
+				toMoveIDs.add(id); 
+				toMoveRects.add(test);
+			}
+		}
+		test = new Rectangle(10, 10, 100, 100);
+		double seconds = TimeUtils.nanosToSeconds(System.nanoTime()  - now);
+		System.out.println("Insertion of 1000000 nodes -> " + Double.toString(seconds) +  " seconds");
+		System.out.println("Size -> " + Integer.toString(tree.size()));
+		now = System.nanoTime();
+		int size = toRemove.size();
+		for (InstanceID<Node<String>> instanceID : toRemove) 
+		{
+			//System.out.println(++i);
+			tree.remove(instanceID);
+		}
+		seconds = TimeUtils.nanosToSeconds(System.nanoTime()  - now);
+		System.out.println("Deletion of " + Integer.toString(size) +" nodes - > " + Double.toString(seconds)  + " seconds");	
+		
+		now = System.nanoTime();
+		size = toMoveRects.size();
+		Iterator<Rectangle> rectIter = toMoveRects.iterator();
+		Iterator<InstanceID<Node<String>>> idIter = toMoveIDs.iterator();
+		for (; rectIter.hasNext();) 
+		{
+			Rectangle rectangle = rectIter.next();
+			InstanceID<Node<String>> id = idIter.next();
+			rectangle.getPosition().add(Rand.range(0, 100), Rand.range(0, 100));
+			tree.updateEntry(id);
+		}
+		seconds = TimeUtils.nanosToSeconds(System.nanoTime()  - now);
+		System.out.println("Move " + Integer.toString(size) +" nodes - > " + Double.toString(seconds) + " seconds");
+		
+	}
+	
+	/*
 	public static void main(String[] args)
 	{		
 		int nInstances = 100000;
@@ -90,5 +168,6 @@ public class QuadTreeTester
 		while (!p.isInterrupted()) {}
 		System.out.println(tree.query(rect).size());
 	}
+	*/
 		
 }

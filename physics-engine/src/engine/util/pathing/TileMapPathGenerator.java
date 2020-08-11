@@ -96,8 +96,6 @@ public class TileMapPathGenerator
 		
 		x = (int) start.x;
 		y = (int) start.y;
-		System.out.println(x);
-		System.out.println(y);
 		if (!checkIndex(x, y) || !checkIndex((int)end.x, (int)end.y))
 		{
 			throw new EngineException("Start or end point out of bounds");

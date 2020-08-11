@@ -76,6 +76,7 @@ public class TickHandler
 		};
 		
 		groups = new HashTreeMap<String, TickableGroup>();
+		groups.put("default", new TickableGroup("defualt"));
 		this.tickables = new LinkedList<Tickable>();
 		
 	}

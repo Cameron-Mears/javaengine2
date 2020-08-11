@@ -7,12 +7,13 @@ public class Shape
 {
 	protected Transform tx;
 	protected double width, height;
-	
+	protected Vector2 position;
 	protected Rectangle bounds;
 	
 	public Shape()
 	{
 		tx = new Transform();
+		position = tx.getPosition();
 	}
 	
 	public Shape(Vector2 position)

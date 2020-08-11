@@ -143,8 +143,6 @@ public class GraphicsLayer implements EngineRemovable
 		node.id = eInstance.getID();
 		node.requestedDepth = depth;
 		members.put(node.id.getID(), node);
-		System.out.print("In -> ");
-		System.out.println(node.id);
 		IGraphics instance = (IGraphics) eInstance;
 		eInstance.addedToRemovableStruct(this);
 		
@@ -222,8 +220,6 @@ public class GraphicsLayer implements EngineRemovable
 		GraphicsInstance gi = renderOrder.get(node.putAtDepth);
 		gi.remove(node.requestedDepth);
 		members.put(id.getID(), null);
-		System.out.print("Out -> ");
-		System.out.println(id);
 	}
 
 	public boolean contains(InstanceID<EngineInstance> id) {

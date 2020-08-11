@@ -37,5 +37,10 @@ public class Transform
 	{
 		this.rotation += rotation;
 	}
+	
+	public void setRotation(double rotation)
+	{
+		this.rotation = rotation; 
+	}
 
 }
