@@ -52,7 +52,13 @@ public class GameFiles
 			FileInputStream fis = new FileInputStream(file);
 			Vector2 a;
 			JSONTokener tokener = new JSONTokener(fis);
-			return new JSONObject(tokener);
+			try
+			{
+				return new JSONObject(tokener);
+			}
+			catch (Exception e) {
+				Engine.printWarningMessage("Failied to load file -> " + file.getPath() + "\n Reason -> " + e.toString(), this);
+			}
 		}
 		catch (IOException e) {System.out.println("Error reading File " + file.getAbsolutePath());}
 		return null;

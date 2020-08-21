@@ -124,10 +124,21 @@ public class TickHandler
 		tf.deltaNS = deltaNS;
 		
 		TickScheduler.getInstance().update(tf);
-		while (!this.tickables.isEmpty())
-		{
-			Tickable t = tickables.poll();
-			if (t != null) t.onTick(tf);
+		int i = 0;
+		int size = tickables.size();
+		synchronized (tickables) {
+			while (!this.tickables.isEmpty())
+			{
+				if (i > size)
+				{
+					System.out.println("Tickhandler do the loop thing ->?");
+					tickables.clear();
+					break;
+				}
+				i++;
+				Tickable t = tickables.poll();
+				if (t != null) t.onTick(tf);
+			}	
 		}
 	}
 	

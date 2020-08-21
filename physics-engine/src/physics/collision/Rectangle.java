@@ -11,7 +11,7 @@ public class Rectangle extends Shape
 	@Override
 	public String toString()
 	{
-		return "[at=" + getPosition().toString() + "][width=" + Double.toString(width) + "height=" + Double.toString(width) + "]";
+		return "[at=" + getPosition().toString() + "][width=" + Double.toString(width) + "height=" + Double.toString(height) + "]";
 	}
 	
 	public Rectangle(double width, double height)
@@ -40,6 +40,21 @@ public class Rectangle extends Shape
 		tx.setPosition(position);
 		this.width = width;
 		this.height = height;
+	}
+	
+	public Rectangle(Vector2 tl, Vector2 bl, boolean copyPosition)
+	{
+		if (tl == null || bl == null) throw new NullPointerException("Neither verticie can be null");
+		
+		width = bl.x - tl.x;
+		height = bl.y - tl.y;
+		if (copyPosition) tx.setPosition(tl);
+		vertices = new Vector2[4];
+		vertices[0] = tx.getPosition();
+		vertices[1] = new Vector2();
+		vertices[2] = new Vector2();
+		vertices[3] = new Vector2();
+		calculateArea();
 	}
 	
 	public double area()
@@ -72,15 +87,22 @@ public class Rectangle extends Shape
 	{
 		tx.setPosition(postion);
 	}
-	
+	/*
+	 * [0]----[1]
+	 * |	    |
+	 * |	    |
+	 * |	    |
+	 * [3]----[2]
+	 */
 	public Vector2[] getVerticies()
 	{
 			Vector2 position = tx.getPosition();
 			vertices[0] = tx.getPosition();
 			vertices[1].set(position.getX() + width, position.getY());
-			vertices[2].set(position.getX(), position.getY() + height);
-			vertices[3].set(position.getX() + width, position.getY() + height);
+			vertices[3].set(position.getX(), position.getY() + height);
+			vertices[2].set(position.getX() + width, position.getY() + height);
 		
+			/*
 		if (tx.getRotation() != 0d)
 		{
 			double[][] transform = new double[2][2];
@@ -88,9 +110,9 @@ public class Rectangle extends Shape
 			transform[0][1] = -Math.sin(getRotation());
 			transform[1][0] = Math.sin(getRotation());
 			transform[1][1] = Math.cos(getRotation());
-			Matrix matrix = new Matrix(transform);
 			
 		}
+		*/
 		
 		return vertices;
 	}
@@ -127,12 +149,18 @@ public class Rectangle extends Shape
 		return false;
 	}
 	
+	public boolean fullyContains(Circle cir)
+	{
+		//return cir.getPosition().x + cir.getRadius() < x;
+		return false;
+	}
+	
 	public boolean contains(Rectangle rect)
 	{
 		Vector2 position = tx.getPosition();
-		return (rect.getPosition().getX() + rect.getWidth() >= position.getX() && rect.getPosition().getX() <= position.getX() + width)
+		return (rect.getPosition().getX() + rect.getWidth() > position.getX() && rect.getPosition().getX() < position.getX() + width)
 				&&
-				(rect.getPosition().getY() + rect.getHeight() >= position.getY() && rect.getPosition().getY() <= position.getY() + height);
+				(rect.getPosition().getY() + rect.getHeight() > position.getY() && rect.getPosition().getY() < position.getY() + height);
 	}
 	
 	public boolean contains(Circle circle)
@@ -161,6 +189,7 @@ public class Rectangle extends Shape
 	
 	public void clamp(Rectangle rect)
 	{
+		Vector2 position = getPosition();
 		Vector2 other = rect.getPosition();
 		if (other.x  < position.x) other.x = position.x;
 		if (other.x + rect.width  > position.x + width) other.x = position.x + width - rect.width;
@@ -183,5 +212,28 @@ public class Rectangle extends Shape
 	public boolean fullyContains(Rectangle rect)
 	{		
 		return (this.contains(rect.getPosition()) && this.contains(rect.getPosition().x + rect.width, rect.getPosition().y + rect.height));
+	}
+	
+	/**
+	 * Snaps the provided rect to the top of this rectanlge such that rect.y + rect.height = this.y
+	 * @param rect
+	 */
+	public void snapTop(Rectangle rect)
+	{
+		rect.getPosition().y = this.getY() - rect.height;
+	}
+	
+	public void snapBottom(Rectangle rect)
+	{
+		rect.getPosition().y = this.getY() + this.height;
+	}
+	
+	public void snapLeft(Rectangle rect)
+	{
+		rect.getPosition().x = this.getX() - rect.width;
+	}
+	public void snapRight(Rectangle rect)
+	{
+		rect.getPosition().x = this.getX() + this.width;
 	}
 }

@@ -10,6 +10,8 @@ import java.util.NoSuchElementException;
 import engine.core.instance.InstanceID;
 import engine.core.instance.InstanceMap;
 import physics.collision.Rectangle;
+import physics.collision.ray.Ray;
+import physics.general.Vector2;
 
 /**
  * CRQuadTree -> ConcurrentRegionQuadTree
@@ -110,6 +112,11 @@ public class CRQuadTree<V> implements Iterable<V>
 		}
 	}
 	
+	public Rectangle getBounds()
+	{
+		return bounds;
+	}
+	
 	/**
 	 * opposite of subdivide
 	 */
@@ -133,20 +140,17 @@ public class CRQuadTree<V> implements Iterable<V>
 		}
 	}
 	
-	private int sum()
+	public int sum(int sum)
 	{
-		int sum = leafs.size();
+		sum += leafs.size();
+		if (sum > leafCapacity) return sum;
 		if (!divided) return sum;
 		else
 		{
-			sum += northEast.leafs.size();
-			sum += northEast.sum();
-			sum += northWest.leafs.size();
-			sum += northWest.sum();
-			sum += southEast.leafs.size();
-			sum += southEast.sum();
-			sum += southWest.leafs.size();
-			sum += southWest.sum();
+			sum += northEast.sum(sum);
+			sum += northWest.sum(sum);
+			sum += southEast.sum(sum);
+			sum += southWest.sum(sum);
 			return sum;
 		}
 		
@@ -251,7 +255,8 @@ public class CRQuadTree<V> implements Iterable<V>
 		synchronized (leafs) 
 		{			
 			Node<V> node = null;
-			for (int i = 0; i < leafs.size(); i++)
+			int size = leafs.size();
+			for (int i = 0; i < size; i++)
 			{
 				node = leafs.poll();
 				if (!insertToChildren(node)) leafs.add(node);
@@ -358,17 +363,65 @@ public class CRQuadTree<V> implements Iterable<V>
 		}
 	}
 	
-	public void remove(InstanceID<Node<V>> id)
+	public void queryRay(Ray ray, LinkedList<V> list)
+	{
+		if (ray.intersects(bounds) || (bounds.contains(ray.origin()) && bounds.contains(ray.end())))
+		{
+			for (Node<V> node : leafs) 
+			{
+				if (ray.intersects(node.bounds)) list.add(node.value);
+			}
+			if (divided)
+			{
+				northWest.queryRay(ray, list);
+				northEast.queryRay(ray, list);
+				southWest.queryRay(ray, list);
+				southEast.queryRay(ray, list);
+			}
+		}
+	}
+	
+	private static class DoubleBox
+	{
+		double num;
+	}
+	
+	private Vector2 queryClosestHit(Ray ray, DoubleBox distanceSq, Vector2 closest)
+	{
+		if (ray.intersects(bounds) || (bounds.contains(ray.origin()) && bounds.contains(ray.end())))
+		{
+			for (Node<V> node : leafs) 
+			{
+				Vector2 test = ray.closestHit(node.bounds);
+				if (test != null) if (ray.origin().distanceToSq(test) < distanceSq.num)
+				{
+					closest = test;
+					distanceSq.num = ray.origin().distanceToSq(test);
+				}
+				
+			}
+			if (divided)
+			{
+				closest = northWest.queryClosestHit(ray, distanceSq, closest);
+				closest = northEast.queryClosestHit(ray, distanceSq, closest);
+				closest = southWest.queryClosestHit(ray, distanceSq, closest);
+				closest = southEast.queryClosestHit(ray, distanceSq, closest);
+			}
+		}
+		return closest;
+	}
+	
+	public void remove(InstanceID<Node<V>> id, boolean cleanup)
 	{
 		Node<V> node = map.getInstanceFromID(id);
 		if (node == null) throw new NoSuchElementException("InstanceID does not point to any node");
 		freeNode(node);
-		if (node.tree.parent != null) node.tree.parent.cleanUp();
+		if (node.tree.parent != null && cleanup) node.tree.parent.cleanUp();
 	}
 	
 	private void clean()
 	{
-		if (sum() <= leafCapacity)
+		if (sum(0) <= leafCapacity)
 		{
 			eatChildren();
 		}
@@ -415,17 +468,14 @@ public class CRQuadTree<V> implements Iterable<V>
 	public boolean updateEntry(InstanceID<Node<V>> id)
 	{
 		Node<V> node = map.getInstanceFromID(id);
+		if (node == null) throw new NoSuchElementException("The provided Instance ID does not point to any Node, Node may been removed due leaving QuadTree boundary");
+		
 		if (node != null)
 		{
-			if (!node.tree.updateEntry(node))
-			{
-				freeNode(node);
-				return false;
-			}			
+			node.tree.updateEntry(node);
+			return true;
 		}
-		else throw new NoSuchElementException("The provided Instance ID does not point to any Node, Node may been removed due leaving QuadTree boundary");
-		
-		return true;
+		return false;
 	}
 	
 	/**
@@ -448,31 +498,19 @@ public class CRQuadTree<V> implements Iterable<V>
 	private boolean updateEntry(Node<V> node)
 	{
 		
-		if (node.tree.bounds.fullyContains(node.bounds))
+		if (bounds.fullyContains(node.bounds))
 		{	
-			if (divided)
-			{
-				if (insertToChildren(node)) //fits in child node, remove entry from the leafs at this level
-				{
-					return true;
-				}
-			}
-			if (this.equals(node.tree)) insert(node); //node fits into level add to this level
+			//if (node.tree.equals(this)) return true; //same tree nothing changed
+			return insert(node); //put the node into the current level, different tree may cause subdivde
 		}
 		else //no longer fits in current level check
 		{
 			if (parent != null) //check if the node can be moved into parent tree
 			{
-				if (parent.updateEntry(node))
-				{
-					if (leafs.size() + sum() <= leafCapacity) eatChildren();
-					return true;
-				}
+				return parent.updateEntry(node);
 			}
-			else return false; //the tree does not have a parent has no parent node no longer fits into QuadTree
+			return false; //the tree does not have a parent has no parent node no longer fits into QuadTree
 		}
-		
-		return true;
 	}
 	
 	/**
@@ -532,6 +570,55 @@ public class CRQuadTree<V> implements Iterable<V>
 		g2.setStroke(new BasicStroke(1));
 		g2.setColor(Color.red);
 		g2.drawRect((int)bounds.getX(), (int)bounds.getY(), (int)bounds.getWidth(), (int)bounds.getHeight());
+	}
+
+	public void clear() 
+	{
+		synchronized (leafs) 
+		{
+			leafs.clear();
+			
+		}
+		if (divided)
+		{
+			northEast.clear();
+			northWest.clear();
+			southEast.clear();
+			southWest.clear();
+		}
+	}
+
+	public Vector2 closetHit(Ray ray) 
+	{
+		DoubleBox box = new DoubleBox();
+		box.num=Double.MAX_VALUE;
+		return queryClosestHit(ray, box, null);		
+	}
+
+	public boolean isClearLine(Ray ray) 
+	{
+		if (ray.intersects(bounds) || bounds.contains(ray.origin()) && bounds.contains(ray.end()))
+		{
+			for (Node<V> node : leafs) {
+				if (ray.intersects(node.bounds))
+				{
+					return false;
+				}
+				else if (node.bounds.contains(ray.origin()) && node.bounds.contains(ray.end()))
+				{
+					return false;
+				}
+			}
+			
+			if (divided)
+			{
+				if (!northEast.isClearLine(ray)) return false;
+				if (!northWest.isClearLine(ray)) return false;
+				if (!southEast.isClearLine(ray)) return false;
+				if (!southWest.isClearLine(ray)) return false;
+			}
+		}
+		return true;
 	}
 	
 	

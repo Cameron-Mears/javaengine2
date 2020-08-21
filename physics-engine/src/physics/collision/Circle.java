@@ -12,6 +12,11 @@ public class Circle extends Shape
 		this.radius = radius;
 	}
 	
+	public Circle(double x, double y, double radius)
+	{
+		this(new Vector2(x, y), radius);
+	}
+	
 	public double getRadius()
 	{
 		return radius;

@@ -66,7 +66,7 @@ public class QuadTreeTester
 		for (InstanceID<Node<String>> instanceID : toRemove) 
 		{
 			//System.out.println(++i);
-			tree.remove(instanceID);
+			//tree.remove(instanceID);
 		}
 		seconds = TimeUtils.nanosToSeconds(System.nanoTime()  - now);
 		System.out.println("Deletion of " + Integer.toString(size) +" nodes - > " + Double.toString(seconds)  + " seconds");	

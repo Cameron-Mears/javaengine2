@@ -15,6 +15,7 @@ import graphics.instance.IGraphics;
 import graphics.layer.GraphicsLayer;
 import graphics.layer.GraphicsLayerManager;
 import physics.collision.Rectangle;
+import physics.general.Vector2;
 
 public class Renderer extends EngineInstance implements IGraphics
 {
@@ -72,6 +73,12 @@ public class Renderer extends EngineInstance implements IGraphics
 	 * @param camera
 	 */
 	
+	
+	public Camera getActiveCamera()
+	{
+		return activeCamera;
+	}
+	
 	public void addCamera(long id, Camera camera)
 	{
 		cameras.put(id, camera);
@@ -103,6 +110,14 @@ public class Renderer extends EngineInstance implements IGraphics
 	public Rectangle renderBoundingArea() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public void translateCord(Vector2 mouse) 
+	{	
+		if (activeCamera != null && mouse != null)
+		{
+			mouse.add(activeCamera.getPosition().x, activeCamera.getPosition().y);
+		}
 	}
 
 }

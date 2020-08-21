@@ -7,22 +7,19 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
 
-import engine.core.exceptions.EngineException;
 import engine.core.instance.InstanceID;
 import engine.core.instance.InstanceMap;
 import engine.core.tick.TickHandler;
 import engine.core.tick.TickInfo;
 import engine.core.tick.Tickable;
-import external.org.json.JSONException;
-import graphics.instance.InvalidInstanceException;
-import graphics.viewer.Window;
+import graphics.viewer.Display;
 import physics.general.Transform;
 import physics.general.Vector2;
 
@@ -33,16 +30,16 @@ public class InputHandler implements MouseListener, KeyListener, MouseWheelListe
 	
 	private InstanceID<InputHandler> id;
 	
-	private HashMap<Integer, Boolean> keyWasPressed;
-	private HashMap<Integer, Boolean> keyWasReleased;
-	private HashMap<Integer, Boolean> keyIsDown;
+	private ConcurrentHashMap<Integer, Boolean> keyWasPressed;
+	private ConcurrentHashMap<Integer, Boolean> keyWasReleased;
+	private ConcurrentHashMap<Integer, Boolean> keyIsDown;
 	
 	private Queue<Integer> keyPresses;
 	private Queue<Integer> keyReleases;	
 	
-	private HashMap<Integer, Boolean> mouseWasPressed;
-	private HashMap<Integer, Boolean> mouseWasReleased;
-	private HashMap<Integer, Boolean> mouseIsDown;
+	private ConcurrentHashMap<Integer, Boolean> mouseWasPressed;
+	private ConcurrentHashMap<Integer, Boolean> mouseWasReleased;
+	private ConcurrentHashMap<Integer, Boolean> mouseIsDown;
 	
 	private Queue<Integer> mousePresses;
 	private Queue<Integer> mouseReleases;
@@ -54,7 +51,31 @@ public class InputHandler implements MouseListener, KeyListener, MouseWheelListe
 	private boolean isQueued = false; //stops this from getting queued multiple times
 	private int mouseX;
 	private int mouseY;
+	private LinkedList<MouseTx> mousetxs;
+	private double sign;
+
+	private int scrollsSinceLast;
+
+	private int totalScrolls;
 	
+	private static class MouseTx
+	{
+		Vector2 tx;
+		double sign;
+		public MouseTx(Vector2 tx, double sign)
+		{
+			this.tx = tx;
+			this.sign = sign;
+		}
+	}
+	
+	
+	public void addMouseTranslation(Vector2 translation, double sign)
+	{
+		this.sign =  sign;
+		MouseTx tx = new MouseTx(translation, sign);
+		mousetxs.add(tx);
+	}
 	
 	@Override
 	public boolean equals(Object o)
@@ -64,6 +85,7 @@ public class InputHandler implements MouseListener, KeyListener, MouseWheelListe
 	
 	public InputHandler(boolean enable)
 	{
+		mousetxs = new LinkedList<InputHandler.MouseTx>();
 		listeners = new LinkedList<InputEventListener>();
 		id = map.newInstanceID(this);
 		if (enable) enable();
@@ -76,9 +98,9 @@ public class InputHandler implements MouseListener, KeyListener, MouseWheelListe
 		Field[] fields = KeyEvent.class.getDeclaredFields();
 		int n = 0;
 
-		keyWasPressed = new HashMap<Integer, Boolean>(fields.length);
-		keyWasReleased = new HashMap<Integer, Boolean>(fields.length);
-		keyIsDown = new HashMap<Integer, Boolean>(fields.length);
+		keyWasPressed = new ConcurrentHashMap<Integer, Boolean>(fields.length);
+		keyWasReleased = new ConcurrentHashMap<Integer, Boolean>(fields.length);
+		keyIsDown = new ConcurrentHashMap<Integer, Boolean>(fields.length);
 		
 		keyPresses = new LinkedList<Integer>();
 		keyReleases = new LinkedList<Integer>();	
@@ -106,9 +128,9 @@ public class InputHandler implements MouseListener, KeyListener, MouseWheelListe
 		
 		fields = MouseEvent.class.getDeclaredFields();
 		n = 0;
-		mouseWasPressed = new HashMap<Integer, Boolean>(fields.length);
-		mouseWasReleased = new HashMap<Integer, Boolean>(fields.length);
-		mouseIsDown = new HashMap<Integer, Boolean>(fields.length);
+		mouseWasPressed = new ConcurrentHashMap<Integer, Boolean>(fields.length);
+		mouseWasReleased = new ConcurrentHashMap<Integer, Boolean>(fields.length);
+		mouseIsDown = new ConcurrentHashMap<Integer, Boolean>(fields.length);
 		
 		mousePresses = new LinkedList<Integer>();
 		mouseReleases = new LinkedList<Integer>();
@@ -176,9 +198,11 @@ public class InputHandler implements MouseListener, KeyListener, MouseWheelListe
 	public Vector2 getMousePosition()
 	{
 		Vector2 pos = new Vector2(mouseX, mouseY);
-		if (transform != null)
+		if (mousetxs != null)
 		{
-			pos.add(transform.getPosition());
+			for (MouseTx tx : mousetxs) {
+				pos.add(tx.tx.scaled(tx.sign));
+			}
 		}
 		return pos;
 	}
@@ -186,18 +210,18 @@ public class InputHandler implements MouseListener, KeyListener, MouseWheelListe
 	
 	public void disable()
 	{
-		Window.getInstance().removeKeyListener(this);
-		Window.getInstance().removeMouseListener(this);
-		Window.getInstance().removeMouseMotionListener(this);
-		Window.getInstance().removeMouseWheelListener(this);
+		Display.getInstance().removeKeyListener(this);
+		Display.getInstance().removeMouseListener(this);
+		Display.getInstance().removeMouseMotionListener(this);
+		Display.getInstance().removeMouseWheelListener(this);
 	}
 	
 	public void enable()
 	{
-		Window.getInstance().addKeyListener(this);
-		Window.getInstance().addMouseListener(this);
-		Window.getInstance().addMouseMotionListener(this);
-		Window.getInstance().addMouseWheelListener(this);
+		Display.getInstance().addKeyListener(this);
+		Display.getInstance().addMouseListener(this);
+		Display.getInstance().addMouseMotionListener(this);
+		Display.getInstance().addMouseWheelListener(this);
 	}
 	
 	
@@ -259,6 +283,7 @@ public class InputHandler implements MouseListener, KeyListener, MouseWheelListe
 			mousePresses.add(button);
 		}
 		TickHandler.getInstance().queueTickable(this);
+		informListeners();
 	}
 
 	@Override
@@ -266,12 +291,11 @@ public class InputHandler implements MouseListener, KeyListener, MouseWheelListe
 	{
 		int button = e.getButton();
 		
-		if (!mouseIsDown.get(button))
-		{
-			mouseIsDown.put(button,false);
-			mouseWasReleased.put(button, true);
-			mouseReleases.add(button);
-		}
+		
+		mouseIsDown.put(button,false);
+		mouseWasReleased.put(button, true);
+		mouseReleases.add(button);
+		
 		TickHandler.getInstance().queueTickable(this);
 		informListeners();
 	}
@@ -291,21 +315,24 @@ public class InputHandler implements MouseListener, KeyListener, MouseWheelListe
 	}
 	
 	@Override
-	public void mouseDragged(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
+	public void mouseDragged(MouseEvent e) 
+	{
+		mouseX = e.getX();
+		mouseY = e.getY();
+		informListeners();
 	}
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		mouseX = e.getX();
 		mouseY = e.getY();
-		
+		informListeners();
 	}
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		e.getClickCount();
+		scrollsSinceLast += e.getScrollAmount()/e.getUnitsToScroll();
+		totalScrolls +=  e.getScrollAmount();
 		
 	}
 
@@ -329,6 +356,12 @@ public class InputHandler implements MouseListener, KeyListener, MouseWheelListe
 			mouseWasPressed.put(key,false);
 		}
 		
+		while (!mouseReleases.isEmpty())
+		{
+			Integer key = mouseReleases.poll();
+			mouseWasReleased.put(key,false);
+		}
+		
 		while (!keyReleases.isEmpty())
 		{
 			Integer key = mouseReleases.poll();
@@ -337,6 +370,12 @@ public class InputHandler implements MouseListener, KeyListener, MouseWheelListe
 		isQueued = false;
 		
 		
+	}
+
+	public int scrollDelta() {
+		int temp = scrollsSinceLast;
+		scrollsSinceLast = 0;
+		return temp;
 	}
 
 }

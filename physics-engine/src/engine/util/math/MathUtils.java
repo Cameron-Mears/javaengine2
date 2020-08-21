@@ -10,4 +10,10 @@ public final class MathUtils
 		
 		return val > min? val:min;
 	}
+
+	public static double direction(double yDirection, double xDirection) 
+	{
+		double angle =  Math.atan2(-yDirection, xDirection);
+		return (angle < 0)? (2*Math.PI)+angle:angle;
+	}
 }

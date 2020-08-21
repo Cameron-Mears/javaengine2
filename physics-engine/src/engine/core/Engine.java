@@ -136,7 +136,7 @@ public final class Engine                                                       
 		//add to seperate parsing methods
 		engineProperties.put("tickHandlerConfig", new JSONObject(new JSONTokener(new FileInputStream(new File(USER_DIR+"\\config\\tickHandlerConfig.json")))).getJSONArray("tick_handler"));
 		
-		files = new GameFiles(USER_DIR + "\\assets\\gamefiles"); 
+		files = new GameFiles(USER_DIR + "\\assets"); 
 		AssetMapParser.parseAssetMap(new File(System.getProperty("user.dir") + "\\assets\\assetmap.json"));
 	}
 	
@@ -163,14 +163,21 @@ public final class Engine                                                       
 	
 	public static void printDebugMessage(Object message, Object sender)
 	{
-		System.out.print("[DEBUG][" + sender.getClass().getName() + "]: ");
+		System.out.print("[DEBUG][" + senderToString(sender) + "]: ");
 		System.out.println(message);
+	}
+	
+	private static String senderToString(Object sender)
+	{
+		if (sender instanceof String) return (String) sender;		
+		if (sender instanceof Class) return ((Class<?>)sender).getName();
+		return sender.getClass().getName();
 	}
 	
 	public static void printWarningMessage(Object message, Object sender)
 	{
-		//System.out.print("[WARNING][" + sender.getClass().getName() + "]: ");
-		//System.out.println(message);
+		System.err.print("[WARNING][" + senderToString(sender) + "]: ");
+		System.out.println(message);
 	}
 	
 	

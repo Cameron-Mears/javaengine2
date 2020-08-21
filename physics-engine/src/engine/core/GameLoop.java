@@ -4,11 +4,12 @@ import java.awt.Graphics2D;
 import java.io.IOException;
 
 import engine.core.exceptions.EngineException;
+import engine.core.instance.EngineInstance;
 import engine.core.tick.TickHandler;
 import external.org.json.JSONException;
 import graphics.instance.InvalidInstanceException;
 import graphics.layer.GraphicsLayerManager;
-import graphics.viewer.Window;
+import graphics.viewer.Display;
 import physics.collision.CollisionLayerManager;
 
 class GameLoop extends Thread
@@ -168,6 +169,7 @@ class GameLoop extends Thread
 				frames = 0;
 				deltaSum = 0;
 			}
+			EngineInstance.flush();
 			this.lastTime = now;
 			
 			
@@ -185,13 +187,13 @@ class GameLoop extends Thread
 	{
 		Graphics2D g2 = null;
 		try
-		{ g2 = Window.getInstance().createGraphics();
+		{ g2 = Display.getInstance().createGraphics();
 			
 		}
 		catch (Exception e) {e.printStackTrace();}
 		if (g2 == null) return;
 		GraphicsLayerManager.getInstance().render(g2);
-		Window.getInstance().showGraphics();
+		Display.getInstance().showGraphics();
 	}
 	
 

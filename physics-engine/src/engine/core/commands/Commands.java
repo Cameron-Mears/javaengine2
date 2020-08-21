@@ -1,15 +1,22 @@
 package engine.core.commands;
 
-import java.io.Console;
-import java.text.NumberFormat;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import engine.core.Engine;
+import graphics.layer.GraphicsLayer;
+import graphics.layer.GraphicsLayerManager;
 
 public final class Commands 
 {
 	private ConcurrentHashMap<String, ConsoleCommand> commands;
 	private ConcurrentHashMap<String, ConcurrentHashMap<String, ConsoleCommand>> subCommands;
+	private static Commands instance;
+	public static Commands getInstance()
+	{
+		return instance;
+	}
 	private ConsoleCommand exit = new ConsoleCommand() {
 		
 		@Override
@@ -17,6 +24,11 @@ public final class Commands
 		{
 			System.exit(0);
 			return null;
+		}
+
+		@Override
+		public String syntax() {
+			 return "Syntax -> | shutdown the engine";
 		}
 	};
 	
@@ -26,6 +38,32 @@ public final class Commands
 		public String exucute(String... args) {
 			Engine.getInstance().setProperty("drawFunc", args[0]);
 			return "";
+		}
+
+		@Override
+		public String syntax() {
+			return "Syntax -> command does nothing";
+		}
+	};
+	
+	private ConsoleCommand setLayerHidden = new ConsoleCommand() {
+		
+		@Override
+		public String exucute(String... args) 
+		{
+			if (args.length < 2) return tooFewArguments(2);
+			String layer = args[0];
+			GraphicsLayer gl = GraphicsLayerManager.getInstance().getLayer(layer);
+			if  (gl == null) return "No such GraphicsLayer -> " + layer;
+			boolean b = Boolean.parseBoolean(args[1]);
+			gl.setHidden(b);
+			return "GrphicsLayer -> " + layer + " succesfully " + ((b)?"hidden":"shown");
+		}
+
+		@Override
+		public String syntax() {
+			
+			return "Syntax -> layer->string hidden->boolean | the name of the layer, if hidden is true the engine not render the layer";
 		}
 	};
 	
@@ -49,6 +87,11 @@ public final class Commands
 			
 			return "Tickrate Succesfully Changed to " + numberToString(value);
 		}
+
+		@Override
+		public String syntax() {
+			return "Syntax -> rate->int the rate to change the target tickrate to";
+		}
 	};
 	
 	private ConsoleCommand printRates = new ConsoleCommand() {
@@ -57,9 +100,44 @@ public final class Commands
 		public String exucute(String... args) {
 			boolean b = Boolean.parseBoolean(args[0]);
 			Engine.getInstance().setProperty("printRates", b);
-			return null;
+			return b? "Started Printing Rates":"Stopped Printing Rates";
+		}
+
+		@Override
+		public String syntax() {
+			return "Syntax -> printRates->boolean if true the engine will print rates to the console";
 		}
 	};
+	
+	private ConsoleCommand help = new ConsoleCommand() {
+		
+		@Override
+		public String exucute(String... args) {
+			String ret = "\n";
+			Set<Entry<String,ConsoleCommand>> cmds = commands.entrySet();
+			Set<Entry<String, ConcurrentHashMap<String, ConsoleCommand>>> subcmds = subCommands.entrySet();
+			for (Entry<String, ConcurrentHashMap<String, ConsoleCommand>> entry : subcmds) {
+				
+				ret += "Command Subset -> " + entry.getKey() + "\n";
+				ret += "\t" + printCommandSet(entry.getValue().entrySet()) + "\n";
+			}
+			return printCommandSet(cmds) + ret;
+		}
+		
+		@Override
+		public String syntax() {
+			return "";
+		}
+	};
+	
+	private String printCommandSet(Set<Entry<String,ConsoleCommand>> commands)
+	{
+		String ret = "\n";
+		for (Entry<String, ConsoleCommand> entry : commands) {
+			ret += "Command: \"" +entry.getKey() + "\" \t" + entry.getValue().syntax()+"\n";
+		}
+		return ret;
+	}
 	
 	private ConsoleCommand changeFrameRate = new ConsoleCommand() {
 		
@@ -80,6 +158,11 @@ public final class Commands
 			}
 			
 			return "Framerate Succesfully Changed to " + numberToString(value);
+		}
+
+		@Override
+		public String syntax() {
+			return "Syntax -> rate->int the rate to change the target framerate to";
 		}
 	};
 	
@@ -102,6 +185,11 @@ public final class Commands
 			}
 			
 			return "Framerate Succesfully Changed to " + numberToString(value);
+		}
+
+		@Override
+		public String syntax() {
+			return "Syntax -> command does nothing right now";
 		}
 	};
 	
@@ -196,18 +284,50 @@ public final class Commands
 		
 	}
 	
+	public void addCommands(ConcurrentHashMap<String, ConsoleCommand> commands, boolean override, boolean disableOverrideWarnings)
+	{
+		if (commands == null)
+		{
+			Engine.printWarningMessage("The command list to add was null", this);
+			return;
+		}
+		
+		Set<Entry<String, ConsoleCommand>> set = commands.entrySet();
+		
+		for (Entry<String, ConsoleCommand> entry : set) 
+		{
+			if (entry.getValue() == null)
+			{
+				Engine.printWarningMessage("The command " + entry.getKey() + " contains a null commands", this);
+				
+			}
+			if (this.commands.get(entry.getKey()) != null)
+			{
+				if (override)
+				{
+					this.commands.put(entry.getKey(), entry.getValue());
+					if (!disableOverrideWarnings) Engine.printWarningMessage("Overwriting Command -> " + entry.getKey(), this);;
+				}
+			}
+			this.commands.put(entry.getKey(), entry.getValue());
+		}
+	}
+	
 	public Commands()
 	{
+		instance = this;
 		commands = new ConcurrentHashMap<String, ConsoleCommand>();
 		commands.put("exit", exit);
 		commands.put("draw", changeDrawFunc);
 		commands.put("printRates",printRates);
+		commands.put("help",help);
 		subCommands = new ConcurrentHashMap<String, ConcurrentHashMap<String,ConsoleCommand>>();
 		subCommands.put("tick", new ConcurrentHashMap<String, ConsoleCommand>());
 		subCommands.put("render", new ConcurrentHashMap<String, ConsoleCommand>());
 		
 		ConcurrentHashMap<String, ConsoleCommand> renderCommands = subCommands.get("render");
 		renderCommands.put("setFrameRate", changeFrameRate);
+		renderCommands.put("setLayerHidden", this.setLayerHidden);
 		
 		ConcurrentHashMap<String, ConsoleCommand> tickCommands = subCommands.get("tick");
 		tickCommands.put("setRate", changeTickRate);

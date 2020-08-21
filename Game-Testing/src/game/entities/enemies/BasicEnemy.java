@@ -1,12 +1,9 @@
 package game.entities.enemies;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 
 import engine.core.tick.TickHandler;
 import engine.core.tick.TickInfo;
-import external.org.json.JSONObject;
-import game.entities.Player;
 import graphics.layer.GraphicsLayerManager;
 import graphics.sprite.SpriteMap;
 import physics.body.MassData;
@@ -19,20 +16,21 @@ import physics.general.Vector2;
 
 public class BasicEnemy extends Enemy
 {
-	private int tickLife = 100;
 	private long depth;
 	
-	public BasicEnemy()
+	public BasicEnemy(long n)
 	{
-		super(new PhysicsBody(new MassData(1), new Material(), new Transform()));
-		depth = GraphicsLayerManager.getInstance().getLayer("default").addGraphics(this,0);
-		TickHandler.getInstance().addTickable("default", this);
+		super(500, 10, n);
+		body = new PhysicsBody(new MassData(1), new Material(), new Transform());
 		sprite = SpriteMap.getClonedSprite("enemy");
 		hitbox = new HitBox(new Rectangle(32, 32, getPosition()), this);
+		super.init(body, hitbox);
+		
+		TickHandler.getInstance().addTickable("default", this);
 	}
 
 	@Override
-	public void onTick(TickInfo info, Object t) 
+	public void tick(TickInfo info) 
 	{
 		pathFollower.onTick(info);
 		sprite.tick(info);
@@ -40,15 +38,13 @@ public class BasicEnemy extends Enemy
 
 	@Override
 	public void render(Graphics2D g2) {
-		
-		//g2.setColor(Color.RED);
-		//g2.fillRect((int)(body.getPosition().getX()*32), (int)(body.getPosition().getY()*32), 32, 32);
-		g2.drawImage(sprite.getCurrentFrame(), (int)(body.getPosition().getX()*32), (int)(body.getPosition().getY()*32), null);
+	
+		g2.drawImage(sprite.getCurrentFrame(), (int)body.getPosition().getX(), (int)body.getPosition().getY(), null);
 	}
 
 	@Override
 	public Rectangle renderBoundingArea() {
-		return null;
+		return hitbox.getBounds();
 	}
 
 	@Override
@@ -63,7 +59,6 @@ public class BasicEnemy extends Enemy
 
 	@Override
 	public HitBox getHitBox() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

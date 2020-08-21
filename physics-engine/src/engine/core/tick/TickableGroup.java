@@ -1,5 +1,6 @@
 package engine.core.tick;
 
+import engine.core.Engine;
 import engine.core.exceptions.EngineException;
 import engine.core.instance.EngineInstance;
 import engine.core.instance.InstanceID;
@@ -9,8 +10,9 @@ import engine.util.tree.HashTreeMap;
 import engine.util.tree.TraverseFunction;
 import external.org.json.JSONArray;
 import external.org.json.JSONException;
+import external.org.json.JSONObject;
 import graphics.instance.InvalidInstanceException;
-import graphics.viewer.Window;
+import graphics.viewer.Display;
 
 
 public class TickableGroup implements Tickable, EngineRemovable
@@ -62,6 +64,7 @@ public class TickableGroup implements Tickable, EngineRemovable
 	{
 		int size = members.size();
 		this.info = info;
+		this.info.groupName = "default";
 		members.inOrderTraverse(function);
 	}
 		
@@ -72,8 +75,15 @@ public class TickableGroup implements Tickable, EngineRemovable
 		
 		for (int index = 0; index < instances.length(); index++) 
 		{
-			EngineInstance instance = EngineInstance.instanceFromJSON(instances.getJSONObject(index));
-			addTickable(instance);
+			JSONObject obj = instances.getJSONObject(index);
+			try
+			{
+				EngineInstance instance = EngineInstance.instanceFromJSON(obj);
+				addTickable(instance);
+			}
+			catch (Exception e) {
+				Engine.printWarningMessage("Error loading instance -> " + obj.toString(), this);
+			}
 		}
 	}
 	catch (Exception e) {e.printStackTrace();};
@@ -95,7 +105,6 @@ public class TickableGroup implements Tickable, EngineRemovable
 	@Override
 	public void onTick(TickInfo info) 
 	{
-		System.out.println(members.size());
 		tick(info);
 	}
 

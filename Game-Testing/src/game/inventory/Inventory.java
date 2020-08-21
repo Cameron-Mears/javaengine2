@@ -21,7 +21,7 @@ import game.entities.item.Item;
 import graphics.sprite.Sprite;
 import graphics.sprite.SpriteMap;
 import graphics.util.GraphicsUtils;
-import graphics.viewer.Window;
+import graphics.viewer.Display;
 
 public class Inventory implements JSONSerializable, Comparator<Entry>, InputEventListener
 {
@@ -137,8 +137,8 @@ public class Inventory implements JSONSerializable, Comparator<Entry>, InputEven
 	{
 		if (active)
 		{	
-			x = GraphicsUtils.center(drawWidth, Window.WIDTH);
-			y = GraphicsUtils.center(drawHeight, Window.HEIGHT);
+			x = GraphicsUtils.center(drawWidth, Display.WIDTH);
+			y = GraphicsUtils.center(drawHeight, Display.HEIGHT);
 			int uix = GraphicsUtils.putRight(32, drawWidth) + x;
 			Color color = new Color(0, 0, 0, 230);
 			g2.setColor(color);

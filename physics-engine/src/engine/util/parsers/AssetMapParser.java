@@ -40,7 +40,7 @@ public class AssetMapParser
 					
 					
 				case "tilemap":
-					tileMapAssets.putTileMap(new TileMap(asset, tileMapAssets.getImageSet(asset.getString("name")), asset.getString("name")));
+					tileMapAssets.putTileMap(new TileMap(asset, tileMapAssets.getImageSet(asset.getString("imageset")), asset.getString("name")));
 					break;
 				case "tilemapimageset":
 					tileMapAssets.putTileMapImageSet(parserImageSet(asset));

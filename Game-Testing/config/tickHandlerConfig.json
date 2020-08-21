@@ -6,14 +6,7 @@
 			"enabled": true,
 			"members":[
 
-				{
-					"class" : "game.entities.BackgroundManager",
-					"graphicsLayer": "default",
-					"graphicsDepth": -1,
-					"constructor": {
-						"test":1
-					}
-				},
+				
 				{
 					"class" : "game.entities.Player",
 					"graphicsLayer": "default",

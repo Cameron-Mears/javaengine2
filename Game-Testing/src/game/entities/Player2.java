@@ -52,7 +52,7 @@ public class Player2 extends Entity
 	
 	
 	@Override
-	public void onTick(TickInfo info, Object o) 
+	public void onTick(TickInfo info) 
 	{
 		/*
 		if (input.isKeyDown('W')) body.applyForce(0,-100);

@@ -11,7 +11,8 @@
 		
 		"tickrate": 40000,
 		"framerate": 20000,
-		"doTickAndFrameRatePrint" : true,
+		"doTickAndFrameRatePrint" : false,
+		"drawDebugGeom": false,
 		"doLoad": true,
 		"collisionDefaultLayerBounds":{
 			"origin_x": -100,

@@ -52,6 +52,7 @@ public class TickScheduler
 		}
 	}
 	
+	
 	private TickScheduler()
 	{
 		info = new TickInfo();
@@ -96,6 +97,13 @@ public class TickScheduler
 		};
 	}
 	
+	public void remove(InstanceID<Node> nodeID)
+	{
+		Node node = nodeMap.getInstanceFromID(nodeID);
+		if (node == null) throw new EngineException("nodeID is invalid, or the tickaable as alreay run");
+		nodes.put(nodeID, null);
+	}
+	
 	public void pause(InstanceID<Node> nodeID)
 	{
 		Node node = nodeMap.getInstanceFromID(nodeID);
@@ -117,11 +125,16 @@ public class TickScheduler
 		return node.id;
 	}
 	
-	public InstanceID<Node> addPeriodic(Tickable t, long interval)
+	public InstanceID<Node> addPeriodic(Tickable t, long intervalNanos)
 	{
-		if (t == null || interval < 0) throw new IllegalArgumentException();
-		Node node = new Node(t, interval, this, true);
+		if (t == null || intervalNanos < 0) throw new IllegalArgumentException();
+		Node node = new Node(t, intervalNanos, this, true);
 		return node.id;	
+	}
+
+	public int numScheduled() 
+	{
+		return nodes.size();
 	}
 	
 	

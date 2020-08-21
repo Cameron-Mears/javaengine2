@@ -1,7 +1,7 @@
 package graphics.layer;
 
 import java.awt.Graphics2D;
-import java.util.function.Function;
+import java.util.LinkedList;
 
 import engine.core.Engine;
 import engine.core.exceptions.EngineException;
@@ -13,6 +13,8 @@ import engine.util.tree.TraverseFunction;
 import graphics.Camera;
 import graphics.instance.IGraphics;
 import physics.collision.Rectangle;
+import physics.collision.quadtree.CRQuadTree;
+import physics.collision.quadtree.CRQuadTree.Node;
 
 public class GraphicsLayer implements EngineRemovable
 {
@@ -45,21 +47,35 @@ public class GraphicsLayer implements EngineRemovable
 	
 	private HashTreeMap<Long, GraphicsNode> members;
 	private HashTreeMap<Long,GraphicsInstance> renderOrder;
+	
+	
 	private Graphics2D g2;
-	private TraverseFunction<GraphicsInstance> traverse;
+	private TraverseFunction<GraphicsInstance> traverseBST;
+	private CRQuadTree<IGraphics> qt;
 	private RENDER_QUERY_MODE mode;
+	private boolean hidden;
 
 	private static class GraphicsNode
 	{
 		InstanceID<EngineInstance> id;
 		long requestedDepth;
 		long putAtDepth;
+		InstanceID<Node<IGraphics>> qtID;
 	}
+	
 	
 	@Override
 	public boolean equals(Object other)
 	{
 		return (other instanceof GraphicsLayer)?  ((GraphicsLayer) other).getName().equals(name):false;
+	}
+	
+	
+	public GraphicsLayer(String name, CRQuadTree<IGraphics> quadtree)
+	{
+		this(name);
+		this.mode = RENDER_QUERY_MODE.QUAD_TREE;
+		this.qt = quadtree;
 	}
 	
 	public GraphicsLayer(String name) 
@@ -68,7 +84,7 @@ public class GraphicsLayer implements EngineRemovable
 		this.mode = RENDER_QUERY_MODE.BST;
 		renderOrder = new HashTreeMap<Long, GraphicsInstance>();
 		members = new HashTreeMap<>();
-		traverse = new TraverseFunction<GraphicsInstance>() 
+		traverseBST = new TraverseFunction<GraphicsInstance>() 
 		{
 
 			@Override
@@ -111,14 +127,16 @@ public class GraphicsLayer implements EngineRemovable
 	
 	public void render(Graphics2D g2)
 	{
+		if (hidden) return;
 		this.g2 = g2;
 		
 		switch (mode) 
 		{
 			case BST:
-				renderOrder.inOrderTraverse(traverse);
+				renderOrder.inOrderTraverse(traverseBST);
 				break;
 			case QUAD_TREE:
+				renderQT();
 				break;
 			case DEPTH_QUAD_TREE:
 				break;
@@ -127,7 +145,7 @@ public class GraphicsLayer implements EngineRemovable
 			throw new IllegalArgumentException("Unexpected value: " + mode);
 		}
 	}
-
+	
 	
 	/**
 	 * 
@@ -137,7 +155,7 @@ public class GraphicsLayer implements EngineRemovable
 	 */
 	public long addGraphics(EngineInstance eInstance, long depth) 
 	{
-		if (eInstance.getComponent("IGraphics") == null) throw new EngineException("Instance : " + eInstance.getClass().getName() + " does not implement IGrpahics or is not defined in the EngineInstances.json file");
+		//if (IGraphics.class.isAssignableFrom(eInstance.getClass())) throw new EngineException("Instance : " + eInstance.getClass().getName() + " does not implement IGrpahics or is not defined in the EngineInstances.json file");
 		
 		GraphicsNode node = new GraphicsNode();
 		node.id = eInstance.getID();
@@ -203,6 +221,37 @@ public class GraphicsLayer implements EngineRemovable
 	}
 	
 	
+	/**
+	 * Function to inset into a {@code RENDER_QUERY_MODE.QUADTREE} layer, the EngineInstance must implement IGraphics and must have a render bounding area
+	 * note using the quadtree graphics instances can added externally
+	 * @param instance
+	 */
+	public void add(EngineInstance instance)
+	{
+		if (!(instance instanceof IGraphics)) 
+			throw new EngineException("Instance : " + instance.getClass().getName() + " does not implement IGrpahics or is not defined in the EngineInstances.json file");
+		
+		IGraphics graphics = (IGraphics) instance;
+		Rectangle rect = graphics.renderBoundingArea();
+		if (rect == null) throw new EngineException("Instance : " + instance.getClass().getName() + "must return a render bounding area defined in IGraphics.renderBoundingArea");
+		GraphicsNode node = new GraphicsNode();
+		node.id = instance.getID();
+		node.qtID = qt.put(rect, graphics);	
+		instance.addedToRemovableStruct(this);
+		members.put(instance.getID().getID(), node);
+	}
+	
+	private void renderQT()
+	{
+		if (camera == null) throw new NullPointerException("The Camera cannot be null for quadtree rendering");
+		
+		LinkedList<IGraphics> list = qt.queryCollisions(camera.getBounds());
+		
+		for (IGraphics engineInstance : list) {
+			engineInstance.render(g2);
+		}
+	}
+	
 	public boolean addGraphicsInstance(GraphicsInstance g)
 	{
 		return false;
@@ -214,8 +263,13 @@ public class GraphicsLayer implements EngineRemovable
 		GraphicsNode node = members.get(id.getID());
 		if (node == null)
 		{
-			System.out.print("Error -> ");
-			System.out.println(id);
+			Engine.printWarningMessage("Error -> no node with id" + id.toString(), this);
+		}
+		if (node.qtID != null)
+		{
+			qt.remove(node.qtID, true);
+			members.put(id.getID(), null);
+			return;
 		}
 		GraphicsInstance gi = renderOrder.get(node.putAtDepth);
 		gi.remove(node.requestedDepth);
@@ -224,6 +278,12 @@ public class GraphicsLayer implements EngineRemovable
 
 	public boolean contains(InstanceID<EngineInstance> id) {
 		return members.get(id.getID()) != null;
+	}
+
+
+	public void setHidden(boolean hidden) 
+	{
+		this.hidden = hidden;		
 	}
 	
 	

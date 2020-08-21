@@ -21,6 +21,9 @@ import graphics.layer.GraphicsLayerManager;
 public abstract class EngineInstance 
 {
 	protected InstanceID<EngineInstance> id;
+	protected boolean alive = true;
+	
+	private static LinkedList<EngineInstance> toFlush = new LinkedList<EngineInstance>();
 	
 	protected LinkedList<EngineRemovable> listmembers;
 	
@@ -50,7 +53,9 @@ public abstract class EngineInstance
 			try //check if is valid class
 			{
 				rootClass = Class.forName(clazz);
-			} catch (Exception e) {}
+			} catch (Exception e) {
+				//Engine.printWarningMessage("Could find class -> " + clazz, EngineInstance.class);
+				}
 			
 			if (rootClass == null) continue;
 			HashMap<String, Class<?>> components = new HashMap<String, Class<?>>();
@@ -125,20 +130,42 @@ public abstract class EngineInstance
 	
 	public final boolean delete()
 	{
-		synchronized (listmembers) {
-			while (!listmembers.isEmpty())
-			{
-				EngineRemovable struct = listmembers.poll();
-				synchronized (struct) {
-					struct.remove(id);	
+		beforeDelete();
+		toFlush.add(this);
+		alive = false;
+		return true;
+	}
+	
+	public static boolean flush()
+	{
+		for (EngineInstance instance : toFlush) 
+		{
+			synchronized (instance.listmembers) {
+				while (!instance.listmembers.isEmpty())
+				{
+					EngineRemovable struct = instance.listmembers.poll();
+					synchronized (struct) {
+						struct.remove(instance.id);	
+					}
 				}
+				instance.id.delete();
 			}
-			id.delete();
-			return true;
 		}
+		return true;
 	}
 	
 	
+	protected void beforeDelete()
+	{
+		
+	}
+	
+	public boolean isAlive()
+	{
+		return alive;
+	}
+
+
 	//optional method for class to implement to create an instance from a json file
 	public void configureFromJSON(JSONObject object)
 	{

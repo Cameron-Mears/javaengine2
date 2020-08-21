@@ -1,0 +1,83 @@
+{
+        "name": "background2",
+        "nTiles": 3,
+        "cellWidth": 32,
+        "cellHeight": 32,
+        "images": [
+            
+            {
+                "int_code": 1,
+                "path": "assets\\images\\tilemap\\tilemap_image_grass.png"
+            },
+            {
+                "int_code": 2,
+                "path": "assets\\images\\tilemap\\tilemap_image_x.png"
+            },
+            {
+                "int_code": 3,
+                "path": "assets\\images\\tilemap\\tilemap_image_turn_left_down.png"
+            },
+            {
+                "int_code": 4,
+                "path": "assets\\images\\tilemap\\tilemap_image_y.png"
+            },
+            {
+                "int_code":5,
+                "path": "assets\\images\\tilemap\\tilemap_image_turn_down_left.png"
+            },
+            {
+                "int_code":6,
+                "path": "assets\\images\\tilemap\\wall_top_junction.png"
+            },
+            {
+                "int_code":7,
+                "path":"assets\\images\\tilemap\\tilemap_wall_vertical.png"
+            },
+            {
+                "int_code":8,
+                "path":"assets\\images\\tilemap\\tilemap_wall.png"
+            },
+            {
+                "int_code":9,
+                "path":"assets\\images\\tilemap\\tilemap_end_right.png"
+            },
+            {
+                "int_code":10,
+                "path":"assets\\images\\tilemap\\tilemap_end_left.png"
+            },
+            {
+                "int_code":11,
+                "path":"assets\\images\\tilemap\\ground_0.png"
+            },
+            {
+                "int_code":12,
+                "path":"assets\\images\\tilemap\\ground_1.png"
+            },
+            {
+                "int_code":13,
+                "path":"assets\\images\\tilemap\\ground_2.png"
+            },
+            {
+                "int_code":14,
+                "path":"assets\\images\\tilemap\\ground_3.png"
+            },
+            {
+                "int_code":15,
+                "path":"assets\\images\\tilemap\\ground_4.png"
+            }
+            ,
+            {
+                "int_code":16,
+                "path":"assets\\images\\tilemap\\ground_5.png"
+            },
+            {
+                "int_code":17,
+                "path":"assets\\images\\tilemap\\ground_6.png"
+            },
+            {
+                "int_code":18,
+                "path":"assets\\images\\tilemap\\ground_7.png"
+            }
+            
+        ]
+}

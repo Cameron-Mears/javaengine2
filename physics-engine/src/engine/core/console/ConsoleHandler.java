@@ -1,5 +1,6 @@
 package engine.core.console;
 
+import java.awt.Window;
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -7,6 +8,7 @@ import engine.core.commands.Commands;
 
 public class ConsoleHandler 
 {
+	private Window win = new Window(null);
 	private ConsoleDevice console;
 	private boolean running;
 	private Commands commands;
@@ -16,11 +18,13 @@ public class ConsoleHandler
 		console = new ConsoleDevice();
 		running = true;
 		commands = new Commands();
-		new Thread(()->{
+		Thread thread = new Thread(()->{
 			
 			start();
 			
-		}).start();
+		});
+		thread.setName("Console");
+		thread.start();
 	}
 	
 	public void stop()

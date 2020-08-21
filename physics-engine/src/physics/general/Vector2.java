@@ -63,6 +63,12 @@ public class Vector2 implements JSONSerializable
 		y = 0;
 	}
 	
+	public Vector2(JSONObject object)
+	{
+		this.x = object.getDouble("x");
+		this.y = object.getDouble("y");
+	}
+	
 	public Vector2(double x, double y)
 	{
 		this.x = x;
@@ -140,19 +146,31 @@ public class Vector2 implements JSONSerializable
 	
 	public double angleTo(Vector2 other)
 	{
-		double angle =  Math.atan2(other.getY() - this.y,other.getX() - this.x);
-		return (angle < 0)? (2*Math.PI)+angle:angle;
+		double angle =  Math.atan2(-(other.y - y), other.x - x);
+		return (angle < 0)? angle+Math.PI*2:angle;
 	}
 	
+	public double ato(Vector2 o)
+	{
+		double dx = o.x-x;
+		double dy = -(o.y-y);
+		if (dx == 0) return Double.NaN;
+		if (dy == 0) return (dx > 0)? 0:Math.PI;
+		double ref = Math.atan(Math.abs(dy)/Math.abs(dx));
+		if (dx > 0 && dy > 0) return ref; //quadrant 1
+		if (dx < 0 && dy > 0) return Math.PI-ref; //quadrant 2
+		if (dx < 0 && dy < 0) return Math.PI+ref; //quadrant 3
+		return (Math.PI*2) - ref; //quadrant 4
+	}
 	public double direction()
 	{
-		double angle =  Math.atan2(y, x);
+		double angle =  Math.atan2(-y, x);
 		return (angle < 0)? (2*Math.PI)+angle:angle;
 	}
 	
 	public double getMagnitude()
 	{
-		return Math.hypot(x, y);
+		return Math.sqrt(x*x+y*y);
 	}
 	
 	public double dotProduct(Vector2 other)
@@ -163,12 +181,23 @@ public class Vector2 implements JSONSerializable
 
 	public double distanceTo(Vector2 position) 
 	{
-		return Math.hypot(position.x - x, position.y - y);
+		double dx = position.x - x;
+		double dy =  position.y - y;
+		return Math.sqrt(dx*dx+dy*dy);
+	}
+	/**
+	 * returns the square of the distance to the specified position avoiding expensive square root calculations
+	 */
+	
+	public double distanceToSq(Vector2 position)
+	{
+		double dx = position.x - x;
+		double dy =  position.y - y;
+		return (dx*dx)+(dy*dy);
 	}
 
 	@Override
-	public JSONObject serialize() 
-	
+	public JSONObject serialize()
 	{
 		JSONObject obj = new JSONObject();
 		obj.put("x", x);

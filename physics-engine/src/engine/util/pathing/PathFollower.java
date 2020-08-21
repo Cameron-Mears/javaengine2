@@ -79,8 +79,8 @@ public class PathFollower implements Tickable
 		int direction = (int)current.directionToNext();
 		if (direction == 0) xDir = 1;
 		if (direction == 180) xDir = -1;
-		if (direction == 90) yDir = 1;
-		if (direction == 270) yDir = -1;
+		if (direction == 90) yDir = -1;
+		if (direction == 270) yDir = 1;
 	}
 	
 	

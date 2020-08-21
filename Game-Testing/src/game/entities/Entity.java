@@ -1,11 +1,16 @@
 package game.entities;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+
 import engine.core.instance.EngineInstance;
 import engine.core.tick.TickHandler;
 import engine.core.tick.TickInfo;
 import engine.core.tick.Tickable;
 import engine.core.tick.TickableGroup;
 import engine.util.quadtree.ConcurrentQuadTreeNode;
+import game.entities.modifiers.EntityModifiers;
+import game.enums.Elements;
 import graphics.instance.IGraphics;
 import graphics.layer.GraphicsLayer;
 import graphics.layer.GraphicsLayerManager;
@@ -14,20 +19,27 @@ import physics.collision.Collidable;
 import physics.collision.CollisionLayer;
 import physics.collision.CollisionLayerManager;
 import physics.collision.HitBox;
+import physics.collision.quadtree.CRQuadTree;
 import physics.general.Vector2;
 
 public abstract class Entity extends EngineInstance implements Tickable, IGraphics, Collidable
 {
 	public abstract PhysicsBody getPhysicsBody();
 	public abstract Vector2 getPosition();
-	public abstract void onTick(TickInfo tf, Object somethinmgelse);
 	
-	protected ConcurrentQuadTreeNode<?> quadTreeNode;
 	protected PhysicsBody body;
 	protected HitBox hitbox;
+	
+	protected EntityModifiers modifiers;
+	
+	protected int debuffCount;
+	
+	protected HashMap<Elements, Boolean> underEffects;
+	
+	
 	public Entity() 
 	{
-		
+		this.modifiers = new EntityModifiers();
 	}
 	
 	public void addToLayers(String collisionLayer, String graphicsLayer, String tickableGroup)
@@ -60,19 +72,5 @@ public abstract class Entity extends EngineInstance implements Tickable, IGraphi
 			if (tg != null) tg.addTickable(this);
 		}
 		
-	}
-	
-	@Override
-	public final void onTick(TickInfo info)
-	{
-		if (body != null)
-		{
-			if (body.hasMoved())
-			{
-				quadTreeNode.update();
-				//update quadtree position
-			}
-		}
-		onTick(info, this);
 	}
 }

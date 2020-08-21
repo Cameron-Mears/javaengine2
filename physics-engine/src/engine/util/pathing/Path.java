@@ -59,6 +59,15 @@ public class Path implements Iterable<PathNode>, Iterator<PathNode>
 	{
 		return current != null;
 	}
+	
+	public void scale(double factor)
+	{
+		for (PathNode pathNode : path) 
+		{
+			pathNode.getPosition().x *= 32;
+			pathNode.getPosition().y *= 32;
+		}
+	}
 
 	@Override
 	public PathNode next() 

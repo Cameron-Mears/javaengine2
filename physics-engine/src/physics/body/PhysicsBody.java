@@ -59,8 +59,8 @@ public class PhysicsBody
 		tx.getPosition().add(velocity.scaled(info.delta));
 		
 		this.force.set(0, 0);
-		hasMoved = xLast == getPosition().getX();
-		hasMoved = yLast == getPosition().getY() || hasMoved; //incase x case is true and y case is false
+		hasMoved = xLast != getPosition().getX();
+		hasMoved = yLast != getPosition().getY() || hasMoved; //incase x case is true and y case is false
 		
 	}
 	

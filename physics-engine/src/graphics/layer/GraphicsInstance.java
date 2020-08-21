@@ -24,21 +24,23 @@ public class GraphicsInstance
 	{
 		this.renderFunction = (graphics)->{
 			Rectangle bounds = graphics.renderBoundingArea();
-			if (camera != null)
+			if (bounds == null || camera == null)
 			{
-				if (bounds != null)
-				{
-					if (camera.getBounds() != null && camera.getBounds().contains(bounds))
-					{
-						graphics.render(g2);
-						return;
-					}
-					return;
-				}
 				graphics.render(g2);
 				return;
 			}
-			graphics.render(g2);
+			
+			if (camera.getBounds() != null)
+			{
+				if (camera.getBounds().contains(bounds))
+				{
+					graphics.render(g2);
+					return;
+				}
+			
+			}
+			 graphics.render(g2);
+			return;
 		};
 		this.renderPriority = depth;
 		this.renderInterfaces = new HashTreeMap<Long, IGraphics>();

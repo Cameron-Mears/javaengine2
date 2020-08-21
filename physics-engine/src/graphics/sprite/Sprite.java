@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import engine.core.instance.EngineInstance;
+import engine.core.random.Rand;
 import engine.core.tick.TickInfo;
 import physics.collision.HitBox;
 import physics.collision.Rectangle;
@@ -57,6 +58,15 @@ public class Sprite
 		Rectangle rect = new Rectangle(frames.get(0).getWidth(), frames.get(0).getHeight(), position);
 		return new HitBox(rect, owner);
 	}
+	/**
+	 * 
+	 * @param pos, optional
+	 * @return
+	 */
+	public Rectangle createNewBoundingBox(Vector2 pos)
+	{
+		return pos == null? new Rectangle(frames.get(0).getWidth(), frames.get(0).getHeight()):new Rectangle(frames.get(0).getWidth(), frames.get(0).getHeight(), pos);
+	}
 	
 	public void setSpriteFPS(double fps)
 	{
@@ -100,5 +110,29 @@ public class Sprite
 	{
 		return frames.get(currentFrame);
 		
+	}
+	
+	public BufferedImage randFrame()
+	{
+		return frames.get(Rand.randInt(0, frames.size()-1));
+		
+	}
+
+
+	public int getWidth() 
+	{
+		return frames.get(0).getWidth();
+		
+	}
+	
+	public int getHeight() 
+	{
+		return frames.get(0).getWidth();
+		
+	}
+
+
+	public int getFrameCount() {
+		return frames.size();
 	}
 }

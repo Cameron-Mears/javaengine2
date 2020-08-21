@@ -1,0 +1,29 @@
+{
+    "rarity":"RARE",
+    "sprite": null,
+    "stats":{
+        "TYPE": "HITSCAN",
+        "RAW_DPS":900,
+        "APS": 10,
+        "elementdamage":[
+            {
+                "TYPE":"FIRE",
+                "EFFECT_CHANCE":10,
+                "DAMAGE":400
+            },
+            {
+                "TYPE":"RIADIATION",
+                "EFFECT_CHANCE":20,
+                "DAMAGE":600
+            }
+        ]
+    },
+    "name":"Gamma Ray Rifle",
+    "elements": [
+        "RIADATION",
+        "FIRE"
+    ],
+    "defaultMods":[
+        
+    ]
+}

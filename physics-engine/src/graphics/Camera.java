@@ -83,7 +83,7 @@ public class Camera
 		return img;
 	}
 	
-	private void clamp() 
+	public void clamp() 
 	{
 		if (boundries == null) return;
 		boundries.clamp(bounds);		
@@ -122,9 +122,13 @@ public class Camera
 	 */
 	public void capture(GraphicsLayer layer, Graphics2D g2)
 	{
+		clamp();
 		g2.setTransform(new AffineTransform());
+		//g2.setClip((int)bounds.getX(), (int)bounds.getY(), (int)bounds.getWidth(), (int)bounds.getHeight());
 		g2.scale(scale, scale);
-		g2.translate(-bounds.getPosition().getX(), -bounds.getPosition().getY());
+		double tx = bounds.getPosition().getX();
+		double ty = bounds.getPosition().getY();
+		g2.translate(-tx, -ty);
 		layer.render(this,g2);
 	}
 

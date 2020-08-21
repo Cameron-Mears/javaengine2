@@ -25,4 +25,7 @@ public class Rand
 	{
 		return (int) (((max - min) * Math.random()) + min);
 	}
+	public static int randElement(int[] tiles) {
+		return tiles[randInt(0, tiles.length)];
+	}
 }

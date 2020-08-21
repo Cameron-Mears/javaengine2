@@ -1,0 +1,9 @@
+{
+    "imagesets":[
+        "tilemap_level_2_set.json"
+    ],
+
+    "tilemaps":[
+        "very_cool_tilemap.json"
+    ]
+}
